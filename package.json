@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/SoftwareG4/reyoka/issues"
   },
-  "homepage": "https://github.com/SoftwareG4/reyoka#readme"
+  "homepage": "https://github.com/SoftwareG4/reyoka#readme",
+  "dependencies": {
+    "http2": "^3.3.7",
+    "mysql2": "^3.6.2"
+  }
 }
