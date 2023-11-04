@@ -12,7 +12,7 @@ const pricingService = require('./src/services/pricingService')
 
 const server = http.createServer(async (req, res) => {
 
-//====================================================GET Specific Reviews===============================================================
+//==================================================== GET Specific Reviews, CHAITANYA ===============================================================
   if (req.url.startsWith('/reviews/') && req.method === 'GET') {
     try {
       const params = url.parse(req.url, true);
@@ -33,8 +33,29 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ error: 'Internal Server Error' }));
     }
   } 
+
+  //=================================================== GET ALL REVIEWS, LOKESH =========================================================
+
+  else if (req.url === '/reviews' && req.method === 'GET') {
+    try {
+      ReviewsModel.getAllReviews((err, reviews) => {
+        if (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          console.log(err);
+          res.end(JSON.stringify({ error: 'Internal Server Error' }));
+        } else {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(reviews));
+        }
+      });
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      console.log(error);
+      res.end(JSON.stringify({ error: 'Internal Server Error' }));
+    }
+  }
   
-//====================================================POST Reviews===============================================================
+//==================================================== POST Reviews, LOKESH ===============================================================
 
   else if (req.url.startsWith('/reviews/') && req.method === 'POST') {
     try {
@@ -62,7 +83,41 @@ const server = http.createServer(async (req, res) => {
   }  
 
 
-  //=====================================================POST INTO CART============================================================
+  //===================================================== DELETE REVIEW, DEEVESH =========================================================
+
+  // DELETE Review API
+else if (req.url.startsWith('/reviews/') && req.method === 'DELETE') {
+    try {
+      const params = url.parse(req.url, true);
+      const reviewId = parseInt(params.pathname.split('/').pop());
+  
+      // Implement a function to check if the review exists and is associated with the current user
+      const isAuthorizedToDelete = checkReviewAuthorization(reviewId, userId);
+  
+      if (isAuthorizedToDelete) {
+        // Call the ReviewsModel function to delete the review
+        ReviewsModel.deleteReview(reviewId, (err, result) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Internal Server Error' }));
+          } else {
+            res.writeHead(204); // Successful deletion has no content in the response
+            res.end();
+          }
+        });
+      } else {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized to delete this review' }));
+      }
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Internal Server Error' }));
+    }
+  }
+  
+
+
+  //===================================================== ADD INTO CART, CHAITANYA ============================================================
 
 else if (req.url.startsWith('/cart/') && req.method === 'POST') {
     try {
@@ -124,7 +179,7 @@ else if (req.url.startsWith('/cart/') && req.method === 'POST') {
 
 
 
-//===============================================================CHECK AVAILABILITY=================================================
+//=============================================================== CHECK AVAILABILITY, DEEVESH =================================================
 
 else if (req.url.startsWith('/availability/') && req.method === 'POST') {
     try {
@@ -162,7 +217,7 @@ else if (req.url.startsWith('/availability/') && req.method === 'POST') {
   
 
 
-  //====================================================PRICE CALCULATION===========================================
+  //==================================================== PRICE CALCULATION, DEEVESH ===========================================
 
   else if (req.url.startsWith('/calculate-price/') && req.method === 'POST') {
     let body = '';
@@ -184,8 +239,6 @@ else if (req.url.startsWith('/availability/') && req.method === 'POST') {
       res.end(JSON.stringify({ price: price }));
     });
   }
-
-
 
 
 else {
