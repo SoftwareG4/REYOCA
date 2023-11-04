@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
+const db = require('../../dbcon');
 
 dotenv.config(); // Load environment variables from .env file
 

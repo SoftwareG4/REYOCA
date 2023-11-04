@@ -1,5 +1,5 @@
 // paymentProfileModel.js
-const db = require('../dbcon');
+const db = require('../../dbcon');
 
 class PaymentProfileModel {
   static getAllPaymentProfiles(callback) {

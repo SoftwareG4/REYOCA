@@ -1,5 +1,5 @@
 // vehicleCatalogModel.js
-const db = require('../dbcon');
+const db = require('../../dbcon');
 
 class VehicleCatalogModel {
   static getAllVehicles(callback) {

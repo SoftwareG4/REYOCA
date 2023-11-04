@@ -1,4 +1,4 @@
-const db = require('../../dbcon'); // Import your database connection
+const db = require('../../dbcon');
 
 class UserModel {
   static async getAllUsers(callback) {

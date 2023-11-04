@@ -1,9 +1,7 @@
-// reviewsModel.js
 const db = require('../../dbcon');
 
 class ReviewsModel {
-
-
+  
   static getAllReviews(callback) {
     try {
       const connection = db(); // Get a connection
@@ -92,7 +90,7 @@ class ReviewsModel {
     }
   }
 
-   static deleteReview(reviewId, callback) {
+  static deleteReview(reviewId, callback) {
     try {
       const connection = db(); // Get a connection
 
@@ -119,7 +117,6 @@ class ReviewsModel {
       return callback(error, null);
     }
   }
-
 }
 
 module.exports = ReviewsModel;

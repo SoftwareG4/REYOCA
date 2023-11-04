@@ -3,6 +3,7 @@ const db = require('../../dbcon');
 
 
   class TransactionHistoryModel {
+
     static checkAvailability(vehicleId, startDate, endDate, callback) {
 
       try{
@@ -47,8 +48,7 @@ const db = require('../../dbcon');
 
       
     }
+
   }
-
-
 
 module.exports = TransactionHistoryModel;
