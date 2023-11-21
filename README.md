@@ -45,7 +45,7 @@ To get started with REYOCA, follow these steps:
 4. **Run the Application:** Start the web application by launching the server.
 
    ```bash
-   node server.js
+   node app.js
    ```
 
 5. **Access the Application:** Open your web browser and navigate to `http://localhost:3000` (or the appropriate URL as specified in your environment).
