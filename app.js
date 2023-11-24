@@ -13,7 +13,7 @@ const TransactionHistoryModel = require('./src/models/transactionHistoryModel');
 
 
 // Import Apis
-const ReviewsApi = require('./src/api/reviewsAPIs');
+const reviewsApi = require('./src/api/reviewsAPIs');
 const cartApi = require('./src/api/cartAPIs');
 const locationApi = require('./src/api/locationAPIs');
 const transactionApi = require('./src/api/transactionAPIs');
@@ -25,32 +25,39 @@ const vehicleApi = require('./src/api/vehicleAPIs');
 const pricingService = require('./src/services/pricingService')
 const authService = require('./src/services/authService');
 
+// Resource path
+const userPath = '/user';
+const vehiclePath = '/vehicle';
+const locationPath = '/location';
+const cartPath = '/cart';
+const transactionPath = '/transaction';
+const reviewsPath = '/reviews';
 
 const server = http.createServer(async (req, res) => {
 
 
-  if (req.url.startsWith('/reviews')) {
-    ReviewsApi(req, res);
-  }
-
-  else if (req.url.startsWith('/cart')) {
-    cartApi(req, res);
-  }
-
-  else if (req.url.startsWith('/location')) {
-    locationApi(req, res);
-  }
-
-  else if (req.url.startsWith('/user')) {
+  if (req.url.startsWith(userPath)) {
     userApi(req, res);
   }
 
-  else if (req.url.startsWith('/vehicle')) {
+  else if (req.url.startsWith(vehiclePath)) {
     vehicleApi(req, res);
   }
 
-  else if (req.url.startsWith('/transaction')) {
+  else if (req.url.startsWith(locationPath)) {
+    locationApi(req, res);
+  }
+
+  else if (req.url.startsWith(cartPath)) {
+    cartApi(req, res);
+  }
+
+  else if (req.url.startsWith(transactionPath)) {
     transactionApi(req, res);
+  }
+
+  else if (req.url.startsWith(reviewsPath)) {
+    reviewsApi(req, res);
   }
 
   else {
