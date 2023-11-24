@@ -19,6 +19,7 @@ const locationApi = require('./src/api/locationAPIs');
 const transactionApi = require('./src/api/transactionAPIs');
 const userApi = require('./src/api/userAPIs');
 const vehicleApi = require('./src/api/vehicleAPIs');
+const searchApi = require('./src/api/searchAPI');
 
 
 // Import Services
@@ -28,6 +29,7 @@ const authService = require('./src/services/authService');
 // Resource path
 const userPath = '/user';
 const vehiclePath = '/vehicle';
+const searchPath = '/search';
 const locationPath = '/location';
 const cartPath = '/cart';
 const transactionPath = '/transaction';
@@ -42,6 +44,10 @@ const server = http.createServer(async (req, res) => {
 
   else if (req.url.startsWith(vehiclePath)) {
     vehicleApi(req, res);
+  }
+
+  else if (req.url.startsWith(searchPath)) {
+    searchApi(req, res);
   }
 
   else if (req.url.startsWith(locationPath)) {
