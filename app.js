@@ -6,58 +6,44 @@ const mysql = require('mysql2');
 
 
 
-// Import Models
-const ReviewsModel = require('./src/models/reviewsModel');
-const CartModel = require('./src/models/cartModel');
-const TransactionHistoryModel = require('./src/models/transactionHistoryModel');
 
 
-// Import Apis
-const ReviewsApi = require('./src/api/reviewsAPIs');
-const cartApi = require('./src/api/cartAPIs');
-const locationApi = require('./src/api/locationAPIs');
-const transactionApi = require('./src/api/transactionAPIs');
-const userApi = require('./src/api/userAPIs');
-const vehicleApi = require('./src/api/vehicleAPIs');
 
+// Import Routes
+const {register_rentee,register_renter,login_user,logout_user} = require('./src/routes/register_login');
 
 // Import Services
-const pricingService = require('./src/services/pricingService')
-const authService = require('./src/services/authService');
+
 
 
 const server = http.createServer(async (req, res) => {
-
-
-  if (req.url.startsWith('/reviews')) {
-    ReviewsApi(req, res);
+  // Get the Content-Type header and method from the request
+  const contentType = req.headers['content-type'];
+  const method = req.method;
+  let path =  req.url;
+  if(path[path.length-1]=='/'){
+    path=path.substring(0,path.length-1)
   }
+  console.log(contentType,method,path)
 
-  else if (req.url.startsWith('/cart')) {
-    cartApi(req, res);
+  switch(path){
+    case "/login/create-rentee":
+      register_rentee(req, res);
+      break
+    case "/login/create-renter":
+      register_renter(req, res);
+      break
+    case "/login":
+      login_user(req, res);
+      break
+    case "/logout":
+      logout_user(req, res);
+      break
+    default:
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Page Not Found');
+  
   }
-
-  else if (req.url.startsWith('/location')) {
-    locationApi(req, res);
-  }
-
-  else if (req.url.startsWith('/user')) {
-    userApi(req, res);
-  }
-
-  else if (req.url.startsWith('/vehicle')) {
-    vehicleApi(req, res);
-  }
-
-  else if (req.url.startsWith('/transaction')) {
-    transactionApi(req, res);
-  }
-
-  else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
-  }
-
 
 });
 
