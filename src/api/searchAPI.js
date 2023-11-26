@@ -8,6 +8,9 @@ function searchApi(req, res) {
 
     try {
         let apiCall = req.url;
+        if (apiCall.endsWith('/')) {
+            apiCall = apiCall.substring(0, apiCall.length-1);
+        }
         
         switch (apiCall) {
             case "/search":
@@ -19,18 +22,24 @@ function searchApi(req, res) {
 
                     req.on('end', async () => {
                         console.log("body: ", body, " end");
-                        const jsonData = JSON.parse(body);
-
-                        SearchModel.setSearchParam (
-                            jsonData.userLocation,
-                            jsonData.startDate,
-                            jsonData.endDate,
-                            null,
-                            null,
-                            false
-                        );
-                        SearchModel.searchAvailableVehicles(callback);
+                        if (body) {
+                            SearchModel.setSearchParam (
+                                jsonData.userLocation,
+                                jsonData.startDate,
+                                jsonData.endDate,
+                                null,
+                                null,
+                                false
+                            );
+                            SearchModel.searchAvailableVehicles(callback);
+                        } else {
+                            res.writeHead(400, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({error: "Bad request."}));
+                        }
                     });
+                } else {
+                    res.writeHead(405, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({error: "Method not allowed."}));
                 }
                 break;
 
@@ -43,18 +52,26 @@ function searchApi(req, res) {
                     });
 
                     req.on('end', async () => {
-                        const jsonData = JSON.parse(body);
+                        if (body) {
+                            const jsonData = JSON.parse(body);
 
-                        SearchModel.setSearchParam (
-                            jsonData.userLocation,
-                            jsonData.startDate,
-                            jsonData.endDate,
-                            jsonData.filterColumns,
-                            null,
-                            false
-                        );
-                        SearchModel.searchAvailableVehicles(callback);
+                            SearchModel.setSearchParam (
+                                jsonData.userLocation,
+                                jsonData.startDate,
+                                jsonData.endDate,
+                                jsonData.filterColumns,
+                                null,
+                                false
+                            );
+                            SearchModel.searchAvailableVehicles(callback);
+                        } else {
+                            res.writeHead(400, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({error: "Bad request."}));
+                        }
                     });
+                } else {
+                    res.writeHead(405, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({error: "Method not allowed."}));
                 }
                 break;
 
@@ -67,18 +84,26 @@ function searchApi(req, res) {
                     });
 
                     req.on('end', async () => {
-                        const jsonData = JSON.parse(body);
+                        if (body) {
+                            const jsonData = JSON.parse(body);
 
-                        SearchModel.setSearchParam (
-                            jsonData.userLocation,
-                            jsonData.startDate,
-                            jsonData.endDate,
-                            jsonData.filterColumns,
-                            priceColName,
-                            false
-                        );
-                        SearchModel.searchAvailableVehicles(callback);
+                            SearchModel.setSearchParam (
+                                jsonData.userLocation,
+                                jsonData.startDate,
+                                jsonData.endDate,
+                                jsonData.filterColumns,
+                                priceColName,
+                                false
+                            );
+                            SearchModel.searchAvailableVehicles(callback);
+                        } else {
+                            res.writeHead(400, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({error: "Bad request."}));
+                        }
                     });
+                } else {
+                    res.writeHead(405, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({error: "Method not allowed."}));
                 }
                 break;
             case "/search/filter/rating":
@@ -89,18 +114,26 @@ function searchApi(req, res) {
                     });
 
                     req.on('end', async () => {
-                        const jsonData = JSON.parse(body);
+                        if (body) {
+                            const jsonData = JSON.parse(body);
 
-                        SearchModel.setSearchParam (
-                            jsonData.userLocation,
-                            jsonData.startDate,
-                            jsonData.endDate,
-                            jsonData.filterColumns,
-                            ratingColName,
-                            false
-                        );
-                        SearchModel.searchAvailableVehicles(callback);
+                            SearchModel.setSearchParam (
+                                jsonData.userLocation,
+                                jsonData.startDate,
+                                jsonData.endDate,
+                                jsonData.filterColumns,
+                                ratingColName,
+                                false
+                            );
+                            SearchModel.searchAvailableVehicles(callback);
+                        } else {
+                            res.writeHead(400, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({error: "Bad request."}));
+                        }
                     });
+                } else {
+                    res.writeHead(405, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({error: "Method not allowed."}));
                 }
                 break;
             case "/search/filter/price/desc":
@@ -111,18 +144,26 @@ function searchApi(req, res) {
                     });
 
                     req.on('end', async () => {
-                        const jsonData = JSON.parse(body);
+                        if (body) {
+                            const jsonData = JSON.parse(body);
 
-                        SearchModel.setSearchParam (
-                            jsonData.userLocation,
-                            jsonData.startDate,
-                            jsonData.endDate,
-                            jsonData.filterColumns,
-                            priceColName,
-                            true
-                        );
-                        SearchModel.searchAvailableVehicles(callback);
+                            SearchModel.setSearchParam (
+                                jsonData.userLocation,
+                                jsonData.startDate,
+                                jsonData.endDate,
+                                jsonData.filterColumns,
+                                priceColName,
+                                true
+                            );
+                            SearchModel.searchAvailableVehicles(callback);
+                        } else {
+                            res.writeHead(400, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({error: "Bad request."}));
+                        }
                     });
+                } else {
+                    res.writeHead(405, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({error: "Method not allowed."}));
                 }
                 break;
             case "/search/filter/rating/desc":
@@ -133,19 +174,32 @@ function searchApi(req, res) {
                     });
 
                     req.on('end', async () => {
-                        const jsonData = JSON.parse(body);
+                        if (body) {
+                            const jsonData = JSON.parse(body);
 
-                        SearchModel.setSearchParam (
-                            jsonData.userLocation,
-                            jsonData.startDate,
-                            jsonData.endDate,
-                            jsonData.filterColumns,
-                            ratingColName,
-                            true
-                        );
-                        SearchModel.searchAvailableVehicles(callback);
+                            SearchModel.setSearchParam (
+                                jsonData.userLocation,
+                                jsonData.startDate,
+                                jsonData.endDate,
+                                jsonData.filterColumns,
+                                ratingColName,
+                                true
+                            );
+                            SearchModel.searchAvailableVehicles(callback);
+                        } else {
+                            res.writeHead(400, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({error: "Bad request."}));
+                        }
                     });
+                } else {
+                    res.writeHead(405, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({error: "Method not allowed."}));
                 }
+                break;
+            default:
+                res.writeHead(404, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({error: "Requested URL not found."}));
+                break;
         }
     } catch (err) {
         res.writeHead(500, {'Content-Type': 'application/json'});
