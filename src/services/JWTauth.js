@@ -3,7 +3,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 const cookie = require('cookie');
 
-const {invalidatedTokens} = require('../routes/register_login');
+// const {invalidatedTokens} = require('../routes/register_login');
+require('../../global.js');
 
 const createTokens = (user) => {
   const accessToken = sign(
@@ -15,12 +16,15 @@ const createTokens = (user) => {
 
 
 function validateToken(cookieHeader){
-  if (!cookieHeader || invalidatedTokens.has(token)) {
+  if (!cookieHeader) {
     return false
   }
   try{
     const cookies = cookie.parse(cookieHeader);
     const accessToken = cookies.access_token;
+    if(invalidatedTokens.has(accessToken)){
+      return false
+    }
     // console.log('Value of access_token:', accessToken);
     const users=verify(accessToken,process.env.ACCESS_TOKEN_SECRET);
     const id=users.id

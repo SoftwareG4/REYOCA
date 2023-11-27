@@ -1,10 +1,13 @@
-const url = require('url');
 const UserModel = require('../models/M_register_login');
 const {createTokens, validateToken}= require('../services/JWTauth');
 const jwt = require('jsonwebtoken')
 const cookie = require('cookie');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const invalidatedTokens = new Set();
+require('../../global.js');
+
+// const invalidatedTokens = new Set();
 
 function register_rentee(req, res) {
     const chunks = [];
@@ -129,4 +132,4 @@ function logout_user(req, res) {
         res.end(JSON.stringify({ error: "User not Authenticated" }));
     }
 }
-module.exports = {register_rentee,register_renter,login_user,logout_user,invalidatedTokens};
+module.exports = {register_rentee,register_renter,login_user,logout_user};

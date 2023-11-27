@@ -10,10 +10,12 @@
   "author": "Deevesh",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.456.0",
     "bcrypt": "^5.1.1",
     "cookie": "^0.6.0",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
+    "formidable": "^3.5.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.2"
   },
