@@ -49,6 +49,68 @@ const db = require('../../dbcon');
       
     }
 
+
+//===================================================================NEW FUNCTIONS TEST THESE ==========================================================================
+    static cancelBooking(transactionId, callback) {
+      try {
+        const connection = db(); // Get a connection
+  
+        connection.connect((err) => {
+          if (err) {
+            console.error('Error connecting to the database:', err);
+            return callback(err, null);
+          }
+  
+          const query = 'DELETE FROM transactions WHERE transaction_id = ?';
+          connection.query(query, [transactionId], (err, result) => {
+            connection.end(); // Close the connection
+  
+            if (err) {
+              console.error('Error executing the query:', err);
+              return callback(err, null);
+            }
+  
+            return callback(null, result);
+          });
+        });
+      } catch (error) {
+        console.error('Error:', error);
+        return callback(error, null);
+      }
+    }
+
+
+
+    static updateBooking(transactionId, updatedData, callback) {
+      try {
+        const connection = db(); // Get a connection
+  
+        connection.connect((err) => {
+          if (err) {
+            console.error('Error connecting to the database:', err);
+            return callback(err, null);
+          }
+  
+          const query = 'UPDATE transactions SET ? WHERE transaction_id = ?';
+          connection.query(query, [updatedData, transactionId], (err, result) => {
+            connection.end(); // Close the connection
+  
+            if (err) {
+              console.error('Error executing the query:', err);
+              return callback(err, null);
+            }
+  
+            return callback(null, result);
+          });
+        });
+      } catch (error) {
+        console.error('Error:', error);
+        return callback(error, null);
+      }
+    }
+
+
+
   }
 
 module.exports = TransactionHistoryModel;

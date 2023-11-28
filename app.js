@@ -10,6 +10,7 @@ const mysql = require('mysql2');
 const ReviewsModel = require('./src/models/reviewsModel');
 const CartModel = require('./src/models/cartModel');
 const TransactionHistoryModel = require('./src/models/transactionHistoryModel');
+const FavouritesModel = require('../models/favouritesModel');
 
 
 // Import Apis
@@ -19,6 +20,9 @@ const locationApi = require('./src/api/locationAPIs');
 const transactionApi = require('./src/api/transactionAPIs');
 const userApi = require('./src/api/userAPIs');
 const vehicleApi = require('./src/api/vehicleAPIs');
+const sosApi = require('./src/api/sosApi');
+const favouritesApi = require('./src/api/favouritesApi');
+
 
 
 // Import Services
@@ -51,6 +55,14 @@ const server = http.createServer(async (req, res) => {
 
   else if (req.url.startsWith('/transaction')) {
     transactionApi(req, res);
+  }
+
+  else if (req.url.startsWith('/sos')) {
+    sosApi(req, res);
+  }
+
+  else if (req.url.startsWith('/favourites')) {
+    favouritesApi(req, res);
   }
 
   else {
