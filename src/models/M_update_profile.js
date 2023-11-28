@@ -67,7 +67,7 @@ class Profile_Model {
                                 return callback(err, null);
                             }
                         });
-                        return callback(null, results);
+                        return callback(null, "Password updated successfully");
                     }
                     else{
                         return callback(null, "Invalid Password");

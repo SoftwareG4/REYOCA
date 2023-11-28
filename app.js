@@ -12,6 +12,7 @@ const mysql = require('mysql2');
 // Import Routes
 const {register_rentee,register_renter,login_user,logout_user} = require('./src/routes/register_login');
 const {update_pic,update_password} = require('./src/routes/update_profile');
+const {add_review} = require('./src/routes/review');
 // Import Services
 
 
@@ -44,6 +45,9 @@ const server = http.createServer(async (req, res) => {
       break
     case "/updatepassword":
         update_password(req, res);
+      break
+    case "/postreview":
+        add_review(req, res);
       break
     default:
       res.writeHead(404, { 'Content-Type': 'text/plain' });

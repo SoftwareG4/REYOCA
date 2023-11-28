@@ -102,7 +102,7 @@ function update_password(req, res) {
             res.end(JSON.stringify({ error: err }));
         } else {
             res.writeHead(201, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Password changed successfully' }));
+            res.end(JSON.stringify({ message: result }));
         }
     });
 });

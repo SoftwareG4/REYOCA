@@ -54,7 +54,7 @@ class UserModel {
               return callback(err, null);
             }
 
-            const query ="INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `phone`, `role`, `government_id`) VALUES ('"+requestData["firstname"]+"', '"+requestData["lastname"]+"', '"+requestData["email"]+"', '"+encrypt_password+"', '"+requestData["phone"]+"', 'renter','"+requestData["gov_id"]+"','"+requestData["gender"]+"');";
+            const query ="INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `phone`, `role`, `government_id`,`gender`) VALUES ('"+requestData["firstname"]+"', '"+requestData["lastname"]+"', '"+requestData["email"]+"', '"+encrypt_password+"', '"+requestData["phone"]+"', 'renter','"+requestData["gov_id"]+"','"+requestData["gender"]+"');";
             connection.query(query, (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
