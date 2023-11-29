@@ -77,7 +77,161 @@ class Profile_Model {
             });
         });
     }
+
+    static async profile_update(user_id,requestData,callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+        // console.log(user_id,requestData)
+        connection.connect((err) => {
+            if (err) {
+              return callback(err, null);
+            }
+            const query = "SELECT * FROM user WHERE _ID=?";
+            connection.query(query,[user_id], async (err, results) => {
+                // connection.end(); // Close the connection
+                if (err) {
+                return callback(err, null);
+                }
+                // console.log(results)
+                if(results.length==0){
+                    return callback(null, "Email Not Registered");
+                }
+                else{
+                    let query = "UPDATE user SET "; // Replace '*' with specific columns if needed
+                    let conditions = [];
+                    let values = [];
+
+                    if (requestData.first_name) { 
+                        conditions.push("first_name = ?");
+                        values.push(requestData.rating_for);
+                    }
+                    if (requestData.last_name) { 
+                        conditions.push("last_name = ?");
+                        values.push(requestData.last_name);
+                    }
+                    if (requestData.email) { 
+                        conditions.push("email = ?");
+                        values.push(requestData.email);
+                    }
+                    if (requestData.phone) { 
+                        conditions.push("phone = ?");
+                        values.push(requestData.phone);
+                    }
+                    if (requestData.gender) { 
+                        conditions.push("gender = ?");
+                        values.push(requestData.gender);
+                    }
+
+                    if (conditions.length > 0) {
+                        query += conditions.join(" AND ") + " WHERE _ID=" + user_id;
+                    }
+                    connection.query(query, values, (err, results) => {
+                        connection.end(); // Close the connection
+                        if (err) {
+                            return callback(err, null);
+                        }
+                        return callback(null, "Profile updated");
+                    });
+                }
+                connection.end(); 
+            });
+        });
+    }
+
+    static async payment_update(user_id,requestData,callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+        // console.log(user_id,requestData)
+        connection.connect((err) => {
+            if (err) {
+              return callback(err, null);
+            }
+            const query = "SELECT * FROM user WHERE _ID=?";
+            connection.query(query,[user_id], async (err, results) => {
+                // connection.end(); // Close the connection
+                if (err) {
+                return callback(err, null);
+                }
+                // console.log(results)
+                if(results.length==0){
+                    return callback(null, "Email Not Registered");
+                }
+                else{
+                    let query = "UPDATE payment_profile SET "; // Replace '*' with specific columns if needed
+                    let conditions = [];
+                    let values = [];
+
+                    if (requestData.card_number) { 
+                        conditions.push("card_number = ?");
+                        values.push(requestData.card_number);
+                    }
+                    if (requestData.exp_date) { 
+                        conditions.push("exp_date = ?");
+                        values.push(requestData.exp_date);
+                    }
+                    if (requestData.is_credit) { 
+                        conditions.push("is_credit = ?");
+                        values.push(requestData.is_credit);
+                    }
+
+                    if (conditions.length > 0) {
+                        query += conditions.join(" AND ") + " WHERE _ID=" + user_id;
+                    }
+                    connection.query(query, values, (err, results) => {
+                        connection.end(); // Close the connection
+                        if (err) {
+                            return callback(err, null);
+                        }
+                        return callback(null, "Payment updated");
+                    });
+                }
+                connection.end();  
+            });
+        });
+    }
+
+    static async getRatingById(user_id, callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+        connection.connect((err) => {
+            if (err) {
+                return callback(err, null);
+            }
+            const query = "SELECT AVG(stars) AS average_rating FROM reviews WHERE rating_for=?";
+            connection.query(query, [user_id], (err, results) => {
+                connection.end(); // Close the connection
+                if (err) {
+                    return callback(err, null);
+                }
+                if (results.length == 0 || results[0].average_rating === null) {
+                    return callback(null, "No Rating Available");
+                } else {
+                    // Return the average rating
+                    const averageRating = results[0].average_rating;
+                    return callback(null, averageRating);
+                }
+            });
+        });
+    }
+    
 }
+
+
 
 module.exports = Profile_Model;
 

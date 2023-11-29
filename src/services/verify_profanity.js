@@ -83,7 +83,7 @@ async function verify_foul(description){
     }
 }
 // (async () => {
-//     console.log("Foul words:", await verify_foul("your ass is very nice"));
+//     console.log("Foul words:", await verify_foul("your ass. is very nice"));
 // })();
 
 

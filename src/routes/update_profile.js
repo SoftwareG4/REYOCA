@@ -105,11 +105,128 @@ function update_password(req, res) {
             res.end(JSON.stringify({ message: result }));
         }
     });
-});
+  });
 } 
 
+function update_prof(req, res) {
+  const user_id=validateToken(req.headers.cookie)
+  if (user_id==false){
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: "User not Authenticated" }));
+  }
+  const chunks = [];
+  req.on("data", (chunk) => {
+      chunks.push(chunk);
+  });
+  req.on('end', () => {
+      let requestData = {};
+      try {
+          const data = Buffer.concat(chunks);
+          const stringData = data.toString();
+          const parsedData = new URLSearchParams(stringData);
+          for (var pair of parsedData.entries()) {
+              requestData[pair[0]] = pair[1];
+          }
+          // console.log("DataObj: ", requestData);
 
-module.exports = {update_pic,update_password};
+      } catch (error) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
+          return;
+      }
+
+      profile_Model.profile_update(user_id,requestData, (err, result) => {
+      if (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: err }));
+      } else {
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: result }));
+      }
+    });
+  });
+} 
+
+function update_payment(req, res) {
+  const user_id=validateToken(req.headers.cookie)
+  if (user_id==false){
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: "User not Authenticated" }));
+  }
+  const chunks = [];
+  req.on("data", (chunk) => {
+      chunks.push(chunk);
+  });
+  req.on('end', () => {
+      let requestData = {};
+      try {
+          const data = Buffer.concat(chunks);
+          const stringData = data.toString();
+          const parsedData = new URLSearchParams(stringData);
+          for (var pair of parsedData.entries()) {
+              requestData[pair[0]] = pair[1];
+          }
+          // console.log("DataObj: ", requestData);
+
+      } catch (error) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
+          return;
+      }
+
+      profile_Model.payment_update(user_id,requestData, (err, result) => {
+      if (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: err }));
+      } else {
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: result }));
+      }
+    });
+  });
+} 
+
+function rating_get(req, res) {
+  const user_id=validateToken(req.headers.cookie)
+  if (user_id==false){
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: "User not Authenticated" }));
+  }
+  const chunks = [];
+  req.on("data", (chunk) => {
+      chunks.push(chunk);
+  });
+  req.on('end',async () => {
+    let requestData = {};
+    try {
+        const data = Buffer.concat(chunks);
+        const stringData = data.toString();
+        const parsedData = new URLSearchParams(stringData);
+        for (var pair of parsedData.entries()) {
+            requestData[pair[0]] = pair[1];
+        }
+        console.log("DataObj: ", requestData);
+
+    } catch (error) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
+        return;
+    }
+    
+    profile_Model.getRatingById(user_id, (err, result) => {
+        if (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: err }));
+        } else {
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: result }));
+        }
+      });
+  });
+}
+
+
+module.exports = {update_pic,update_password,update_prof,update_payment,rating_get};
 
 
 

@@ -4,8 +4,8 @@ const db = require('../../dbcon');
 const bcrypt = require("bcrypt");
 
 
-class review_Model {
-    static async post_review(user_id,data,callback) {
+class ReportModel {
+    static async post_report(user_id,data,callback) {
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -18,7 +18,7 @@ class review_Model {
               return callback(err, null);
             }
             const query ="SELECT * FROM vehicle_catalog vc join transaction_history th on vc._ID=th.vehicle_id WHERE (th.rentee_id=? AND vc.renter_id=?) OR (th.rentee_id=? AND vc.renter_id=?);"
-            connection.query(query, [user_id,data["rating_for"],data["rating_for"],user_id],(err, results) => {
+            connection.query(query, [user_id,data["reported_id"],data["reprted_id"],user_id],(err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
                 return callback();
@@ -27,20 +27,20 @@ class review_Model {
                     return callback("Cannot review this user as no transaction in database", null);
                 }
                 else{
-                    const sql="INSERT INTO reviews(`stars`,`description`,`rating_for`,`rating_by`) VALUES (?,?,?,?);"
-                    connection.query(query, [data["star"],data["description"],data["rating_for"],user_id],(err, result) => {
+                    const sql="INSERT INTO report(`report_type`,`description`,`reported_id`,`reported_by`) VALUES (?,?,?,?);"
+                    connection.query(query, [data["report_type"],data["description"],data["reported_id"],user_id],(err, result) => {
                         connection.end(); // Close the connection
                         if (err) {
                         return callback(err, null);
                         }
-                        return callback(null, "Review Added Successfully");
+                        return callback(null, "Successfully Reported");
                     });
                 }
             });
         });
     }
 
-    static async getReviewById(user_id, callback) {
+    static async getReportById(reported_id, callback) {
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -52,8 +52,8 @@ class review_Model {
             if (err) {
               return callback(err, null);
             }
-            const query = "SELECT * FROM reviews WHERE rating_for=?";
-            connection.query(query,[user_id], async (err, results) => {
+            const query = "SELECT * FROM report WHERE reported_id=?";
+            connection.query(query, reported_id, async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
@@ -78,7 +78,7 @@ class review_Model {
         });
     }
 
-    static async filterReview(filterCriteria, callback) {
+    static async filterReport(filterCriteria, callback) {
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -90,22 +90,30 @@ class review_Model {
             if (err) {
                 return callback(err, null);
             }
-            let query = "SELECT * FROM reviews"; // Replace '*' with specific columns if needed
+            let query = "SELECT * FROM report"; 
             let conditions = [];
             let values = [];
     
-            if (filterCriteria.rating_for) { // Assuming it's 'rating_by' based on your error log
-                conditions.push("rating_for = ?");
-                values.push(filterCriteria.rating_for);
+            if (filterCriteria.reported_id) { 
+                conditions.push("reported_id = ?");
+                values.push(filterCriteria.reported_id);
             }
-            if (filterCriteria.stars) {
-                conditions.push("stars = ?");
-                values.push(filterCriteria.stars);
+
+            if (filterCriteria.reported_by) { // Assuming it's 'rating_by' based on your error log
+                conditions.push("reported_by = ?");
+                values.push(filterCriteria.reported_by);
             }
-            if (filterCriteria.keyword) {
+
+            if (filterCriteria.report_type) { // Assuming it's 'rating_by' based on your error log
+                conditions.push("report_type = ?");
+                values.push(filterCriteria.report_type);
+            }
+
+            if (filterCriteria.keyword) { // Assuming it's 'rating_by' based on your error log
                 conditions.push("description LIKE '%" + filterCriteria.keyword + "%'");
             }
             
+    
             if (conditions.length > 0) {
                 query += " WHERE " + conditions.join(" AND ");
             }
@@ -120,5 +128,6 @@ class review_Model {
         });
     }
 }
-module.exports = review_Model;
+
+module.exports = ReportModel;
 

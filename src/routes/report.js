@@ -1,4 +1,4 @@
-const review_Model = require('../models/M_review');
+const ReportModel = require('../models/M_report');
 const {validateToken}= require('../services/JWTauth');
 const {verify_foul}= require('../services/verify_profanity');
 const fs = require('fs');
@@ -8,7 +8,7 @@ dotenv.config();
 
 
 
-function add_review(req, res) {
+function add_report(req, res) {
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -40,7 +40,7 @@ function add_review(req, res) {
         res.end(JSON.stringify({ found_bad_words : foul_words }));
       }
 
-      review_Model.post_review(user_id,requestData, (err, result) => {
+      ReportModel.post_report(user_id,requestData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err }));
@@ -52,7 +52,7 @@ function add_review(req, res) {
   });
 }
 
-function review_get(req, res) {
+function report_get(req, res) {
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -79,7 +79,7 @@ function review_get(req, res) {
         return;
     }
     
-    review_Model.getReviewById(user_id, (err, result) => {
+    ReportModel.getReportById(user_id, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
@@ -91,7 +91,7 @@ function review_get(req, res) {
   });
 }
 
-function review_filter(req, res) {
+function report_filter(req, res) {
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -118,7 +118,7 @@ function review_filter(req, res) {
         return;
     }
     
-    review_Model.filterReview(requestData, (err, result) => {
+    ReportModel.filterReport(requestData, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
@@ -130,7 +130,7 @@ function review_filter(req, res) {
   });
 }
 
-module.exports = { add_review, review_get, review_filter };
+module.exports = { add_report, report_get, report_filter };
 
 
 
