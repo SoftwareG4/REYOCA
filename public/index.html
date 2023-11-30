@@ -7,6 +7,55 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Custom CSS link -->
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- Places API -->
+    <script>
+        let autocomplete;
+        function initSearch() {
+            autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('location'),
+                {
+                    types: ['locality'],
+                    componentRestrictions: {'country': ['US']},
+                    fields: ['place_id', 'geometry', 'name']
+                }
+            );
+        }
+
+        async function submitForm() {
+            if (!autocomplete) {
+                console.log("Some error occurred");
+            }
+            let placeSelected = autocomplete.getPlace();
+            if (!placeSelected.geometry) {
+                document.getElementById('location').placeholder = "Please select a location";
+                alert("Please select a location before searching." );
+            } else {
+                let lat = placeSelected.geometry.location.lat();
+                let lng = placeSelected.geometry.location.lng();
+                
+                let user_loc = [lat, lng];
+                let start_date = document.getElementById('start_date').value;
+                let end_date = document.getElementById('end_date').value;
+                
+                let data = {
+                    "userLocation": user_loc,
+                    "startDate": start_date,
+                    "endDate": end_date
+                };
+
+                const response = await fetch('/search', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                let content = await response.text();
+                console.log(content);
+                document.getElementById('test').textContent = content;
+            }
+        }
+    </script>
 </head>
 
 <body class="bg-light">
@@ -43,6 +92,27 @@
                 <a href="#" class="btn btn-primary">Get Started</a>
             </div>
         </section>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md">
+                    <div class="card mb-4 box-shadow">
+                        <form>
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location">
+                            <label for="start_date">From</label>
+                            <input type="datetime-local" id="start_date" name="start_date">
+                            <label for="end_date">Until</label>
+                            <input type="datetime-local" id="end_date" name="start_date">
+                            <button type="button" value="Search" onclick="submitForm()">Search</button>
+                        </form>
+                        <p id="test"></p>
+                        <p id="geometry"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
@@ -84,6 +154,9 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlxjdoI_JGnoGMDcZzuz-mBKVNnZqODmA&libraries=places&callback=initSearch">
+    </script>
 </body>
 
 </html>

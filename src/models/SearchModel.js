@@ -2,11 +2,17 @@
 const db = require('../../dbcon');
 
 // Base search query
-const searchQuery = `
-    SELECT * FROM vehicles v
-      JOIN transaction_history th ON v._ID = th.vehicle_id
-     WHERE (? < th.booking_start AND ? < th.booking_start) 
-        OR (? > th.booking_end AND ? > th.booking_end)
+const searchQuery_part1 = `
+    SELECT v.*
+    FROM vehicles v
+    LEFT JOIN transaction_history th ON v._ID = th.vehicle_id
+    WHERE (th.vehicle_id IS NULL)
+    OR (th.booking_end < ? OR th.booking_start > ?)
+`;
+
+const searchQuery_part2 = `
+GROUP BY v._ID
+HAVING COUNT(th._ID) = COUNT(CASE WHEN th.booking_end < ? OR th.booking_start > ? THEN 1 END)
 `;
 
 class SearchModel {
@@ -40,15 +46,16 @@ class SearchModel {
                 let query = this.#setFilterColumns(this.#filterColumns, this.#sortByCol, this.#isDesc);
 
                 const searchParameters = [this.#startDate, this.#endDate, this.#startDate, this.#endDate];
+                console.log(query);
                 dbCon.query(query, searchParameters, (err, result) => {
                     if (err) {
                         console.log(err);
                         return callback(err, null);
                     }
 
-                    result.forEach((item, index, arr) => {
-                        arr[index].dist = this.#calcDistance(this.#userLocation[0], this.#userLocation[1], item['latitude'], item['longitude']);
-                    });
+                    // result.forEach((item, index, arr) => {
+                    //     arr[index].dist = this.#calcDistance(this.#userLocation[0], this.#userLocation[1], item['latitude'], item['longitude']);
+                    // });
 
                     result = JSON.stringify({"response": result});
                     return callback(null, result);
@@ -61,12 +68,26 @@ class SearchModel {
 
 
     static setSearchParam (user_loc, start_date, end_date, filter_col, sort_by_col, is_desc) {
+        if (start_date && end_date) {
+            let today = new Date();
+
+            console.log(today);
+            // Start and end date can only be in the future
+            if (today < start_date || today < end_date) {
+                return false;
+            }
+            // Start date can only be before the end date
+            if (start_date <= end_date) {
+                return false;
+            }
+        }
         this.#userLocation    = user_loc;
         this.#startDate       = start_date;
         this.#endDate         = end_date;
         this.#filterColumns   = filter_col;
         this.#sortByCol       = sort_by_col;
         this.#isDesc          = is_desc;
+        return true;
     }
 
 
@@ -112,7 +133,7 @@ class SearchModel {
     * @returns Search query including the filters and sort parameters
     */
     static #setFilterColumns (filter_columns, sort_by_col, is_desc) {
-        let query = searchQuery;
+        let query = searchQuery_part1;
         
         if (filter_columns != null && Object.keys(filter_columns).length !== 0) {
             const filters = Object.keys(filter_columns).map(column => {
@@ -129,6 +150,8 @@ class SearchModel {
             query += ' AND ';
             query += filters.join(' AND ');
         }
+
+        query += searchQuery_part2;
 
         if (sort_by_col != null) {
             query += ` ORDER BY ${sort_by_col}`;

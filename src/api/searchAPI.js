@@ -14,7 +14,7 @@ function searchApi(req, res) {
         
         switch (apiCall) {
             case "/search":
-                if (req.method == 'GET') {
+                if (req.method == 'POST') {
                     let body = '';
                     req.on('data', (chunk) => {
                         body += chunk;
@@ -23,6 +23,8 @@ function searchApi(req, res) {
                     req.on('end', async () => {
                         console.log("body: ", body, " end");
                         if (body) {
+                            const jsonData = JSON.parse(body);
+
                             SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
@@ -31,21 +33,26 @@ function searchApi(req, res) {
                                 null,
                                 false
                             );
-                            SearchModel.searchAvailableVehicles(callback);
+                            if (!isValid) {
+                                res.writeHead(400, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({"error": "Bad request."}));
+                            } else {
+                                SearchModel.searchAvailableVehicles(callback);
+                            }
                         } else {
                             res.writeHead(400, {'Content-Type': 'application/json'});
-                            res.end(JSON.stringify({error: "Bad request."}));
+                            res.end(JSON.stringify({"error": "Bad request."}));
                         }
                     });
                 } else {
                     res.writeHead(405, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({error: "Method not allowed."}));
+                    res.end(JSON.stringify({"error": "Method not allowed."}));
                 }
                 break;
 
 
             case "/search/filter":
-                if (req.method == 'GET') {
+                if (req.method == 'POST') {
                     let body = '';
                     req.on('data', (chunk) => {
                         body += chunk;
@@ -59,25 +66,30 @@ function searchApi(req, res) {
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
-                                jsonData.filterColumns,
+                                jsonData.columns,
                                 null,
                                 false
                             );
-                            SearchModel.searchAvailableVehicles(callback);
+                            if (!isValid) {
+                                res.writeHead(400, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({"error": "Bad request."}));
+                            } else {
+                                SearchModel.searchAvailableVehicles(callback);
+                            }
                         } else {
                             res.writeHead(400, {'Content-Type': 'application/json'});
-                            res.end(JSON.stringify({error: "Bad request."}));
+                            res.end(JSON.stringify({"error": "Bad request."}));
                         }
                     });
                 } else {
                     res.writeHead(405, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({error: "Method not allowed."}));
+                    res.end(JSON.stringify({"error": "Method not allowed."}));
                 }
                 break;
 
             
             case "/search/filter/price":
-                if (req.method == 'GET') {
+                if (req.method == 'POST') {
                     let body = '';
                     req.on('data', (chunk) => {
                         body += chunk;
@@ -87,27 +99,32 @@ function searchApi(req, res) {
                         if (body) {
                             const jsonData = JSON.parse(body);
 
-                            SearchModel.setSearchParam (
+                            let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
-                                jsonData.filterColumns,
+                                jsonData.columns,
                                 priceColName,
                                 false
                             );
-                            SearchModel.searchAvailableVehicles(callback);
+                            if (!isValid) {
+                                res.writeHead(400, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({"error": "Bad request."}));
+                            } else {
+                                SearchModel.searchAvailableVehicles(callback);
+                            }
                         } else {
                             res.writeHead(400, {'Content-Type': 'application/json'});
-                            res.end(JSON.stringify({error: "Bad request."}));
+                            res.end(JSON.stringify({"error": "Bad request."}));
                         }
                     });
                 } else {
                     res.writeHead(405, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({error: "Method not allowed."}));
+                    res.end(JSON.stringify({"error": "Method not allowed."}));
                 }
                 break;
             case "/search/filter/rating":
-                if (req.method == 'GET') {
+                if (req.method == 'POST') {
                     let body = '';
                     req.on('data', (chunk) => {
                         body += chunk;
@@ -121,23 +138,28 @@ function searchApi(req, res) {
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
-                                jsonData.filterColumns,
+                                jsonData.columns,
                                 ratingColName,
                                 false
                             );
-                            SearchModel.searchAvailableVehicles(callback);
+                            if (!isValid) {
+                                res.writeHead(400, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({"error": "Bad request."}));
+                            } else {
+                                SearchModel.searchAvailableVehicles(callback);
+                            }
                         } else {
                             res.writeHead(400, {'Content-Type': 'application/json'});
-                            res.end(JSON.stringify({error: "Bad request."}));
+                            res.end(JSON.stringify({"error": "Bad request."}));
                         }
                     });
                 } else {
                     res.writeHead(405, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({error: "Method not allowed."}));
+                    res.end(JSON.stringify({"error": "Method not allowed."}));
                 }
                 break;
             case "/search/filter/price/desc":
-                if (req.method == 'GET') {
+                if (req.method == 'POST') {
                     let body = '';
                     req.on('data', (chunk) => {
                         body += chunk;
@@ -151,23 +173,28 @@ function searchApi(req, res) {
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
-                                jsonData.filterColumns,
+                                jsonData.columns,
                                 priceColName,
                                 true
                             );
-                            SearchModel.searchAvailableVehicles(callback);
+                            if (!isValid) {
+                                res.writeHead(400, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({"error": "Bad request."}));
+                            } else {
+                                SearchModel.searchAvailableVehicles(callback);
+                            }
                         } else {
                             res.writeHead(400, {'Content-Type': 'application/json'});
-                            res.end(JSON.stringify({error: "Bad request."}));
+                            res.end(JSON.stringify({"error": "Bad request."}));
                         }
                     });
                 } else {
                     res.writeHead(405, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({error: "Method not allowed."}));
+                    res.end(JSON.stringify({"error": "Method not allowed."}));
                 }
                 break;
             case "/search/filter/rating/desc":
-                if (req.method == 'GET') {
+                if (req.method == 'POST') {
                     let body = '';
                     req.on('data', (chunk) => {
                         body += chunk;
@@ -181,29 +208,34 @@ function searchApi(req, res) {
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
-                                jsonData.filterColumns,
+                                jsonData.columns,
                                 ratingColName,
                                 true
                             );
-                            SearchModel.searchAvailableVehicles(callback);
+                            if (!isValid) {
+                                res.writeHead(400, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({"error": "Bad request."}));
+                            } else {
+                                SearchModel.searchAvailableVehicles(callback);
+                            }
                         } else {
                             res.writeHead(400, {'Content-Type': 'application/json'});
-                            res.end(JSON.stringify({error: "Bad request."}));
+                            res.end(JSON.stringify({"error": "Bad request."}));
                         }
                     });
                 } else {
                     res.writeHead(405, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({error: "Method not allowed."}));
+                    res.end(JSON.stringify({"error": "Method not allowed."}));
                 }
                 break;
             default:
                 res.writeHead(404, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify({error: "Requested URL not found."}));
+                res.end(JSON.stringify({"error": "Requested URL not found."}));
                 break;
         }
     } catch (err) {
         res.writeHead(500, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({error: 'Internal Server Error'}));
+        res.end(JSON.stringify({"error": 'Internal Server Error'}));
     }
 
     function callback (err, result) {
@@ -219,7 +251,7 @@ function searchApi(req, res) {
             res.end(JSON.stringify(result));
         } else {
             res.writeHead(404, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify({error: "No entries with these filters exist."}));
+            res.end(JSON.stringify({"error": "No entries with these filters exist."}));
         }
     }
 }
