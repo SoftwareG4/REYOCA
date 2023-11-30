@@ -61,7 +61,7 @@ const db = require('../../dbcon');
             return callback(err, null);
           }
   
-          const query = 'DELETE FROM transactions WHERE transaction_id = ?';
+          const query = 'DELETE FROM transaction_history WHERE _ID = ?';
           connection.query(query, [transactionId], (err, result) => {
             connection.end(); // Close the connection
   
@@ -81,33 +81,71 @@ const db = require('../../dbcon');
 
 
 
-    static updateBooking(transactionId, updatedData, callback) {
+    static updateBooking(transactionData, callback) {
       try {
-        const connection = db(); // Get a connection
-  
+        const connection = db();
+        // console.log(transactionData);
+    
+        // Validate required fields
+        const { renteeId, vehicleId, startDate, endDate, amount, transactionId } = transactionData;
+        console.log(renteeId, vehicleId, startDate, endDate, amount, transactionId);
+        if (!renteeId || !vehicleId || !startDate || !endDate || !amount || !transactionId) {
+          const error = new Error('Invalid or missing fields in the request body');
+          // console.log("1");
+          // console.log(transactionData);
+          // console.log(error);
+          return callback(error, null);
+        }
+    
+        // Validate data types
+        if (typeof renteeId !== 'number' || typeof vehicleId !== 'number' || typeof startDate !== 'string' || typeof endDate !== 'string' || typeof transactionId !== 'number') {
+          const error = new Error('Invalid data types in the request body');
+          // console.log("20");
+          // console.log(error);
+          return callback(error, null);
+        }
+    
         connection.connect((err) => {
           if (err) {
-            console.error('Error connecting to the database:', err);
+            // console.error('Error connecting to the database:', err);
+            // console.log("3");
+            // console.log(error);
             return callback(err, null);
           }
-  
-          const query = 'UPDATE transactions SET ? WHERE transaction_id = ?';
-          connection.query(query, [updatedData, transactionId], (err, result) => {
-            connection.end(); // Close the connection
-  
-            if (err) {
-              console.error('Error executing the query:', err);
-              return callback(err, null);
+    
+          const query = `
+            UPDATE transaction_history
+            SET 
+              rentee_id = ?,
+              vehicle_id = ?,
+              booking_start = ?,
+              booking_end = ?,
+              amount = ?
+            WHERE _id = ?;
+          `;
+    
+          connection.query(
+            query,
+            [renteeId, vehicleId, startDate, endDate, amount, transactionId],
+            (err, result) => {
+              connection.end(); // Close the connection
+    
+              if (err) {
+                console.error('Error executing the query:', err);
+                return callback(err, null);
+              }
+    
+              return callback(null, result);
             }
-  
-            return callback(null, result);
-          });
+          );
         });
       } catch (error) {
         console.error('Error:', error);
         return callback(error, null);
       }
     }
+    
+    
 
 
 

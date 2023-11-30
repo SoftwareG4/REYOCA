@@ -31,21 +31,19 @@ function transactionApi(req,res){
   } 
   
   //========================================================================== NEW ONE ==========================================================================
-  else if (req.method === 'PUT' && req.url.startsWith('/transaction/update/')) {
-    const params = url.parse(req.url, true);
-    const transactionId = parseInt(params.pathname.split('/').pop());
-
+  else if (req.method === 'PUT' && req.url.startsWith('/transaction/update')) {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk;
     });
-
+  
     req.on('end', async () => {
       try {
         const updateData = JSON.parse(body);
-
+        const { transactionId } = updateData;
+  
         // Call the TransactionHistoryModel function to update the booking
-        TransactionHistoryModel.updateBooking(transactionId, updateData, (err, result) => {
+        TransactionHistoryModel.updateBooking(updateData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Internal Server Error' }));
@@ -60,7 +58,8 @@ function transactionApi(req,res){
         res.end(JSON.stringify({ error: 'Invalid request body' }));
       }
     });
-  } 
+  }
+  
   
   else {
     // If the request method is not DELETE, return a 404 error

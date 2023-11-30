@@ -62,32 +62,49 @@ class CartModel {
     });
   }
 
-  static addToCart(renteeId, vehicleId, extras, quantity, totalCost, callback) {
-    const connection = mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT,
-    });
 
-    connection.connect((err) => {
-      if (err) {
-        return callback(err, null);
-      }
 
-      const query = 'INSERT INTO cart (rentee_id, vehicle_id, extras, quantity, total_cost) VALUES (?, ?, ?, ?, ?)';
-      connection.query(query, [renteeId, vehicleId, extras, quantity, totalCost], (err, results) => {
-        connection.end(); // Close the connection
 
+  static addToCart(cartData, callback) {
+    try {
+      const connection = db(); // Get a connection
+  
+      connection.connect((err) => {
         if (err) {
-          return callback(err, null);
+          console.error('Error connecting to the database:', err);
+          return;
         }
-
-        return callback(null, { message: 'Item added to cart successfully' });
+  
+        const query = 'INSERT INTO cart (rentee_id, vehicle_id, extras, quantity, total_cost) VALUES (?, ?, ?, ?, ?)';
+        connection.query(
+          query,
+          [cartData.renteeId, cartData.vehicleId, cartData.extras, cartData.quantity, cartData.totalCost],
+          (err, result) => {
+            connection.end(); // Close the connection
+  
+            if (err) {
+              console.error('Error executing the query:', err);
+              return;
+            }
+  
+            return callback(null, { message: 'Item added to cart successfully' });
+          }
+        );
       });
-    });
+    } catch (error) {
+      console.error('Error:', error);
+      return callback(error, null);
+    }
   }
+  
+
+
+
+
+
+
+
+
 }
 
 module.exports = CartModel;

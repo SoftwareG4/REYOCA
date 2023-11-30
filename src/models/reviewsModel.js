@@ -117,6 +117,42 @@ class ReviewsModel {
       return callback(error, null);
     }
   }
+
+
+  static editReview(reviewId, updatedReviewData, callback) {
+    try {
+      const connection = db(); // Get a connection
+
+      connection.connect((err) => {
+        if (err) {
+          console.error('Error connecting to the database:', err);
+          return callback(err, null);
+        }
+
+        const query = 'UPDATE reviews SET stars = ?, description = ? WHERE review_id = ?';
+        connection.query(
+          query,
+          [updatedReviewData.stars, updatedReviewData.description, reviewId],
+          (err, result) => {
+            connection.end(); // Close the connection
+
+            if (err) {
+              console.error('Error executing the query:', err);
+              return callback(err, null);
+            }
+
+            return callback(null, result);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      return callback(error, null);
+    }
+  }
+
+
+
 }
 
 module.exports = ReviewsModel;
