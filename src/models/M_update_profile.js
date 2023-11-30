@@ -2,6 +2,9 @@ const mysql = require('mysql2');
 const dotenv = require('dotenv');
 const db = require('../../dbcon');
 const bcrypt = require("bcrypt");
+var ncrypt = require('ncrypt-js');
+var encrypted = new ncrypt(process.env.KEY);
+
 
 dotenv.config();
 async function encrypt(password) {
@@ -128,7 +131,7 @@ class Profile_Model {
                     }
 
                     if (conditions.length > 0) {
-                        query += conditions.join(" AND ") + " WHERE _ID=" + user_id;
+                        query += conditions.join(",") + " WHERE _ID=" + user_id;
                     }
                     connection.query(query, values, (err, results) => {
                         connection.end(); // Close the connection
@@ -142,6 +145,58 @@ class Profile_Model {
             });
         });
     }
+
+    static async payment_create(user_id, requestData, callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+    
+        // Check if all mandatory fields are present
+        if (!requestData.card_number || !requestData.exp_date || requestData.is_credit === undefined) {
+            return callback(new Error("All fields (card_number, exp_date, is_credit) are required"), null);
+        }
+    
+        connection.connect(err => {
+            if (err) {
+                return callback(err, null);
+            }
+    
+            const userQuery = "SELECT * FROM user WHERE _ID = ?";
+            connection.query(userQuery, [user_id], (err, results) => {
+                if (err) {
+                    connection.end();
+                    return callback(err, null);
+                }
+    
+                if (results.length === 0) {
+                    connection.end();
+                    return callback(null, "User not registered");
+                } else {
+                    let insertQuery = "INSERT INTO payment_profile (user_id, card_number, exp_date, is_credit) VALUES (?, ?, ?, ?)";
+                    let values = [
+                        requestData.user_id,
+                        encrypted.encrypt(requestData.card_number),
+                        encrypted.encrypt(requestData.exp_date),
+                        requestData.is_credit
+                    ];
+    
+                    connection.query(insertQuery, values, (err, results) => {
+                        connection.end();
+                        if (err) {
+                            return callback(err, null);
+                        }
+                        return callback(null, "Payment profile created");
+                    });
+                }
+            });
+        });
+    }
+    
+    
 
     static async payment_update(user_id,requestData,callback) {
         const connection = mysql.createConnection({
@@ -167,17 +222,19 @@ class Profile_Model {
                     return callback(null, "Email Not Registered");
                 }
                 else{
-                    let query = "UPDATE payment_profile SET "; // Replace '*' with specific columns if needed
+                    let query = "UPDATE payment_profile SET ";
                     let conditions = [];
                     let values = [];
 
                     if (requestData.card_number) { 
+                        const encryptedCardNO = encrypted.encrypt(requestData.card_number);
                         conditions.push("card_number = ?");
-                        values.push(requestData.card_number);
+                        values.push(encryptedCardNO);
                     }
                     if (requestData.exp_date) { 
+                        const encryptedExpDate = encrypted.encrypt(requestData.card_number);
                         conditions.push("exp_date = ?");
-                        values.push(requestData.exp_date);
+                        values.push(encryptedExpDate);
                     }
                     if (requestData.is_credit) { 
                         conditions.push("is_credit = ?");
@@ -185,8 +242,9 @@ class Profile_Model {
                     }
 
                     if (conditions.length > 0) {
-                        query += conditions.join(" AND ") + " WHERE _ID=" + user_id;
+                        query += conditions.join(",") + " WHERE user_id=" + user_id;
                     }
+                    console.log("query: ", query);
                     connection.query(query, values, (err, results) => {
                         connection.end(); // Close the connection
                         if (err) {

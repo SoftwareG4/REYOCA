@@ -2,6 +2,8 @@ const profile_Model = require('../models/M_update_profile');
 const {validateToken}= require('../services/JWTauth');
 const aws_s3=require('@aws-sdk/client-s3')
 const formidable = require('formidable');
+var ncrypt = require('ncrypt-js');
+var { encrypt, decrypt } = new ncrypt(process.env.SECRET);
 const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -176,8 +178,51 @@ function update_prof(req, res) {
   });
 } 
 
-function update_payment(req, res) {
+function create_payment(req, res) {
   if(req.method!="POST"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
+  const user_id=validateToken(req.headers.cookie)
+  if (user_id==false){
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: "User not Authenticated" }));
+  }
+  const chunks = [];
+  req.on("data", (chunk) => {
+      chunks.push(chunk);
+  });
+  req.on('end', () => {
+      let requestData = {};
+      try {
+          const data = Buffer.concat(chunks);
+          const stringData = data.toString();
+          const parsedData = new URLSearchParams(stringData);
+          for (var pair of parsedData.entries()) {
+              requestData[pair[0]] = pair[1];
+          }
+          // console.log("DataObj: ", requestData);
+
+      } catch (error) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
+          return;
+      }
+
+      profile_Model.payment_create(user_id,requestData, (err, result) => {
+      if (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: err }));
+      } else {
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: result }));
+      }
+    });
+  });
+} 
+
+function update_payment(req, res) {
+  if(req.method!="PATCH"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
   }
@@ -282,9 +327,13 @@ function update_profile_route(req, res){
         case "/profile/getuserrating":
             rating_get(req, res);
             break
+        case "/profile/createpayment":
+            create_payment(req, res);
+          break
         case "/profile/updatepayment":
             update_payment(req, res);
             break
+        
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('Page Not Found');
