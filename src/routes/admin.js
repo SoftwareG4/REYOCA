@@ -9,9 +9,13 @@ dotenv.config();
 
 
 function delete_review(req, res) {
+  if(req.method!="DELETE"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -53,9 +57,13 @@ function delete_review(req, res) {
 }
 
 function delete_report(req, res) {
+  if(req.method!="DELETE"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -92,9 +100,13 @@ function delete_report(req, res) {
 }
 
 function delete_user(req, res) {
+  if(req.method!="DELETE"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -131,9 +143,13 @@ function delete_user(req, res) {
 }
 
 function delete_listing(req, res) {
+  if(req.method!="DELETE"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
     const user_id=validateToken(req.headers.cookie)
     if (user_id==false){
-        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "User not Authenticated" }));
     }
     const chunks = [];
@@ -169,7 +185,33 @@ function delete_listing(req, res) {
     });
 }
 
-module.exports = { delete_review, delete_report, delete_user, delete_listing };
+function admin_route(req, res){
+  path=req.url
+  if(path[path.length-1]=='/'){
+      path=path.substring(0,path.length-1)
+  }
+  switch(path){
+      case "/admin/deletereview":
+          delete_review(req, res);
+          break
+      case "/deletereport":
+          delete_report(req, res);
+          break
+      case "/deleteuser":
+          delete_user(req, res);
+          break
+      case "/deletelisting":
+          delete_listing(req, res);
+          break
+    default:
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Page Not Found');
+  }
+}
+
+
+
+module.exports = { admin_route };
 
 
 

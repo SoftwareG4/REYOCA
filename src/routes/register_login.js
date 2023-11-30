@@ -10,6 +10,10 @@ require('../../global.js');
 // const invalidatedTokens = new Set();
 
 function register_rentee(req, res) {
+    if(req.method!="POST"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    }
     const chunks = [];
     req.on("data", (chunk) => {
         chunks.push(chunk);
@@ -44,6 +48,10 @@ function register_rentee(req, res) {
 }
 
 function register_renter(req, res) {
+    if(req.method!="POST"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    }
     const chunks = [];
     req.on("data", (chunk) => {
         chunks.push(chunk);
@@ -78,6 +86,10 @@ function register_renter(req, res) {
 }
 
 function login_user(req, res) {
+    if(req.method!="GET"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    }
     const chunks = [];
     req.on("data", (chunk) => {
         chunks.push(chunk);
@@ -118,6 +130,10 @@ function login_user(req, res) {
 }
 
 function logout_user(req, res) {
+    if(req.method!="GET"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    }
     const user_id=validateToken(req.headers.cookie)
     if (user_id!=false){
         const cookies = cookie.parse(req.headers.cookie);
@@ -132,4 +148,33 @@ function logout_user(req, res) {
         res.end(JSON.stringify({ error: "User not Authenticated" }));
     }
 }
-module.exports = {register_rentee,register_renter,login_user,logout_user};
+
+function register_login_route(req, res){
+    path=req.url
+    if(path[path.length-1]=='/'){
+        path=path.substring(0,path.length-1)
+    }
+
+    switch(path){
+        case "/login/create-rentee":
+            register_rentee(req, res);
+            break
+        case "/login/create-renter":
+            register_renter(req, res);
+            break
+        case "/login":
+            login_user(req, res);
+            break
+        case "/login/logout":
+            logout_user(req, res);
+            break
+        default:
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('Page Not Found');
+    }
+}
+
+
+
+
+module.exports = {register_login_route};

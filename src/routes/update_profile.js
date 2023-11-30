@@ -15,6 +15,10 @@ const s3=new aws_s3.S3Client({
 })
 
 function update_pic(req, res) {
+    if(req.method!="POST"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    }
     const form = new formidable.IncomingForm();
     console.log(req.headers['content-type'])
     form.parse(req, async (err, fields, files) => {
@@ -48,7 +52,7 @@ function update_pic(req, res) {
 
       const user_id=validateToken(req.headers.cookie)
       if (user_id==false){
-        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "User not Authenticated" }));
         }
       const img_data={
@@ -68,11 +72,14 @@ function update_pic(req, res) {
     });
   } 
 
-
 function update_password(req, res) {
+    if(req.method!="POST"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    }
     const user_id=validateToken(req.headers.cookie)
     if (user_id==false){
-        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "User not Authenticated" }));
     }
     const chunks = [];
@@ -109,9 +116,13 @@ function update_password(req, res) {
 } 
 
 function update_prof(req, res) {
+  if(req.method!="GET"){
+      res.writeHead(405, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -148,9 +159,13 @@ function update_prof(req, res) {
 } 
 
 function update_payment(req, res) {
+  if(req.method!="POST"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -187,9 +202,13 @@ function update_payment(req, res) {
 } 
 
 function rating_get(req, res) {
+    if(req.method!="GET"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -226,7 +245,39 @@ function rating_get(req, res) {
 }
 
 
-module.exports = {update_pic,update_password,update_prof,update_payment,rating_get};
+function update_profile_route(req, res){
+    path=req.url
+    if(path[path.length-1]=='/'){
+        path=path.substring(0,path.length-1)
+    }
+
+    switch(path){
+        case "/profile/updatepic":
+            update_pic(req, res);
+            break
+        case "/profile/updatepassword":
+            update_password(req, res);
+            break
+        case "/profile/updateprofile":
+            update_prof(req, res);
+            break
+        case "/profile/getuserrating":
+            rating_get(req, res);
+            break
+        case "/profile/updatepayment":
+            update_payment(req, res);
+            break
+        default:
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('Page Not Found');
+    }
+}
+
+
+
+
+
+module.exports = {update_profile_route};
 
 
 

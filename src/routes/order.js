@@ -6,9 +6,13 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 function order_get(req, res) {
+  if(req.method!="GET"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+}
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -45,9 +49,13 @@ function order_get(req, res) {
 }
 
 function order_filter(req, res) {
+  if(req.method!="GET"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+}
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -83,4 +91,23 @@ function order_filter(req, res) {
   });
 }
 
-module.exports = { order_get, order_filter };
+function transaction_route(req, res){
+  path=req.url
+  if(path[path.length-1]=='/'){
+      path=path.substring(0,path.length-1)
+  }
+  switch(path){
+      case "/transaction/getorder":
+          order_get(req, res);
+          break
+      case "/transaction/filterorder":
+          order_filter(req, res);
+          break
+    default:
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Page Not Found');
+  }
+}
+
+
+module.exports = { transaction_route };

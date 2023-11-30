@@ -9,9 +9,13 @@ dotenv.config();
 
 
 function add_report(req, res) {
+  if(req.method!="POST"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+}
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -53,9 +57,13 @@ function add_report(req, res) {
 }
 
 function report_get(req, res) {
+  if(req.method!="GET"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+}
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -92,9 +100,13 @@ function report_get(req, res) {
 }
 
 function report_filter(req, res) {
+  if(req.method!="GET"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+}
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -130,7 +142,32 @@ function report_filter(req, res) {
   });
 }
 
-module.exports = { add_report, report_get, report_filter };
+function report_route(req, res){
+  path=req.url
+  if(path[path.length-1]=='/'){
+      path=path.substring(0,path.length-1)
+  }
+
+  switch(path){
+    case "/report/postreport":
+        add_report(req, res);
+        break
+    case "/report/getreport":
+        report_get(req, res);
+        break
+    case "/report/filterreport":
+        report_filter(req, res);
+        break
+    default:
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Page Not Found');
+  }
+}
+
+
+
+
+module.exports = { report_route };
 
 
 

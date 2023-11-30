@@ -9,9 +9,13 @@ dotenv.config();
 
 
 function add_review(req, res) {
+  if(req.method!="POST"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+  }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -53,9 +57,13 @@ function add_review(req, res) {
 }
 
 function review_get(req, res) {
+  if(req.method!="GET"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+}
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -92,9 +100,13 @@ function review_get(req, res) {
 }
 
 function review_filter(req, res) {
+  if(req.method!="GET"){
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+}
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
   }
   const chunks = [];
@@ -130,7 +142,30 @@ function review_filter(req, res) {
   });
 }
 
-module.exports = { add_review, review_get, review_filter };
+function review_route(req, res){
+  path=req.url
+  if(path[path.length-1]=='/'){
+      path=path.substring(0,path.length-1)
+  }
+
+  switch(path){
+    case "/review/postreview":
+        add_review(req, res);
+        break
+    case "/review/getreview":
+        review_get(req, res);
+        break
+    case "/review/filterreview":
+        review_filter(req, res);
+        break
+    default:
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Page Not Found');
+  }
+}
+
+
+module.exports = { review_route };
 
 
 
