@@ -12,7 +12,7 @@ class ReviewsModel {
           return callback(err, null);
         }
 
-        const query = 'SELECT * FROM reviews';
+        const query = 'SELECT * FROM vehicle_reviews';
         connection.query(query, (err, results) => {
           connection.end(); // Close the connection
 
@@ -40,7 +40,7 @@ class ReviewsModel {
           return callback(err, null);
         }
 
-        const query = 'SELECT * FROM reviews WHERE rating_for = ?';
+        const query = 'SELECT * FROM vehicle_reviews WHERE rating_for = ?';
         connection.query(query, [vehicleId], (err, results) => {
           connection.end(); // Close the connection
 
@@ -68,7 +68,7 @@ class ReviewsModel {
           return callback(err, null);
         }
 
-        const query = 'INSERT INTO reviews (stars, description, rating_for, rating_by) VALUES (?, ?, ?, ?)';
+        const query = 'INSERT INTO vehicle_reviews (stars, description, rating_for, rating_by) VALUES (?, ?, ?, ?)';
         connection.query(
           query,
           [reviewData.stars, reviewData.description, reviewData.rating_for, reviewData.rating_by],
@@ -100,7 +100,7 @@ class ReviewsModel {
           return callback(err, null);
         }
 
-        const query = 'DELETE FROM reviews WHERE review_id = ?';
+        const query = 'DELETE FROM vehicle_reviews WHERE review_id = ?';
         connection.query(query, [reviewId], (err, result) => {
           connection.end(); // Close the connection
 
@@ -129,7 +129,7 @@ class ReviewsModel {
           return callback(err, null);
         }
 
-        const query = 'UPDATE reviews SET stars = ?, description = ? WHERE review_id = ?';
+        const query = 'UPDATE vehicle_reviews SET stars = ?, description = ? WHERE review_id = ?';
         connection.query(
           query,
           [updatedReviewData.stars, updatedReviewData.description, reviewId],
