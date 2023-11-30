@@ -25,7 +25,7 @@ function searchApi(req, res) {
                         if (body) {
                             const jsonData = JSON.parse(body);
 
-                            SearchModel.setSearchParam (
+                            let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
@@ -62,7 +62,7 @@ function searchApi(req, res) {
                         if (body) {
                             const jsonData = JSON.parse(body);
 
-                            SearchModel.setSearchParam (
+                            let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
@@ -134,7 +134,7 @@ function searchApi(req, res) {
                         if (body) {
                             const jsonData = JSON.parse(body);
 
-                            SearchModel.setSearchParam (
+                            let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
@@ -169,7 +169,7 @@ function searchApi(req, res) {
                         if (body) {
                             const jsonData = JSON.parse(body);
 
-                            SearchModel.setSearchParam (
+                            let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
@@ -204,7 +204,7 @@ function searchApi(req, res) {
                         if (body) {
                             const jsonData = JSON.parse(body);
 
-                            SearchModel.setSearchParam (
+                            let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,

@@ -1,5 +1,8 @@
 
 const db = require('../../dbcon');
+const distanceService = require('../services/distanceService');
+
+const searchRadius = 10;    // in miles
 
 // Base search query
 const searchQuery_part1 = `
@@ -47,17 +50,32 @@ class SearchModel {
 
                 const searchParameters = [this.#startDate, this.#endDate, this.#startDate, this.#endDate];
                 console.log(query);
-                dbCon.query(query, searchParameters, (err, result) => {
+                dbCon.query(query, searchParameters, async (err, result) => {
                     if (err) {
                         console.log(err);
                         return callback(err, null);
                     }
 
-                    // result.forEach((item, index, arr) => {
-                    //     arr[index].dist = this.#calcDistance(this.#userLocation[0], this.#userLocation[1], item['latitude'], item['longitude']);
-                    // });
+                    console.log("Original results: ", result);
 
-                    result = JSON.stringify({"response": result});
+                    let searchRadiusResult = [];
+                    result.forEach((item, index, arr) => {
+                        arr[index].dist = distanceService.getAerialDistance(this.#userLocation[0], this.#userLocation[1], item['latitude'], item['longitude']);
+                        if(arr[index].dist < searchRadius) {
+                            searchRadiusResult.push(arr[index]);
+                        }
+                    });
+
+                    let destinationList = searchRadiusResult.map(item => {return {lat: item['latitude'], lng: item['longitude']}});
+                    console.log("Destination List: ", destinationList);
+                    let distanceList = await distanceService.getTravelDistance([{lat: 35.1200959, lng: -106.6003826}], destinationList);
+                    console.log("distanceList: ", distanceList);
+
+                    searchRadiusResult.forEach((item, index, arr) => {
+                        arr[index].travelDist = distanceList[index];
+                    });
+
+                    result = JSON.stringify({"response": searchRadiusResult});
                     return callback(null, result);
                 });
             });
@@ -92,37 +110,6 @@ class SearchModel {
 
 
     // Private Helper Functions
-
-    /**
-     * Returns distance between 2 locations given by their coordinates
-     * 
-     * @param {number} lat1 Latitude of location 1
-     * @param {number} lon1 Longitude of location 1
-     * @param {number} lat2 Latitude of location 2
-     * @param {number} lon2 Longitude of location 2
-     * @returns {number} Distance of location 1 and location 2
-     */
-    static #calcDistance(lat1, lon1, lat2, lon2) {
-        console.log(lat1, lon1, lat2, lon2);
-        if ((lat1 == lat2) && (lon1 == lon2)) {
-            return 0;
-        }
-        else {
-            var radlat1 = Math.PI * lat1/180;
-            var radlat2 = Math.PI * lat2/180;
-            var theta = lon1-lon2;
-            var radtheta = Math.PI * theta/180;
-            var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-            if (dist > 1) {
-                dist = 1;
-            }
-            dist = Math.acos(dist);
-            dist = dist * 180/Math.PI;
-            dist = dist * 60 * 1.1515;
-            console.log(dist);
-            return dist;
-        }
-    }
 
    /**
     * Function to add filters and sort parameters to the base search query
