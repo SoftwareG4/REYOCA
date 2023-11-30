@@ -14,15 +14,15 @@ const FavouritesModel = require('./src/models/favouritesModel');
 
 
 // Import Apis
-const ReviewsApi = require('./src/api/reviewsAPIs');
-const cartApi = require('./src/api/cartAPIs');
-const locationApi = require('./src/api/locationAPIs');
-const transactionApi = require('./src/api/transactionAPIs');
-const userApi = require('./src/api/userAPIs');
-const vehicleApi = require('./src/api/vehicleAPIs');
-const sosApi = require('./src/api/sosAPIs');
-const favouritesApi = require('./src/api/favouritesAPIs');
-const loyaltyApi = require('./src/api/loaltyPointsAPI');
+const ReviewsApi = require('./src/routes/reviewsAPIs');
+const cartApi = require('./src/routes/cartAPIs');
+const locationApi = require('./src/routes/locationAPIs');
+const transactionApi = require('./src/routes/transactionAPIs');
+const userApi = require('./src/routes/userAPIs');
+const vehicleApi = require('./src/routes/vehicleAPIs');
+// const sosApi = require('./src/routes/sosAPIs');
+const favouritesApi = require('./src/routes/favouritesAPIs');
+const loyaltyApi = require('./src/routes/loaltyPointsAPI');
 
 
 
