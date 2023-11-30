@@ -6,6 +6,8 @@ const CheckoutModel = require('../models/M_checkout');
 const jwt = require('jsonwebtoken')
 const cookie = require('cookie');
 const dotenv = require('dotenv');
+const stripe = require('stripe')(process.env.STRIPE_PVT_KEY);
+
 dotenv.config();
 
 function validate_coupon(req, res) {
@@ -52,47 +54,36 @@ function validate_coupon(req, res) {
 
 function checkout(req, res) {
     const chunks = [];
-    let id;
     req.on("data", (chunk) => {
         chunks.push(chunk);
     });
-    if (req.method === 'GET') {
-        req.on('end', () => {
-            let requestData = {};
+    if (req.method === 'POST') {
+        req.on('end', async () => {
             try {
-                const data = Buffer.concat(chunks);
-                const stringData = data.toString();
-                const parsedData = new URLSearchParams(stringData);
-                for (var pair of parsedData.entries()) {
-                    requestData[pair[0]] = pair[1];
-                }
-                id = requestData['id'];
-            }
-            catch (error) {
+                let cart_info = JSON.parse(chunks);
+                const session = await stripe.checkout.sessions.create({
+                    payment_method_types: ["card"],
+                    mode: "payment",
+                    line_items: [{
+                        price_data: {
+                          currency: "usd",
+                          product_data: {
+                            name: "REYOCA Booking amount",
+                          },
+                          unit_amount: cart_info['final_amount'] * 100,
+                        },
+                        quantity: 1,
+                    }],
+                    success_url: `${process.env.CLIENT_URL}/success.html`,
+                    cancel_url: `${process.env.CLIENT_URL}/cancel.html`,
+                  });
+                  res.writeHead(200, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ url: session.url }));
+                } catch (error) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Invalid formatting of the request' }));
+                res.end(JSON.stringify({ error: 'Invalid formatting of the request'+error }));
                 return;
             }
-            CheckoutModel.view_cart(id, (err, result) => {
-                if (err) {
-                    res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: err }));
-                } else if (typeof(result)=="string") {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ message: result }));
-                } else {
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                   
-                    result.forEach(item => {
-                    const { vehicle_id, quantity, total_cost } = item;
-                    if (!current_user_cart.has(vehicle_id)) {
-                        current_user_cart.set(vehicle_id, []);
-                    }
-                    current_user_cart.get(vehicle_id).push([quantity, total_cost]);
-                    });
-                    res.end(JSON.stringify(result));
-                    }
-            });
         });
     } else {
         res.writeHead(405, { 'Content-Type': 'text/plain' });
