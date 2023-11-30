@@ -9,6 +9,21 @@ require('../../global.js');
 
 // const invalidatedTokens = new Set();
 
+function isPasswordValid(password) {
+    const minLength = 8;  // Minimum length
+    const containsUppercase = /[A-Z]/.test(password); // At least one uppercase letter
+    const containsLowercase = /[a-z]/.test(password); // At least one lowercase letter
+    const containsDigit = /\d/.test(password); // At least one digit
+    const containsSpecialChar = /[!@#$%^&*()-_+=<>?]/.test(password); // At least one special character
+  
+    if (password.length >= minLength &&containsUppercase &&containsLowercase &&containsDigit &&containsSpecialChar) {
+      return true; 
+    }
+    return false; 
+  }
+
+
+
 function register_rentee(req, res) {
     if(req.method!="POST"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
@@ -35,6 +50,14 @@ function register_rentee(req, res) {
             return;
         }
         // console.log(requestData)
+        if(isPasswordValid(requestData["password"])==false){
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Password requirement not met' }));
+        }
+        if(!['male','female'].includes(requestData["gender"])){
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'gender invalid' }));
+        }
         UserModel.registerrentee(requestData, (err, result) => {
             if (err) {
               res.writeHead(500, { 'Content-Type': 'application/json' });

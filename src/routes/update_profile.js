@@ -14,6 +14,21 @@ const s3=new aws_s3.S3Client({
     region:process.env.BUCKET_REGION
 })
 
+function isPasswordValid(password) {
+    const minLength = 8;  // Minimum length
+    const containsUppercase = /[A-Z]/.test(password); // At least one uppercase letter
+    const containsLowercase = /[a-z]/.test(password); // At least one lowercase letter
+    const containsDigit = /\d/.test(password); // At least one digit
+    const containsSpecialChar = /[!@#$%^&*()-_+=<>?]/.test(password); // At least one special character
+  
+    if (password.length >= minLength &&containsUppercase &&containsLowercase &&containsDigit &&containsSpecialChar) {
+      return true; 
+    }
+    return false; 
+  }
+
+
+
 function update_pic(req, res) {
     if(req.method!="POST"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
@@ -102,7 +117,10 @@ function update_password(req, res) {
             res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
             return;
         }
-
+        if(isPasswordValid(requestData["new_pass"])==false){
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Password requirement not met' }));
+        }
         profile_Model.update_pass(user_id,requestData, (err, result) => {
         if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
