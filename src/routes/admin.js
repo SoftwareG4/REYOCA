@@ -44,7 +44,7 @@ function delete_review(req, res) {
         res.end(JSON.stringify({ found_bad_words : foul_words }));
       }
 
-      AdminModel.review_delete(requestData, (err, result) => {
+      AdminModel.review_delete(user_id,requestData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err }));
@@ -87,7 +87,7 @@ function delete_report(req, res) {
         return;
     }
     
-    AdminModel.report_delete(requestData, (err, result) => {
+    AdminModel.report_delete(user_id,requestData, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
@@ -130,7 +130,7 @@ function delete_user(req, res) {
         return;
     }
     
-    AdminModel.user_delete(requestData, (err, result) => {
+    AdminModel.user_delete(user_id,requestData, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
@@ -173,7 +173,7 @@ function delete_listing(req, res) {
           return;
       }
       
-      AdminModel.listing_delete(requestData, (err, result) => {
+      AdminModel.listing_delete(user_id,requestData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err }));
@@ -194,13 +194,13 @@ function admin_route(req, res){
       case "/admin/deletereview":
           delete_review(req, res);
           break
-      case "/deletereport":
+      case "/admin/deletereport":
           delete_report(req, res);
           break
-      case "/deleteuser":
+      case "/admin/deleteuser":
           delete_user(req, res);
           break
-      case "/deletelisting":
+      case "/admin/deletelisting":
           delete_listing(req, res);
           break
     default:
