@@ -86,6 +86,82 @@ class SearchModel {
     }
 
 
+    /**
+    * Function to get recommended cars
+    * 
+    * @param {Array} userLocation Coordinates of the user's given location
+    * @param {Date} startDate Start date and time of the user's given input
+    * @param {Date} endDate End date and time of the user's given input
+    * @param {JSON} filterColumns Key-Value pairs of filters
+    * @param {String} sortByCol Column name to be sorted by
+    * @param {Boolean} isDesc Sorting order
+    * @param {Function} callback Callback Function
+    */
+    static getRecommendations(callback) {
+        try {
+            const dbCon = db();
+            dbCon.connect((err) => {
+                if (err) {
+                    return callback(err, null);
+                }
+
+                let query = this.#setFilterColumns(this.#filterColumns, this.#sortByCol, this.#isDesc);
+
+                const searchParameters = [this.#startDate, this.#endDate, this.#startDate, this.#endDate];
+                console.log(query);
+                dbCon.query(query, searchParameters, async (err, result) => {
+                    if (err) {
+                        console.log(err);
+                        return callback(err, null);
+                    }
+
+                    console.log("Original results: ", result);
+
+                    let searchRadiusResult = [];
+                    result.forEach((item, index, arr) => {
+                        arr[index].dist = distanceService.getAerialDistance(this.#userLocation[0], this.#userLocation[1], item['latitude'], item['longitude']);
+                        if(arr[index].dist < searchRadius) {
+                            searchRadiusResult.push(arr[index]);
+                        }
+                    });
+
+                    let destinationList = searchRadiusResult.map(item => {return {lat: item['latitude'], lng: item['longitude']}});
+                    console.log("Destination List: ", destinationList);
+                    let distanceList = await distanceService.getTravelDistance([{lat: this.#userLocation[0], lng: this.#userLocation[1]}], destinationList);
+                    console.log("distanceList: ", distanceList);
+
+                    searchRadiusResult.forEach((item, index, arr) => {
+                        arr[index].travelDist = distanceList[index];
+                    });
+
+
+                    let recommendations = [];
+                    console.log("searchRadiusResult: ", searchRadiusResult);
+
+                    // storing lowest priced car among search results
+                    recommendations.push(searchRadiusResult[0]);
+
+                    let index = 1, maxRating = 0, maxRatingIndex = 0;
+                    while(index < searchRadiusResult.length) {
+                        if(searchRadiusResult[index].rating != null && searchRadiusResult[index].rating > maxRating) {
+                            maxRating = searchRadiusResult[index].rating;
+                            maxRatingIndex = index;
+                        }
+                        index++;
+                    }
+                    // storing highest rated car among search results
+                    recommendations.push(searchRadiusResult[maxRatingIndex]);
+
+                    result = JSON.stringify({"response": recommendations});
+                    return callback(null, result);
+                });
+            });
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
+
     static setSearchParam (user_loc, start_date, end_date, filter_col, sort_by_col, is_desc) {
         if (start_date && end_date) {
             let today = new Date();

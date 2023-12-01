@@ -13,6 +13,44 @@ function searchApi(req, res) {
         }
         
         switch (apiCall) {
+            case "/recommendations":
+                if (req.method == 'POST') {
+                    let body = '';
+                    req.on('data', (chunk) => {
+                        body += chunk;
+                    });
+
+                    req.on('end', async () => {
+                        console.log("body: ", body, " end");
+                        if (body) {
+                            const jsonData = JSON.parse(body);
+
+                            let isValid = SearchModel.setSearchParam (
+                                jsonData.userLocation,
+                                jsonData.startDate,
+                                jsonData.endDate,
+                                jsonData.columns,
+                                priceColName,
+                                false
+                            );
+                            if (!isValid) {
+                                res.writeHead(400, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({"error": "Bad request."}));
+                            } else {
+                                SearchModel.getRecommendations(callback);
+                            }
+                        } else {
+                            res.writeHead(400, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({"error": "Bad request."}));
+                        }
+                    });
+                } else {
+                    res.writeHead(405, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({"error": "Method not allowed."}));
+                }
+                break;
+
+
             case "/search":
                 if (req.method == 'POST') {
                     let body = '';

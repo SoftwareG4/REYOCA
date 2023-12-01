@@ -12,11 +12,12 @@ const messageApi = require('./src/routes/messageAPI');
 // Resource path
 const noPath = '/';
 const searchPath = '/search';
+const recommendationPath = '/recommendations';
 const messagePath = "/message";
 
 const server = http.createServer(async (req, res) => {
 
-  if (req.url.startsWith(searchPath)) {
+  if (req.url.startsWith(searchPath) || req.url.startsWith(recommendationPath)) {
     searchApi(req, res);
   }
 
