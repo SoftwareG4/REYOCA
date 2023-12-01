@@ -270,7 +270,7 @@ class Profile_Model {
             if (err) {
                 return callback(err, null);
             }
-            const query = "SELECT AVG(stars) AS average_rating FROM reviews WHERE rating_for=?";
+            const query = "SELECT AVG(stars) AS average_rating FROM user_reviews WHERE rating_for=?";
             connection.query(query, [user_id], (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {

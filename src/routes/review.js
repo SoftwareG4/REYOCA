@@ -12,11 +12,13 @@ function add_review(req, res) {
   if(req.method!="POST"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
   }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -38,9 +40,9 @@ function add_review(req, res) {
           res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
           return;
       }
-      const foul_words=await verify_foul(requestData["description"])
+      const foul_words=await verify_foul(requestData["description"]);
       if (foul_words.length>0){
-        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ found_bad_words : foul_words }));
       }
 
@@ -60,11 +62,13 @@ function review_get(req, res) {
   if(req.method!="GET"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
 }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -92,7 +96,7 @@ function review_get(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
       });
@@ -103,11 +107,13 @@ function review_filter(req, res) {
   if(req.method!="GET"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
 }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -135,7 +141,7 @@ function review_filter(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
       });

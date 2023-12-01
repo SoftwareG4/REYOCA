@@ -9,11 +9,13 @@ function order_get(req, res) {
   if(req.method!="GET"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
 }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -41,7 +43,7 @@ function order_get(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
       });
@@ -52,11 +54,13 @@ function order_filter(req, res) {
   if(req.method!="GET"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
 }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -84,7 +88,7 @@ function order_filter(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
       });

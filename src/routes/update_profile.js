@@ -35,6 +35,7 @@ function update_pic(req, res) {
     if(req.method!="POST"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
     }
     const form = new formidable.IncomingForm();
     console.log(req.headers['content-type'])
@@ -71,6 +72,7 @@ function update_pic(req, res) {
       if (user_id==false){
         res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "User not Authenticated" }));
+        return;
         }
       const img_data={
         'id':user_id,
@@ -93,11 +95,13 @@ function update_password(req, res) {
     if(req.method!="POST"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
     }
     const user_id=validateToken(req.headers.cookie)
     if (user_id==false){
         res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "User not Authenticated" }));
+        return;
     }
     const chunks = [];
     req.on("data", (chunk) => {
@@ -139,11 +143,13 @@ function update_prof(req, res) {
   if(req.method!="GET"){
       res.writeHead(405, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+      return;
   }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -182,11 +188,13 @@ function create_payment(req, res) {
   if(req.method!="POST"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
   }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -225,11 +233,13 @@ function update_payment(req, res) {
   if(req.method!="PATCH"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
   }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -268,11 +278,13 @@ function rating_get(req, res) {
     if(req.method!="GET"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
     }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -287,7 +299,7 @@ function rating_get(req, res) {
         for (var pair of parsedData.entries()) {
             requestData[pair[0]] = pair[1];
         }
-        console.log("DataObj: ", requestData);
+        // console.log("DataObj: ", requestData);
 
     } catch (error) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -300,7 +312,7 @@ function rating_get(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
       });

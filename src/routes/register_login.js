@@ -28,6 +28,7 @@ function register_rentee(req, res) {
     if(req.method!="POST"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
     }
     const chunks = [];
     req.on("data", (chunk) => {
@@ -74,6 +75,7 @@ function register_renter(req, res) {
     if(req.method!="POST"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
     }
     const chunks = [];
     req.on("data", (chunk) => {
@@ -96,6 +98,14 @@ function register_renter(req, res) {
             return;
         }
         // console.log(requestData)
+        if(isPasswordValid(requestData["password"])==false){
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Password requirement not met' }));
+        }
+        if(!['male','female'].includes(requestData["gender"])){
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'gender invalid' }));
+        }
         UserModel.registerrenter(requestData, (err, result) => {
             if (err) {
               res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -112,6 +122,7 @@ function login_user(req, res) {
     if(req.method!="GET"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
     }
     const chunks = [];
     req.on("data", (chunk) => {
@@ -156,6 +167,7 @@ function logout_user(req, res) {
     if(req.method!="GET"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
     }
     const user_id=validateToken(req.headers.cookie)
     if (user_id!=false){
@@ -167,8 +179,9 @@ function logout_user(req, res) {
         res.end(JSON.stringify({ message: "Logged Out Success" }));
     }
     else{
-        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "User not Authenticated" }));
+        return;
     }
 }
 

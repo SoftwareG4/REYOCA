@@ -12,11 +12,13 @@ function delete_review(req, res) {
   if(req.method!="DELETE"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
   }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -49,7 +51,7 @@ function delete_review(req, res) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err }));
           } else {
-            res.writeHead(201, { 'Content-Type': 'application/json' });
+            res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ message: result }));
           }
         });
@@ -60,11 +62,13 @@ function delete_report(req, res) {
   if(req.method!="DELETE"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
   }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -92,7 +96,7 @@ function delete_report(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
       });
@@ -103,11 +107,13 @@ function delete_user(req, res) {
   if(req.method!="DELETE"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
   }
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
   }
   const chunks = [];
   req.on("data", (chunk) => {
@@ -135,7 +141,7 @@ function delete_user(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
       });
@@ -146,11 +152,13 @@ function delete_listing(req, res) {
   if(req.method!="DELETE"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
   }
     const user_id=validateToken(req.headers.cookie)
     if (user_id==false){
         res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "User not Authenticated" }));
+        return;
     }
     const chunks = [];
     req.on("data", (chunk) => {
@@ -178,7 +186,7 @@ function delete_listing(req, res) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err }));
           } else {
-            res.writeHead(201, { 'Content-Type': 'application/json' });
+            res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ message: result }));
           }
         });

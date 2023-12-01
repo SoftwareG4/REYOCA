@@ -27,7 +27,7 @@ class review_Model {
                     return callback("Cannot review this user as no transaction in database", null);
                 }
                 else{
-                    const sql="INSERT INTO reviews(`stars`,`description`,`rating_for`,`rating_by`) VALUES (?,?,?,?);"
+                    const sql="INSERT INTO user_reviews(`stars`,`description`,`rating_for`,`rating_by`) VALUES (?,?,?,?);"
                     connection.query(query, [data["star"],data["description"],data["rating_for"],user_id],(err, result) => {
                         connection.end(); // Close the connection
                         if (err) {
@@ -52,7 +52,7 @@ class review_Model {
             if (err) {
               return callback(err, null);
             }
-            const query = "SELECT * FROM reviews WHERE rating_for=?";
+            const query = "SELECT * FROM user_reviews WHERE rating_for=?";
             connection.query(query,[user_id], async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {
@@ -90,11 +90,11 @@ class review_Model {
             if (err) {
                 return callback(err, null);
             }
-            let query = "SELECT * FROM reviews"; // Replace '*' with specific columns if needed
+            let query = "SELECT * FROM user_reviews"; 
             let conditions = [];
             let values = [];
     
-            if (filterCriteria.rating_for) { // Assuming it's 'rating_by' based on your error log
+            if (filterCriteria.rating_for) { 
                 conditions.push("rating_for = ?");
                 values.push(filterCriteria.rating_for);
             }
