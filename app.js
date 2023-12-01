@@ -4,67 +4,43 @@ const url = require('url');
 const qs = require('querystring');
 const mysql = require('mysql2');
 
-
-
-// Import Models
-const ReviewsModel = require('./src/models/reviewsModel');
-const CartModel = require('./src/models/cartModel');
-const TransactionHistoryModel = require('./src/models/transactionHistoryModel');
-
-
-// Import Apis
-const reviewsApi = require('./src/api/reviewsAPIs');
-const cartApi = require('./src/api/cartAPIs');
-const locationApi = require('./src/api/locationAPIs');
-const transactionApi = require('./src/api/transactionAPIs');
-const userApi = require('./src/api/userAPIs');
-const vehicleApi = require('./src/api/vehicleAPIs');
-
-
-// Import Services
-const pricingService = require('./src/services/pricingService')
-const authService = require('./src/services/authService');
-
-// Resource path
-const userPath = '/user';
-const vehiclePath = '/vehicle';
-const locationPath = '/location';
-const cartPath = '/cart';
-const transactionPath = '/transaction';
-const reviewsPath = '/reviews';
+// Import Routes
+const {register_login_route} = require('./src/routes/register_login');
+const {update_profile_route} = require('./src/routes/update_profile');
+const {review_route} = require('./src/routes/review');
+const {report_route} = require('./src/routes/report');
+const {transaction_route} = require('./src/routes/order'); 
+const {admin_route} = require('./src/routes/admin');
 
 const server = http.createServer(async (req, res) => {
+  // Get the Content-Type header and method from the request
+  const contentType = req.headers['content-type'];
+  const method = req.method;
+  let path =  req.url;
+  console.log(contentType,method,path)
 
-
-  if (req.url.startsWith(userPath)) {
-    userApi(req, res);
+  if (path.startsWith("/login")){
+    register_login_route(req,res)
   }
-
-  else if (req.url.startsWith(vehiclePath)) {
-    vehicleApi(req, res);
+  else if (path.startsWith("/profile")){
+    update_profile_route(req,res)
   }
-
-  else if (req.url.startsWith(locationPath)) {
-    locationApi(req, res);
+  else if (path.startsWith("/review")){
+    review_route(req,res)
   }
-
-  else if (req.url.startsWith(cartPath)) {
-    cartApi(req, res);
+  else if (path.startsWith("/report")){
+    report_route(req,res)
   }
-
-  else if (req.url.startsWith(transactionPath)) {
-    transactionApi(req, res);
+  else if (path.startsWith("/transaction")){
+    transaction_route(req,res)
   }
-
-  else if (req.url.startsWith(reviewsPath)) {
-    reviewsApi(req, res);
+  else if (path.startsWith("/admin")){
+    admin_route(req,res)
   }
-
-  else {
+  else{
     res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
+    res.end('Page Not Found');
   }
-
 
 });
 
