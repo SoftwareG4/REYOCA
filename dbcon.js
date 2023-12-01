@@ -17,10 +17,4 @@ const createDBConnection = () => {
 };
 
 module.exports = createDBConnection;
-// const bcrypt = require("bcrypt");
-// async function encrypt(password) {
-//   return await bcrypt.hash(password.toString(), 10)
-// }
-// (async () => {
-//   console.log(await encrypt("admin@123"))
-// })();
+

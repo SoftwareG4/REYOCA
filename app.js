@@ -16,6 +16,13 @@ const {admin_route} = require('./src/routes/admin');
 const searchApi = require('./src/routes/searchAPI');
 const messageApi = require('./src/routes/messageAPI');
 
+const ReviewsApi = require('./src/routes/reviewsAPIs');
+const cartApi = require('./src/routes/cartAPIs');
+const transactionApi = require('./src/routes/transactionAPIs');
+const vehicleApi = require('./src/routes/vehicleAPIs');
+const favouritesApi = require('./src/routes/favouritesAPIs');
+const loyaltyApi = require('./src/routes/loaltyPointsAPI');
+
 const {view_cart} = require('./src/routes/view_cart');
 const {delete_car} = require('./src/routes/delete_car');
 const {validate_coupon, checkout} = require('./src/routes/checkout');
@@ -57,11 +64,41 @@ const server = http.createServer(async (req, res) => {
   else if (path.startsWith("/admin")){
     admin_route(req,res)
   }
+
   else if (req.url.startsWith(searchPath) || req.url.startsWith(recommendationPath)) {
     searchApi(req, res);
   }
   else if (req.url.startsWith(messagePath)) {
     messageApi(req, res);
+  }
+
+  else if (req.url.startsWith('/cart')) {
+    cartApi(req, res);
+  }
+  else if (req.url.startsWith('/reviews')) {
+    ReviewsApi(req, res);
+  }
+  else if (req.url.startsWith('/vehicle')) {
+    vehicleApi(req, res);
+  }
+  else if (req.url.startsWith('/transaction')) {
+    transactionApi(req, res);
+  }
+  else if (req.url.startsWith('/favourites')) {
+    favouritesApi(req, res);
+  }
+  else if (req.url.startsWith('/loyalty')) {
+    loyaltyApi(req, res);
+  }
+
+  else if (req.url.startsWith(deletecar)) {
+    delete_car(req, res);
+  } else if (req.url.startsWith(validatecoupon)) {
+    validate_coupon(req, res);
+  } else if (req.url.startsWith(checkoutcart)) {
+    checkout(req, res);
+  } else if (req.url.startsWith(paymentmethods)) {
+    view_pay_method(req, res);
   }
 
   else if (req.url === noPath) {
@@ -74,18 +111,8 @@ const server = http.createServer(async (req, res) => {
       res.write(html);
       res.end();
     });
-  }
-  else if (req.url.startsWith(viewcart)) {
-    view_cart(req, res);
-  } else if (req.url.startsWith(deletecar)) {
-    delete_car(req, res);
-  } else if (req.url.startsWith(validatecoupon)) {
-    validate_coupon(req, res);
-  } else if (req.url.startsWith(checkoutcart)) {
-    checkout(req, res);
-  } else if (req.url.startsWith(paymentmethods)) {
-    view_pay_method(req, res);
-  }else{
+  } 
+  else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Page Not Found');
   }

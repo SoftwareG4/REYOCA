@@ -1,0 +1,29 @@
+/* Custom styles for the landing page */
+body {
+    padding-top: 20px;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.jumbotron {
+    background-image: url('background.jpg');
+    background-size: cover;
+    color: white;
+    padding: 150px 0;
+}
+
+.card {
+    border: none;
+}
+
+.card-title {
+    font-size: 1.25rem;
+}
+
+footer {
+    padding: 20px 0;
+    background-color: #333;
+    color: white;
+}
