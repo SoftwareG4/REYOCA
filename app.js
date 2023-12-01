@@ -16,9 +16,9 @@ const FavouritesModel = require('./src/models/favouritesModel');
 // Import Apis
 const ReviewsApi = require('./src/routes/reviewsAPIs');
 const cartApi = require('./src/routes/cartAPIs');
-const locationApi = require('./src/routes/locationAPIs');
+// const locationApi = require('./src/routes/locationAPIs');
 const transactionApi = require('./src/routes/transactionAPIs');
-const userApi = require('./src/routes/userAPIs');
+// const userApi = require('./src/routes/userAPIs');
 const vehicleApi = require('./src/routes/vehicleAPIs');
 // const sosApi = require('./src/routes/sosAPIs');
 const favouritesApi = require('./src/routes/favouritesAPIs');
@@ -42,24 +42,12 @@ const server = http.createServer(async (req, res) => {
     cartApi(req, res);
   }
 
-  else if (req.url.startsWith('/location')) {
-    locationApi(req, res);
-  }
-
-  else if (req.url.startsWith('/user')) {
-    userApi(req, res);
-  }
-
   else if (req.url.startsWith('/vehicle')) {
     vehicleApi(req, res);
   }
 
   else if (req.url.startsWith('/transaction')) {
     transactionApi(req, res);
-  }
-
-  else if (req.url.startsWith('/sos')) {
-    sosApi(req, res);
   }
 
   else if (req.url.startsWith('/favourites')) {
