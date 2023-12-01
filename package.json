@@ -9,6 +9,7 @@
   "author": "Deevesh",
   "license": "ISC",
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.3.41",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "mysql2": "^3.6.2"

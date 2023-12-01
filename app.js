@@ -6,16 +6,22 @@ const mysql = require('mysql2');
 const fs = require('fs');
 
 // Import Apis
-const searchApi = require('./src/api/searchAPI');
+const searchApi = require('./src/routes/searchAPI');
+const messageApi = require('./src/routes/messageAPI');
 
 // Resource path
 const noPath = '/';
 const searchPath = '/search';
+const messagePath = "/message";
 
 const server = http.createServer(async (req, res) => {
 
   if (req.url.startsWith(searchPath)) {
     searchApi(req, res);
+  }
+
+  else if (req.url.startsWith(messagePath)) {
+    messageApi(req, res);
   }
 
   else if (req.url.startsWith(noPath)) {

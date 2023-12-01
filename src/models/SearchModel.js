@@ -79,8 +79,9 @@ class SearchModel {
                     return callback(null, result);
                 });
             });
-        } catch(e) {
-            console.log(e);
+        } catch(err) {
+            console.log(err);
+            return callback(err, null);
         }
     }
 
