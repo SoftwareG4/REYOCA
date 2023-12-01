@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Car Rental</title>
+    <!-- Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS link -->
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- Places API -->
+    <script>
+        let autocomplete;
+        function initSearch() {
+            autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('location'),
+                {
+                    types: ['locality'],
+                    componentRestrictions: {'country': ['US']},
+                    fields: ['place_id', 'geometry', 'name']
+                }
+            );
+        }
+
+        async function submitForm() {
+            if (!autocomplete) {
+                console.log("Some error occurred");
+            }
+            let placeSelected = autocomplete.getPlace();
+            if (!placeSelected.geometry) {
+                document.getElementById('location').placeholder = "Please select a location";
+                alert("Please select a location before searching." );
+            } else {
+                let lat = placeSelected.geometry.location.lat();
+                let lng = placeSelected.geometry.location.lng();
+                
+                let user_loc = [lat, lng];
+                let start_date = document.getElementById('start_date').value;
+                let end_date = document.getElementById('end_date').value;
+                
+                let data = {
+                    "userLocation": user_loc,
+                    "startDate": start_date,
+                    "endDate": end_date
+                };
+
+                const response = await fetch('/search', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                let content = await response.text();
+                console.log(content);
+                document.getElementById('test').textContent = content;
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-light">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">RentYourCar(REYOCA)</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Rent a Car</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main role="main">
+        <section class="jumbotron text-center">
+            <div class="container">
+                <h1 class="display-4">Rent the Perfect Car</h1>
+                <p class="lead">Find the best cars for your next adventure.</p>
+                <a href="#" class="btn btn-primary">Get Started</a>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md">
+                    <div class="card mb-4 box-shadow">
+                        <form>
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location">
+                            <label for="start_date">From</label>
+                            <input type="datetime-local" id="start_date" name="start_date">
+                            <label for="end_date">Until</label>
+                            <input type="datetime-local" id="end_date" name="start_date">
+                            <button type="button" value="Search" onclick="submitForm()">Search</button>
+                        </form>
+                        <p id="test"></p>
+                        <p id="geometry"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top" src="https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?cs=srgb&dl=pexels-mike-bird-3729464.jpg&fm=jpg" alt="Car 1">
+                        <div class="card-body">
+                            <h5 class="card-title">Luxury Cars</h5>
+                            <p class="card-text">Explore our luxury car selection.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top" src="https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?cs=srgb&dl=pexels-mike-bird-3729464.jpg&fm=jpg" alt="Car 2">
+                        <div class="card-body">
+                            <h5 class="card-title">Affordable Prices</h5>
+                            <p class="card-text">Rent a car at affordable rates.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top" src="https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?cs=srgb&dl=pexels-mike-bird-3729464.jpg&fm=jpg" alt="Car 3">
+                        <div class="card-body">
+                            <h5 class="card-title">24/7 Support</h5>
+                            <p class="card-text">We're here to assist you anytime.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="text-muted text-center">
+        <div class="container">
+            <p>&copy; 2023 Car Rental</p>
+        </div>
+    </footer>
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlxjdoI_JGnoGMDcZzuz-mBKVNnZqODmA&libraries=places&callback=initSearch">
+    </script>
+</body>
+
+</html>
