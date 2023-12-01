@@ -1,1 +1,0 @@
-global.invalidatedTokens = new Set();

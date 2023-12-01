@@ -1,8 +1,6 @@
 // 1. View cart for a particular user.
 
 const CartModel = require('../models/M_cart');
-const jwt = require('jsonwebtoken')
-const cookie = require('cookie');
 const dotenv = require('dotenv');
 dotenv.config();
 

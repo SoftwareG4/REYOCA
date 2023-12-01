@@ -1,8 +1,4 @@
 const http = require('http');
-const db = require('./dbcon');
-const url = require('url');
-const qs = require('querystring');
-const mysql = require('mysql2');
 
 // Import Routes
 const {view_cart} = require('./src/routes/view_cart');

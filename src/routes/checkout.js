@@ -3,8 +3,6 @@
 // 1. View cart for a particular user.
 
 const CheckoutModel = require('../models/M_checkout');
-const jwt = require('jsonwebtoken')
-const cookie = require('cookie');
 const dotenv = require('dotenv');
 const stripe = require('stripe')(process.env.STRIPE_PVT_KEY);
 

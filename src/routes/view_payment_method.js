@@ -1,8 +1,6 @@
 // 1. View cart for a particular user.
 
 const PaymentMethodsModel = require('../models/M_payment_methods');
-const jwt = require('jsonwebtoken')
-const cookie = require('cookie');
 const dotenv = require('dotenv');
 dotenv.config();
 var ncrypt = require('ncrypt-js');
