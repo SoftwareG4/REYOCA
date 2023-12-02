@@ -58,25 +58,25 @@ class SearchModel {
 
                     console.log("Original results: ", result);
 
-                    // let searchRadiusResult = [];
-                    // result.forEach((item, index, arr) => {
-                    //     arr[index].dist = distanceService.getAerialDistance(this.#userLocation[0], this.#userLocation[1], item['latitude'], item['longitude']);
-                    //     if(arr[index].dist < searchRadius) {
-                    //         searchRadiusResult.push(arr[index]);
-                    //     }
-                    // });
+                    let searchRadiusResult = [];
+                    result.forEach((item, index, arr) => {
+                        arr[index].dist = distanceService.getAerialDistance(this.#userLocation[0], this.#userLocation[1], item['latitude'], item['longitude']);
+                        if(arr[index].dist < searchRadius) {
+                            searchRadiusResult.push(arr[index]);
+                        }
+                    });
 
-                    // let destinationList = searchRadiusResult.map(item => {return {lat: item['latitude'], lng: item['longitude']}});
-                    // console.log("Destination List: ", destinationList);
-                    // let distanceList = await distanceService.getTravelDistance([{lat: 35.1200959, lng: -106.6003826}], destinationList);
-                    // console.log("distanceList: ", distanceList);
+                    let destinationList = searchRadiusResult.map(item => {return {lat: item['latitude'], lng: item['longitude']}});
+                    console.log("Destination List: ", destinationList);
+                    let distanceList = await distanceService.getTravelDistance([{lat: 35.1200959, lng: -106.6003826}], destinationList);
+                    console.log("distanceList: ", distanceList);
 
-                    // searchRadiusResult.forEach((item, index, arr) => {
-                    //     arr[index].travelDist = distanceList[index];
-                    // });
+                    searchRadiusResult.forEach((item, index, arr) => {
+                        arr[index].travelDist = distanceList[index];
+                    });
 
-                    // result = JSON.stringify({"response": searchRadiusResult});
-                    // return callback(null, result);
+                    result = JSON.stringify({"response": searchRadiusResult});
+                    return callback(null, result);
                     return callback(null, JSON.stringify({"response": result}));
                 });
             });
