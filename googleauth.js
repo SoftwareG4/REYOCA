@@ -3,15 +3,14 @@ const session = require('express-session');
 const passport = require('passport');
 const UserModel = require('./src/models/M_register_login');
 const {createTokens, validateToken}= require('./src/services/JWTauth');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
-const GOOGLE_CLIENT_ID = "206755122121-icgt8imehmdur8pu4hirk66vqaa5289e.apps.googleusercontent.com";
-const GOOGLE_CLIENT_SECRET = "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";
-
 passport.use(new GoogleStrategy({
-  clientID: GOOGLE_CLIENT_ID,
-  clientSecret: GOOGLE_CLIENT_SECRET,
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: "http://localhost:8080/auth/google/callback",
   passReqToCallback: true,
 },
