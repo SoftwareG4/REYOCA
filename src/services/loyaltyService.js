@@ -21,7 +21,7 @@ async function calculateLoyaltyPoints(userId) {
     // const birthdayPoints = isBirthday(user.birthdate) ? 200 : 0;
 
     // Fetch the number of reviews posted by the user
-    const reviewQuery = 'SELECT COUNT(*) AS reviews FROM reviews WHERE rating_by = ?';
+    const reviewQuery = 'SELECT COUNT(*) AS reviews FROM vehicle_reviews WHERE rating_by = ?';
     const [reviewResults] = await connection.promise().query(reviewQuery, [userId]);
     // console.log(reviewResults);
     const totalReviews = reviewResults[0].reviews;

@@ -3,9 +3,11 @@ const ReviewsModel = require('../models/reviewsModel');
 const authService = require('../services/authService');
 
 function reviewsApi(req, res) {
+  console.log("reaced API wrapper");
   try {
     //========================================== GET Specific REVIEWS =====================================================
     if (req.method === 'GET') {
+      // console.log("reaced inside API code");
       if (req.url.startsWith('/reviews/')) {
         const params = url.parse(req.url, true);
         const vehicleId = parseInt(params.pathname.split('/').pop());

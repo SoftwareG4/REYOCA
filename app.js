@@ -44,15 +44,16 @@ const server = http.createServer(async (req, res) => {
   const contentType = req.headers['content-type'];
   const method = req.method;
   let path =  req.url;
+  
   console.log(contentType,method,path)
-
+  console.log(req.url);
   if (path.startsWith("/login")){
     register_login_route(req,res)
   }
   else if (path.startsWith("/profile")){
     update_profile_route(req,res)
   }
-  else if (path.startsWith("/review")){
+  else if (path.startsWith("/review") && !path.startsWith("/reviews")){
     review_route(req,res)
   }
   else if (path.startsWith("/report")){
@@ -75,7 +76,8 @@ const server = http.createServer(async (req, res) => {
   else if (req.url.startsWith('/cart')) {
     cartApi(req, res);
   }
-  else if (req.url.startsWith('/reviews')) {
+  else if (path.startsWith('/reviews')) {
+    console.log("Path should reach here");
     ReviewsApi(req, res);
   }
   else if (req.url.startsWith('/vehicle')) {

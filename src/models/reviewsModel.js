@@ -2,6 +2,7 @@ const db = require('../../dbcon');
 
 class ReviewsModel {
   
+  
   static getAllReviews(callback) {
     try {
       const connection = db(); // Get a connection
@@ -31,6 +32,7 @@ class ReviewsModel {
   }
 
   static getReviewsByVehicleId(vehicleId, callback) {
+    console.log("reaced final function in model");
     try {
       const connection = db(); // Get a connection
 
@@ -129,7 +131,7 @@ class ReviewsModel {
           return callback(err, null);
         }
 
-        const query = 'UPDATE vehicle_reviews SET stars = ?, description = ? WHERE review_id = ?';
+        const query = 'UPDATE vehicle_reviews SET stars = ?, description = ? WHERE _id = ?';
         connection.query(
           query,
           [updatedReviewData.stars, updatedReviewData.description, reviewId],
