@@ -28,7 +28,6 @@ class UserModel {
             if (err) {
               return callback(err, null);
             }
-
             const query ="INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `phone`, `role`, `government_id`,`gender`) VALUES ('"+requestData["firstname"]+"', '"+requestData["lastname"]+"', '"+requestData["email"]+"', '"+encrypt_password+"', '"+requestData["phone"]+"', 'rentee','"+requestData["gov_id"]+"','"+requestData["gender"]+"');";
             connection.query(query, (err, results) => {
                 connection.end(); // Close the connection
@@ -36,6 +35,47 @@ class UserModel {
                 return callback(err, null);
                 }
                 return callback(null, results);
+            });
+        });
+    }
+
+    static async googleregisterrentee(profile,callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+        const encrypt_password = await encrypt("pikachu");
+        connection.connect((err) => {
+            if (err) {
+              return callback(err, null);
+            }
+            // console.log(profile.email)
+            let query = "SELECT * FROM user WHERE email=?";
+            connection.query(query,[profile.email], async (err, results) => {
+                // connection.end(); // Close the connection
+                if (err) {
+                return callback(err, null);
+                }
+                if(results.length==0){
+                    query ="INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `phone`, `role`, `government_id`,`gender`,`img_url`) VALUES ('"+profile.given_name+"', '"+profile.family_name+"', '"+profile.email+"', '"+encrypt_password+"', NULL, 'rentee',NULL,'NA','"+profile.picture+"');";
+                    connection.query(query,[profile.email], async (err, results) => {
+                        if (err) {
+                            console.log(err)
+                            return callback(err, null);
+                        }
+                        query = "SELECT * FROM user WHERE email=?";
+                        connection.query(query,[profile.email], async (err, results) => {
+                            // console.log(results)
+                            return callback(null, results[0]["_ID"]);
+                        });
+                    });
+                } else{
+                    // console.log(results)
+                    return callback(null, results[0]["_ID"]);
+                }
             });
         });
     }
