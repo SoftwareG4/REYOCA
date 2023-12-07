@@ -4,7 +4,7 @@ const url = require('url');
 const qs = require('querystring');
 const mysql = require('mysql2');
 const passport = require('passport');
-require('./googleauth');
+// require('./googleauth');
 
 // Import Routes
 const {register_login_route} = require('./src/routes/register_login');

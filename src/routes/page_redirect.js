@@ -4,7 +4,7 @@ const fs = require('fs');
 const ejs = require('ejs');
 const dotenv = require('dotenv');
 dotenv.config();
-
+const profileModel = require('../models/M_update_profile.js');
 require('../../global.js');
 
 // const invalidatedTokens = new Set();
@@ -85,6 +85,44 @@ function red_reg_renter(req, res) {
       });
 }
 
+function red_reg_profilepage(req, res) {
+  if (req.method !== "GET") {
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
+  }
+
+  // Assuming validateToken gets the user_id from the request
+  const user_id = 5;
+  if (user_id == false){
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: "User not Authenticated" }));
+    return;
+  }
+
+  profileModel.prof_view(user_id, (err, result) => {
+    if (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err }));
+    } else {
+      // Read and render the EJS file with user profile data
+      fs.readFile('./src/views/profile_page.ejs', 'utf8', (err, data) => {
+        if (err) {
+          console.error(err);
+          res.writeHead(500, { 'Content-Type': 'text/plain' });
+          res.end('Internal Server Error');
+        } else {
+          const dataToRender = { title: 'User Profile', profile: result[0] }; // Assuming result[0] is the user profile object
+          const renderedHtml = ejs.render(data, dataToRender);
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(renderedHtml);
+        }
+      });
+    }
+  });
+}
+
+
 
 function redirect_route(req, res){
     path=req.url
@@ -101,7 +139,9 @@ function redirect_route(req, res){
         case "/dev_page_route/registerrenter":
             red_reg_renter(req, res);
         break
-
+        case "/dev_page_route/profilepage":
+          red_reg_profilepage(req, res);
+        break
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('Page Not Found');

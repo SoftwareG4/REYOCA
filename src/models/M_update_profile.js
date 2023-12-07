@@ -16,6 +16,45 @@ async function compare_encrypt(password,encrypt_password) {
 }
 
 class Profile_Model {
+    static async prof_view(user_id, callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+        connection.connect((err) => {
+            if (err) {
+              return callback(err, null);
+            }
+            const query = "SELECT * FROM user WHERE _ID=?";
+            connection.query(query,[user_id], async (err, results) => {
+                // connection.end(); // Close the connection
+                if (err) {
+                return callback(err, null);
+                }
+                // console.log(results)
+                if(results.length==0){
+                    return callback(null, "No Reviews Found");
+                }
+                else{
+                    const user = results.map(user => {
+                        return {
+                            first_name: user.first_name,
+                            last_name: user.last_name,
+                            gender: user.gender,
+                            phone: user.phone,
+                            government_id: user.government_id
+                        };
+                    });
+                    connection.end(); // Close the connection
+                    return callback(null, user);
+                }
+            });
+        });
+    }
+
     static async update_picture(data,callback) {
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
