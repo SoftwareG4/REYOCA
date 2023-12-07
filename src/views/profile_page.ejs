@@ -1,0 +1,92 @@
+<!-- views/profile.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- Link to CSS -->
+</head>
+<body>
+    <div class="profile-container">
+        <img src="<%= profile.photo %>" alt="Profile Photo">
+        <p>Name:</p>
+        <h2 id="first_name" style="display: inline-block;"><%= profile.first_name %></h2>
+        <h2 id="last_name" style="display: inline-block;"><%= profile.last_name %></h2>
+        <p>Gender:</p>
+        <p id="gender"><%= profile.gender %></p>
+        <p>Phone:</p>
+        <p id="phone"><%= profile.phone %></p>
+        <p>Government ID:</p>
+        <div id="government_id_container">
+            <p id="government_id" style="display: none;"><%= profile.government_id %></p>
+            <button id="btn_hide" onclick="toggleGovernmentID()">Unhide</button>
+        </div>
+        <button id="editButton" onclick="editProfile()">Edit</button>
+        <button onclick="orderHistory()">View Order History</button>
+    </div>
+    <script>
+        let isEditing = false;
+
+        function toggleGovernmentID() {
+            const govIdElement = document.getElementById('government_id');
+            const btnUnhide = document.getElementById('btn_hide');
+            govIdElement.style.display = govIdElement.style.display === 'none' ? '' : 'none';
+            btnUnhide.textContent = btnUnhide.textContent === "Unhide" ? "Hide" : "Unhide";
+        }
+
+        function editProfile() {
+            if (!isEditing) {
+                makeEditable('first_name');
+                makeEditable('last_name');
+                makeEditable('gender');
+                makeEditable('phone');
+                makeEditable('government_id');
+                document.getElementById('editButton').innerText = 'Save';
+            } else {
+                // Retrieve updated values
+                const updatedProfile = {
+                    first_name: document.getElementById('first_name').querySelector('input').value,
+                    last_name: document.getElementById('last_name').querySelector('input').value,
+                    gender: document.getElementById('gender').querySelector('input').value,
+                    phone: document.getElementById('phone').querySelector('input').value,
+                    government_id: document.getElementById('government_id').querySelector('input').value
+                };
+    
+                // Send data to server using AJAX
+                fetch('/update_prof', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedProfile),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    // Refresh the page or update the UI to reflect changes
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+    
+                document.getElementById('editButton').innerText = 'Edit';
+                // Reset isEditing
+                isEditing = false;
+            }
+            isEditing = !isEditing;
+        }
+
+        function makeEditable(id) {
+            const element = document.getElementById(id);
+            const value = element.innerText;
+            element.innerHTML = `<input type="text" value="${value}">`;
+        }
+
+        function orderHistory() {
+            // Logic to handle viewing order history
+            alert('Order history functionality not implemented');
+        }
+    </script>
+</body>
+</html>
