@@ -9,8 +9,8 @@ const searchQuery_part1 = `
     SELECT v.*
     FROM vehicles v
     LEFT JOIN transaction_history th ON v._ID = th.vehicle_id
-    WHERE (th.vehicle_id IS NULL)
-    OR (th.booking_end < ? OR th.booking_start > ?)
+    WHERE ((th.vehicle_id IS NULL)
+    OR (th.booking_end < ? OR th.booking_start > ?))
 `;
 
 const searchQuery_part2 = `
