@@ -185,6 +185,55 @@ function logout_user(req, res) {
     }
 }
 
+function forgot_password(req, res) {
+    if(req.method!="POST"){
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+        return;
+    }
+    const chunks = [];
+    req.on("data", (chunk) => {
+        chunks.push(chunk);
+    });
+    req.on('end', () => {
+        let requestData = {};
+        try {
+            const data = Buffer.concat(chunks);
+            const stringData = data.toString();
+            const parsedData = new URLSearchParams(stringData);
+            for (var pair of parsedData.entries()) {
+                requestData[pair[0]] = pair[1];
+            }
+            // console.log("DataObj: ", requestData);
+
+        } catch (error) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
+            return;
+        }
+        // console.log(requestData)
+        UserModel.pass_update(requestData, (err, result) => {
+            if (err) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: err }));
+            } else if (typeof(result)=="string") {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ message: result }));
+            } else{
+                const accessToken=createTokens(result[0])
+                res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: "Login Success" }));
+            }
+            
+          });
+    });
+}
+
+
+
+
+
 function register_login_route(req, res){
     path=req.url
     if(path[path.length-1]=='/'){
@@ -204,6 +253,9 @@ function register_login_route(req, res){
         case "/login/logout":
             logout_user(req, res);
             break
+        case "/login/forgot-password":
+            forgot_password(req, res);
+        break
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('Page Not Found');

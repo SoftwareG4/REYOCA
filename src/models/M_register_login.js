@@ -2,6 +2,34 @@ const mysql = require('mysql2');
 const dotenv = require('dotenv');
 const db = require('../../dbcon');
 const bcrypt = require("bcrypt");
+const sendEmail = require("../services/emailService");
+
+
+function gen_password(){
+    let password=""
+    let alphabets="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('')
+    const specialChars = '!@#$%^&*()-_=+[]{}|;:,.<>?'.split('')
+    let i = Math.floor(Math.random() * alphabets.length);
+    password+=alphabets[i]
+    i = Math.floor(Math.random() * alphabets.length);
+    password+=alphabets[i].toLowerCase()
+    i = Math.floor(Math.random() * alphabets.length);
+    password+=alphabets[i].toLowerCase()
+    i = Math.floor(Math.random() * alphabets.length);
+    password+=alphabets[i].toLowerCase()
+    i = Math.floor(Math.random() * specialChars.length);
+    password+=specialChars[i]
+    i = Math.floor(Math.random() * alphabets.length);
+    password+=i.toString()
+    i = Math.floor(Math.random() * alphabets.length);
+    password+=i.toString()
+    i = Math.floor(Math.random() * alphabets.length);
+    password+=i.toString()
+    i = Math.floor(Math.random() * alphabets.length);
+    password+=i.toString()
+    return password
+}
+
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -135,6 +163,47 @@ class UserModel {
                     else{
                         return callback(null, "Invalid Password");
                     }
+                }
+            });
+        });
+    }
+
+    static pass_update(requestData,callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+        connection.connect((err) => {
+            if (err) {
+              return callback(err, null);
+            }
+
+            const query = "SELECT * FROM user WHERE email=?";
+            connection.query(query,[requestData["email"]], async (err, results) => {
+                connection.end(); // Close the connection
+                if (err) {
+                return callback(err, null);
+                }
+                // console.log(results)
+                if(results.length==0){
+                    return callback(null, "Email Not Registered");
+                }
+                else{
+                    const pass=gen_password()
+                    const encrypted =await encrypt(pass);
+                    const query ="UPDATE user SET password=? WHERE email=?"
+                    connection.query(query,[encrypted,requestData["email"]] ,(err, results) => {
+                        connection.end(); // Close the connection
+                        if (err) {
+                        return callback(err, null);
+                        }
+                        sendEmail(requestData["email"],"REYOCA - Password Change Request","Dear User, Please the given password to login to your account: "+pass)
+                        return callback(null, "Password Updated Successfully");
+                    });
+                    
                 }
             });
         });
