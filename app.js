@@ -22,6 +22,7 @@ const transactionApi = require('./src/routes/transactionAPIs');
 const vehicleApi = require('./src/routes/vehicleAPIs');
 const favouritesApi = require('./src/routes/favouritesAPIs');
 const loyaltyApi = require('./src/routes/loaltyPointsAPI');
+const userAPI = require('./src/routes/getUserAPI');
 
 const {view_cart} = require('./src/routes/view_cart');
 const {delete_car} = require('./src/routes/delete_car');
@@ -91,6 +92,9 @@ const server = http.createServer(async (req, res) => {
   }
   else if (req.url.startsWith('/loyalty')) {
     loyaltyApi(req, res);
+  }
+  else if (req.url.startsWith('/user')) {
+    userAPI(req, res);
   }
 
   else if (req.url.startsWith(deletecar)) {
