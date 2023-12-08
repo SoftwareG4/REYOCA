@@ -3,6 +3,17 @@ const CartModel = require('../models/cartModel');
 
 function cartApi(req, res) {
   try {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Add this line
+  
+    // Check if the request method is OPTIONS (preflight request)
+    if (req.method === 'OPTIONS') {
+      // Respond to the preflight request
+      res.writeHead(200);
+      res.end();
+      return;
+    }
     //========================================== ADD TO CART =====================================================
     if (req.method === 'POST') {
       if (req.url === '/cart/add-to-cart') {
@@ -14,7 +25,6 @@ function cartApi(req, res) {
         req.on('end', async () => {
           try {
             const postBody = JSON.parse(body);
-
             CartModel.addToCart(postBody, (err, result) => {
               if (err) {
                 res.writeHead(500, { 'Content-Type': 'application/json' });
