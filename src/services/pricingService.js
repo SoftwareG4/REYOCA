@@ -18,7 +18,7 @@ function calculatePrice(vehicleId, startDate, endDate, additionalDrivers, childS
     const basePrice = basePricePerDay * durationInDays;
     const additionalDriverFee = additionalDrivers * additionalDriverFeePerDay * durationInDays;
     const childSeatFee = childSeats * childSeatFeePerDay * durationInDays;
-    const insuranceFee = insurance ? insuranceFeePerDay * durationInDays : 0;
+    const insuranceFee = insurance*1 ? insuranceFeePerDay * durationInDays : 0;
 
 
     const totalPrice = basePrice + additionalDriverFee + childSeatFee + otherAddOnsPrice + insuranceFee;
