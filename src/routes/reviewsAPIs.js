@@ -5,6 +5,17 @@ const authService = require('../services/authService');
 function reviewsApi(req, res) {
   console.log("reaced API wrapper");
   try {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Add this line
+  
+    // Check if the request method is OPTIONS (preflight request)
+    if (req.method === 'OPTIONS') {
+      // Respond to the preflight request
+      res.writeHead(200);
+      res.end();
+      return;
+    }
     //========================================== GET Specific REVIEWS =====================================================
     if (req.method === 'GET') {
       // console.log("reaced inside API code");
@@ -16,7 +27,7 @@ function reviewsApi(req, res) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Internal Server Error' }));
           } else {
-            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.writeHead(200, { 'Content-Type': 'application/json' ,'Access-Control-Allow-Origin': '*'});
             res.end(JSON.stringify(reviews));
           }
         });
@@ -60,28 +71,49 @@ function reviewsApi(req, res) {
     //========================================== DELETE GIVEN REVIEWS BY SAME USER =====================================================
     else if (req.method === 'DELETE') {
       if (req.url.startsWith('/reviews/')) {
-        const params = url.parse(req.url, true);
-        const reviewId = parseInt(params.pathname.split('/').pop());
-
-        const isAuthorizedToDelete = authService.checkReviewAuthorization(reviewId, userId);
-
-        if (isAuthorizedToDelete) {
-          // Call the ReviewsModel function to delete the review
-          ReviewsModel.deleteReview(reviewId, (err, result) => {
-            if (err) {
-              res.writeHead(500, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ error: 'Internal Server Error' }));
-            } else {
-              res.writeHead(204); 
-              res.end();
+        let body = '';
+    
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
+    
+        req.on('end', () => {
+          try {
+            const requestBody = JSON.parse(body);
+            const reviewId = requestBody.reviewId;
+    
+            // Check if reviewId is a valid integer
+            if (!parseInt(reviewId, 10)) {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Invalid reviewId' }));
+              return;
             }
-          });
-        } else {
-          res.writeHead(403, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Unauthorized to delete this review' }));
-        }
+    
+            // Call the ReviewsModel function to delete the review
+            ReviewsModel.deleteReview(reviewId, (err, result) => {
+              if (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Internal Server Error' }));
+              } else {
+                if (result.affectedRows === 0) {
+                  // No review with the specified reviewId was found
+                  res.writeHead(404, { 'Content-Type': 'application/json' });
+                  res.end(JSON.stringify({ error: 'Review not found' }));
+                } else {
+                  // Review deleted successfully
+                  res.writeHead(204);
+                  res.end();
+                }
+              }
+            });
+          } catch (error) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Invalid JSON format in request body' }));
+          }
+        });
       }
-    } 
+    }
+    
     
     else if (req.method === 'PUT') {
       if (req.url.startsWith('/reviews/')) {
