@@ -18,12 +18,9 @@ function validate_coupon(req, res) {
         req.on('end', () => {
             let requestData = {};
             try {
-                const data = Buffer.concat(chunks);
-                const stringData = data.toString();
-                const parsedData = new URLSearchParams(stringData);
-                for (var pair of parsedData.entries()) {
-                    requestData[pair[0]] = pair[1];
-                }
+                const urlParams = new URLSearchParams(req.url.split('?')[1]);
+                const code = urlParams.get('code');
+                requestData['code'] = code;
             }
             catch (error) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -34,10 +31,12 @@ function validate_coupon(req, res) {
                 if (err) {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: err }));
-                } else if (typeof(result)=="string") {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ message: result }));
-                } else {
+                } 
+                // else if (typeof(result)=="string") {
+                //     res.writeHead(400, { 'Content-Type': 'application/json' });
+                //     res.end(JSON.stringify({ message: result }));
+                // } 
+                else {
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                    
                     res.end(JSON.stringify(result));
@@ -51,6 +50,7 @@ function validate_coupon(req, res) {
 }
 
 function checkout(req, res) {
+    
     const chunks = [];
     req.on("data", (chunk) => {
         chunks.push(chunk);

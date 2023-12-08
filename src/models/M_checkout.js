@@ -12,10 +12,10 @@ class CheckoutModel {
               let percentage = (code.toLowerCase() == "reyoca10" || code.toLowerCase() == "new10") ? 0.1 : 0.25
               return callback(null, {"disc" : percentage});
             } else {
-              return callback(null, 'Sorry! Coupon not valid. ');
+              return callback(null, {"message" : 'Sorry! Coupon not valid.'} );
             } 
           } else {
-            return callback(null, 'Coupon code cannot be empty');
+            return callback(null, {"message" : 'Coupon code cannot be empty.'} );
           }
     }
 
