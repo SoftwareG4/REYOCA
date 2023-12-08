@@ -27,13 +27,11 @@ function loyaltyPointsApi(req, res) {
     req.on('end', async () => {
       try {
         const postBody = JSON.parse(body);
-
         // Assuming userId is provided in the request body
-        const userId = postBody.userId;
+        const userId = postBody.user_id;
 
         // Call the LoyaltyService function to calculate loyalty points
         const loyaltyPoints = await LoyaltyService.calculateLoyaltyPoints(userId);
-
         // Return the calculated loyalty points in the response
         res.writeHead(200, { 'Content-Type': 'application/json' ,'Access-Control-Allow-Origin': '*'});
         res.end(JSON.stringify({ loyaltyPoints: loyaltyPoints }));
