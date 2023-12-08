@@ -102,7 +102,7 @@ class ReviewsModel {
           return callback(err, null);
         }
 
-        const query = 'DELETE FROM vehicle_reviews WHERE review_id = ?';
+        const query = 'DELETE FROM vehicle_reviews WHERE _ID = ?';
         connection.query(query, [reviewId], (err, result) => {
           connection.end(); // Close the connection
 
