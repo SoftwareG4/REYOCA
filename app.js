@@ -118,6 +118,28 @@ const server = http.createServer(async (req, res) => {
       res.end();
     });
   } 
+    else if (req.url === '/customize') {
+    // Read the EJS template file
+    
+    fs.readFile('./src/views/vehicleDetails.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.log(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+        return;
+      }
+
+      // Compile the EJS template
+      const compiledTemplate = ejs.compile(data);
+
+      // Render the template without any data (you can't pass dynamic data in this example)
+      const renderedHtml = compiledTemplate();
+
+      // Set response headers and send the rendered HTML
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(renderedHtml);
+    });
+  }
   else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Page Not Found');
