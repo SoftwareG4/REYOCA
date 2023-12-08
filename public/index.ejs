@@ -4,9 +4,9 @@
 <head>
     <title>Car Rental</title>
     <!-- Bootstrap CSS link -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
     <!-- Custom CSS link -->
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="./styles.css">
     <!-- Places API -->
     <script>
         let autocomplete;
@@ -51,8 +51,10 @@
                     body: JSON.stringify(data)
                 });
                 let content = await response.text();
-                console.log(content);
-                document.getElementById('test').textContent = content;
+                // if (response.status == 200) {
+                    console.log("OK");
+                    return response.redirect('test.ejs');
+                // }
             }
         }
     </script>
@@ -60,6 +62,16 @@
 
 <body class="bg-light">
     <header>
+        <style>
+            ul {
+                list-style-type: none;
+            }
+            li a {
+                display: block;
+                float: left;
+                padding-left: 16px;
+            }
+        </style>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="#">RentYourCar(REYOCA)</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -72,32 +84,33 @@
                         <a class="nav-link" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Rent a Car</a>
+                        <a class="nav-link" href="#">Notifications</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Services</a>
+                        <a class="nav-link" href="#">Customer Support</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact Us</a>
+                        <a class="nav-link" href="#">Login / Register</a>
                     </li>
                 </ul>
             </div>
         </nav>
+        <br>
     </header>
     <main role="main">
-        <section class="jumbotron text-center">
+        <!-- <section class="jumbotron text-center">
             <div class="container">
                 <h1 class="display-4">Rent the Perfect Car</h1>
                 <p class="lead">Find the best cars for your next adventure.</p>
                 <a href="#" class="btn btn-primary">Get Started</a>
             </div>
-        </section>
+        </section> -->
 
         <div class="container">
             <div class="row">
                 <div class="col-md">
                     <div class="card mb-4 box-shadow">
-                        <form>
+                        <form style="padding-top: 8px;">
                             <label for="location">Location</label>
                             <input type="text" id="location" name="location">
                             <label for="start_date">From</label>
@@ -112,8 +125,14 @@
                 </div>
             </div>
         </div>
+
+        <div id="big_container">
+            <div id="left_container">
+                <p>Recommendations</p>
+            </div>
+        </div>
         
-        <div class="container">
+        <!-- <div class="container">
             <div class="row">
                 <div class="col-md-4">
                     <div class="card mb-4 box-shadow">
@@ -143,17 +162,17 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </main>
     <footer class="text-muted text-center">
-        <div class="container">
+        <!-- <div class="container">
             <p>&copy; 2023 Car Rental</p>
-        </div>
+        </div> -->
     </footer>
     <!-- Bootstrap JS and Popper.js -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
     <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlxjdoI_JGnoGMDcZzuz-mBKVNnZqODmA&libraries=places&callback=initSearch">
     </script>

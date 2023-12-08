@@ -4,6 +4,7 @@ const url = require('url');
 const qs = require('querystring');
 const mysql = require('mysql2');
 const fs = require('fs');
+const ejs = require('ejs');
 
 // Import Routes
 const {register_login_route} = require('./src/routes/register_login');
@@ -108,16 +109,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   else if (req.url === noPath) {
-    fs.readFile('./public/index.html', function (err, html) {
-
+    fs.readFile('./public/index.ejs', 'utf8', (err, html) => {
       if (err) {
-        console.log(err);
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        const dataToRender = { title: 'User Profile' };
+        const renderedHtml = ejs.render(html, dataToRender);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
       }
-      res.writeHead(200, {"Content-Type": "text/html"});
-      res.write(html);
-      res.end();
     });
-  } 
+  }
   else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Page Not Found');
