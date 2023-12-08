@@ -78,7 +78,7 @@ class CartModel {
         const query = 'INSERT INTO cart (rentee_id, vehicle_id, extras, quantity, total_cost) VALUES (?, ?, ?, ?, ?)';
         connection.query(
           query,
-          [cartData.renteeId, cartData.vehicleId, cartData.extras, cartData.quantity, cartData.totalCost],
+          [cartData.renteeId, cartData.vehicleId, cartData.extras, cartData.quantity, cartData.total],
           (err, result) => {
             connection.end(); // Close the connection
   
