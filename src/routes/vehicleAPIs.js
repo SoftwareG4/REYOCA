@@ -9,6 +9,18 @@ const pricingService = require('../services/pricingService');
 
 function vehicleApi(req, res) {
   try {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Add this line
+  
+    // Check if the request method is OPTIONS (preflight request)
+    if (req.method === 'OPTIONS') {
+      // Respond to the preflight request
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+  
     //============================================ To check vehicle availability before adding to cart ================================================
     if (req.method === 'POST' && req.url === '/vehicle/check-availability') {
       let body = '';
@@ -70,7 +82,7 @@ function vehicleApi(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Internal Server Error' }));
         } else {
-          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' ,'Access-Control-Allow-Origin': '*'});
           res.end(JSON.stringify(details));
         }
       });
