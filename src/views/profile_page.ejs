@@ -5,56 +5,178 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
     <!-- <link rel="stylesheet" type="text/css" href="../../public/styles.css"> Link to CSS -->
+    <style>
+        body{
+  font-family: 'Rethink Sans', sans-serif;
+  background: #F7F9F9;
+}
+button{
+  outline:none;
+  border:none;
+  transition:0.3s ease;
+  cursor:pointer;
+}
+button:hover{
+  filter: brightness(90%)
+}
+.profile-container{
+  background: white;
+  width: 90vw;
+  margin: 0 auto;
+  box-shadow:
+  0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+  0px 5px 10px rgba(0, 0, 0, 0.025),
+  0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+  0px 40px 80px rgba(0, 0, 0, 0.05)
+;
+  border-radius:15px;
+  margin-top:50px;
+  padding: 30px;
+  box-sizing: border-box;
+}
+h2{
+  color: #bc4749;
+  margin-bottom:60px;
+}
+.user-profile--container{
+  display: flex;
+  gap:20px;
+  padding-bottom:20px;
+  margin-bottom:20px;
+  border-bottom:1px solid rgba(0,0,0,0.2);
+}
+.user-avatar--container{
+  width:120px;
+  flex-shrink:0;
+}
+.user--name{
+  margin-top:10px;
+}
+.user--name h3{
+  margin-bottom:0;
+}
+.user-avatar--container img{
+  width:100%;
+}
+#updatePhotoButton{
+  margin-top:10px;
+  background: #fff;
+  color:#bc4749;
+  padding:10px;
+  font-size:14px;
+  font-weight:500;
+  width:100%;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border:1px solid #bc4749;
+}
+#userRating{
+  color: #F1C40F
+}
+.btn--container{
+  flex-shrink:0;
+  width:300px;
+  display: flex;
+  flex-direction: column;
+  border-left:1px solid rgba(0,0,0,0.2);
+  padding-left:20px;
+}
+.btn--container button{
+  border-bottom:1px solid rgba(0,0,0,0.2);
+  background:transparent;
+  padding:10px 0;
+}
+.user-bottom--container{
+  display: flex;
+  gap:20px;
+}
+.user-additional-details--container{
+  flex-grow:1;
+}
+#logoutButton, #deleteButton{
+  border-bottom: none;
+}
+#logoutButton{
+  margin-top:10px;
+  background: #fff;
+  color:#bc4749;
+  padding:7px;
+  font-size:13px;
+  font-weight:500;
+  width:100%;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border:1px solid #bc4749;
+}
+    </style>
 </head>
 <body>
     <div class="profile-container">
-        <img src="<%= profile.photo %>" alt="Profile Photo" style="width: 100px; height: auto;">
-        <button id="updatePhotoButton" onclick="triggerFileInput()">Update Photo</button>
-        <!-- Add this under the profile photo -->
-        
-        <div style="display: flex; align-items: center;">
-            <p id="user_rating_title" style="margin-right: 10px;">Rating:</p>
-            <p id="userRating" style="margin: 0;"><%= rating %></p>
+        <h2>Profile</h2>
+        <div class="user-profile--container">
+          <div class="user-avatar--container">
+              <img src="<%= profile.photo %>" alt="Profile Photo" style="display:block;">
+              <button id="updatePhotoButton" onclick="triggerFileInput()">Update Photo</button>
         </div>
-
-        <!-- Hidden File Input -->
-        <input type="file" id="photoInput" style="display: none;" onchange="handleFileChange()">
-        <p></p>
-        <h2 id="first_name" style="display: inline-block;"><%= profile.first_name %></h2>
-        <h2 id="last_name" style="display: inline-block;"><%= profile.last_name %></h2>
-
-        <div style="display: flex; align-items: center;">
-            <p style="margin-right: 10px;">Gender:</p>
-            <div id="gender" class="gender-dropdown">
-                <select style="display: none;">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-                <p style="margin: 0;"><%= profile.gender %></p>
+          <div class="user-profile--right">
+          <div class="user--name">
+          <h3 id="first_name" style="display: inline-block;"><%= profile.first_name %></h3>
+              <h3 id="last_name" style="display: inline-block;"><%= profile.last_name %></h3>
+          </div>
+            <div style="display: flex; align-items: center;">
+                  <p id="user_rating_title" style="margin-right: 10px;">Rating:</p>
+                  <p id="userRating" style="margin: 0;"><%= rating %></p>
+              </div>
             </div>
         </div>
-        <div style="display: flex; align-items: center;">
-            <p id="phone_title" style="margin-right: 10px;">Phone:</p>
-            <p id="phone" style="margin: 0;"><%= profile.phone %></p>
-        </div>
         
-
-        <div style="display: flex; align-items: center;">
-            <p style="margin-right: 10px;">Government ID:</p>
-            <div id="government_id_container" style="flex-grow: 1;">
-                <p id="government_id" style="display: none; margin: 0;"><%= profile.government_id %></p>
-                <button id="btn_hide" onclick="toggleGovernmentID()">Unhide</button>
-            </div>
-        </div>
-
-        <button id="editButton" onclick="editProfile()">Edit</button>
-        <button onclick="orderHistory()">View Order History</button>
-        <button id="updatepassword" onclick="updatepassword()">Update Password</button>
-        <button id="deleteButton" onclick="deleteAccount()">Delete Account</button>
-        <button id="logoutButton" onclick="logout()">Logout</button>
-
-    </div>
+              <!-- Add this under the profile photo -->
+              
+              
+      
+              <!-- Hidden File Input -->
+              <input type="file" id="photoInput" style="display: none;" onchange="handleFileChange()">
+              <p></p>
+              
+              <div class="user-bottom--container">
+            <div class="user-additional-details--container">
+      
+              <div style="display: flex; align-items: center;">
+                  <p style="margin-right: 10px;">Gender:</p>
+                  <div id="gender" class="gender-dropdown">
+                      <select style="display: none;">
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                      </select>
+                      <p style="margin: 0;"><%= profile.gender %></p>
+                  </div>
+              </div>
+              <div style="display: flex; align-items: center;">
+                  <p id="phone_title" style="margin-right: 10px;">Phone:</p>
+                  <p id="phone" style="margin: 0;"><%= profile.phone %></p>
+              </div>
+              
+      
+              <div style="display: flex; align-items: center;">
+                  <p style="margin-right: 10px;">Government ID:</p>
+                  <div id="government_id_container" style="flex-grow: 1;">
+                      <p id="government_id" style="display: none; margin: 0;"><%= profile.government_id %></p>
+                      <button id="btn_hide" onclick="toggleGovernmentID()">Unhide</button>
+                  </div>
+              </div>
+              </div>
+            <div class="btn--container">
+      
+              <button id="editButton" onclick="editProfile()">Edit</button>
+              <button onclick="orderHistory()">View Order History</button>
+              <button id="updatepassword" onclick="updatepassword()">Update Password</button>
+              <button id="deleteButton" onclick="deleteAccount()">Delete Account</button>
+              <button id="logoutButton" onclick="logout()">Logout</button>
+      </div>
+          </div>
+      
+          </div>
 
     <script>
         let isEditing = false;

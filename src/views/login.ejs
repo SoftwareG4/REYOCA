@@ -1,29 +1,150 @@
 <html>
     <head>
         <title>ReYoCa:your car renting solution</title>
+        <style>
+            body{
+  font-family: 'Rethink Sans', sans-serif;
+  background: #F7F9F9;
+}
+a{
+  text-decoration: none;
+  transition:0.2s linear;
+}
+a:hover{
+  text-decoration:underline;
+}
+.app--container{
+  background: white;
+  width: 500px;
+  margin: 0 auto;
+  box-shadow:
+  0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+  0px 5px 10px rgba(0, 0, 0, 0.025),
+  0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+  0px 40px 80px rgba(0, 0, 0, 0.05)
+;
+  border-radius:15px;
+  margin-top:50px;
+  padding: 30px;
+  box-sizing: border-box;
+}
+h2{
+  text-align:center;
+  color: #bc4749;
+}
+h2 span{
+  color: #808B96
+}
+form{
+  margin-top:60px;
+}
+label{
+  color: #808B96;
+  font-weight:500;
+  font-size:14px;
+  margin-bottom:5px;
+}
+input{
+  width:100%;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding:10px;
+  border: 1px solid #D5D8DC;
+  outline:none;
+  margin-bottom: 20px;
+}
+input[type="submit"]{
+  background: #bc4749;
+  color:white;
+  padding:10px;
+  font-size:14px;
+  font-weight:500;
+  margin-bottom:0;
+  border: none;
+  margin-top:20px;
+}
+.forgot-password--link{
+  display:flex;
+  justify-content:end;
+}
+.forgot-password--link a{
+  font-size:13px;
+  margin-top:10px;
+  color: #566573;
+}
+.divider{
+  text-align:center;
+  position:relative;
+  margin:25px 0;
+}
+.divider::before{
+  content:'';
+  position:absolute;
+  top:50%;
+  left:20%;
+  background: #566573;
+  height:1px;
+  width:calc(30% - 30px);
+  transform: translateY(-50%);
+}
+.divider::after{
+  content:'';
+  position:absolute;
+  top:50%;
+  right:20%;
+  background: #566573;
+  height:1px;
+  width:calc(30% - 30px);
+  transform: translateY(-50%);
+}
+.signin-google--btn{
+  margin:0 auto;
+  display:flex;
+  justify-content:center;
+}
+.signin-google--btn a{
+  display:flex;
+  align-items:center;
+  background: white;
+  border: 1px solid #17202A;
+  color: #17202A;
+  padding:8px;
+  border-radius:5px;
+  margin-bottom:50px;
+}
+.create-account--container a, .become-renter--container a{
+  color: #bc4749
+}
+.become-renter--container{
+  margin-top:10px;
+}
+        </style>
     </head>
     <body>
-        
-        <form action="http://localhost:3000/login" method="POST">
-            <label for="email">Email</label><br>
-            <input type="email" name="email" required><br>
-            <label for="password">Password</label><br>
-            <input type="password" name="password" required><br>
-            <input type="submit" value="Login">
-        </form>
-        <a href="/dev_page_route/passreset" style="color:red">Forgot Password</a>
-        <br>
-        <br>
-        <br>
-    <a href="http://localhost:8080/auth/google" style="text-decoration:none"><button type="button" style="display:flex; align-items:center"><img src="https://reyocaprofilepic.s3.amazonaws.com/google-icon.png" alt="G" width="20" height="20">&nbsp;Sign in with Google</button></a>
+        <div class="app--container">
+            <h2>ReYoCa: <span>your car renting solution</span></h2>
+            <form action="http://localhost:3000/login" method="POST">
+              <label for="email">Email</label><br>
+              <input type="email" name="email" required><br>
+              <label for="password">Password</label><br>
+              <input type="password" name="password" required><br>
+              <input type="submit" value="Login">
+            </form>
+            <div class="forgot-password--link">
+              <a href="/dev_page_route/passreset">Forgot Password?</a>
+            </div>
+            <div class="divider">OR</div>
+            <div class="signin-google--btn">
+            
+            <a href="http://localhost:8080/auth/google" style="text-decoration:none"><img src="https://reyocaprofilepic.s3.amazonaws.com/google-icon.png" alt="G" width="20" height="20">&nbsp;Sign in with Google</a>
+            </div>
+            <div class='create-account--container'>
+              Not Registered Yet? <a href="/dev_page_route/registerrentee">Create an Account</a></div>
+            <div class="become-renter--container">
+              <a href="/dev_page_route/registerrenter">Become a Renter</a>&nbsp;and generate passive income off of your standing car
+            </div>
+          </div>
 
-    <br>
-    
-    <br>
-    <br>
-    Not Registered Yet? <a href="/dev_page_route/registerrentee">Create an Account</a>
-    <br>
-    <br>
-    Want to become a Renter and generate passive income off of your standing car? <a href="/dev_page_route/registerrenter">Become a Renter</a>
+        
     </body>
 </html>
