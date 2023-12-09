@@ -96,7 +96,14 @@
     
 </div>
 <script>
+    let car = [];
     let total = 0;
+    cars = '<%- JSON.stringify(cars) %>';
+    cars = JSON.parse(cars);
+    cars.forEach((car) => { total += car.price;});
+    document.getElementById('total_amount').innerHTML = total
+
+    
     async function validate() {
         let code = document.getElementById('coupon').value;
         const options = {
@@ -159,6 +166,12 @@
             },
             body: JSON.stringify({
                 "final_amount" : total,
+                // "book_from": cars.from_date,
+                // "book_to": cars.to_date,
+                // "vehicle_id" : cars.vehicle_id,
+                "book_from": new Date(),
+                "book_to": new Date(),
+                "vehicle_id" : cars.vehicle_id,
             })
         };
         fetch("/checkout", options)
@@ -167,11 +180,7 @@
                 window.location.replace(data['url']);
             })
     }
-    let car = [];
-    cars = '<%- JSON.stringify(cars) %>';
-    cars = JSON.parse(cars);
-    cars.forEach((car) => { total += car.price;});
-    document.getElementById('total_amount').innerHTML = total
+    
 </script>
 </body>
 </html>

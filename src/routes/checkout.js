@@ -1,6 +1,8 @@
 // 1. check coupon
 // 2. complete checkout
 // 1. View cart for a particular user.
+const querystring = require('querystring');
+const url = require('url');
 
 const CheckoutModel = require('../models/M_checkout');
 const dotenv = require('dotenv');
@@ -72,7 +74,7 @@ function checkout(req, res) {
                         },
                         quantity: 1,
                     }],
-                    success_url: `${process.env.CLIENT_URL}/success.html`,
+                    success_url: `http://localhost:3000/store_transaction?data=${chunks}`,
                     cancel_url: `${process.env.CLIENT_URL}/cancel.html`,
                   });
                   res.writeHead(200, { "Content-Type": "application/json" });
@@ -89,4 +91,57 @@ function checkout(req, res) {
     }
 }
 
-module.exports = {validate_coupon, checkout};
+function store_transaction(req,res){
+        
+    // Assuming req is your HTTP request object
+    const urlParts = url.parse(req.url);
+    const query = querystring.parse(urlParts.query);
+    let data = query.data;
+    // console.log('Transaction ID:', transactionId);
+    
+
+    // // let data = '';
+    // req.on('data', (chunk) => {
+    //   data += chunk;
+    // });
+    console.log("STORING",data,"YES");
+    const requestData = JSON.parse(data);
+    console.log(requestData);
+    req.on('end', async () => {
+      try {
+        
+        console.log("req",requestData);
+        
+        const {  vehicle_id, amount } = requestData;
+        let user_id =1;
+        let payment_id = 1010101;
+        // Store transaction details in the database
+        const transactionQuery = `
+          INSERT INTO transaction_history (payment_id, rentee_id, vehicle_id, amount, start_ts, booking_start, booking_end)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  
+        // Replace the placeholder values (1, new Date(), new Date(), new Date()) with your actual values
+        connection.query(
+          transactionQuery,
+          [payment_id, user_id, vehicle_id, amount, new Date(), new Date(), new Date()],
+          (error, results) => {
+            console.log("Its happening");
+            if (error) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: error.message }));
+              console.log(error);
+            } else {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ success: true }));
+              console.log(results);
+            }
+          }
+        );
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+}
+
+module.exports = {validate_coupon, checkout, store_transaction};
