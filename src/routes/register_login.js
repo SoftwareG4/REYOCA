@@ -158,7 +158,7 @@ function login_user(req, res) {
                 const accessToken=createTokens(result[0])
                 res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
                 if (result[0].role=="admin"){
-                    redirect_admin(req,res)
+                    redirect_admin(req,res,requestData)
 
                 }
                 else{
@@ -224,15 +224,9 @@ function forgot_password(req, res) {
               res.writeHead(500, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ error: err }));
             } else if (typeof(result)=="string") {
-              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.writeHead(201, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ message: result }));
-            } else{
-                const accessToken=createTokens(result[0])
-                res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: "Login Success" }));
-            }
-            
+            } 
           });
     });
 }

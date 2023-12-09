@@ -65,10 +65,12 @@ class ReportModel {
                 else{
                     const reviews = results.map(review => {
                         return {
-                            id: review._ID,
-                            stars: review.stars,
+                            _ID: review._ID,
+                            reported_id: review.reported_id,
+                            reported_by: review.reported_by,
                             description: review.description,
-                            ratedBy: review.rating_by
+                            report_type: review.report_type,
+                            status: review.status
                         };
                     });
                     connection.end(); // Close the connection

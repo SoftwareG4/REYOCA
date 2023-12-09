@@ -1,11 +1,13 @@
 const {createTokens, validateToken}= require('../services/JWTauth');
 const cookie = require('cookie');
 const fs = require('fs');
+const fs_promise = require('fs').promises;
 const ejs = require('ejs');
 const dotenv = require('dotenv');
 dotenv.config();
 const profileModel = require('../models/M_update_profile.js');
 const OrderModel = require('../models/M_order.js');
+const ReportModel = require('../models/M_report.js');
 require('../../global.js');
 
 // const invalidatedTokens = new Set();
@@ -112,27 +114,70 @@ function red_reg_renter(req, res) {
       });
 }
 
-function redirect_admin(req, res) {
-  fs.readFile('./src/views/admin_page.ejs', 'utf8', (err, data) => {
-      if (err) {
-        console.error(err);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
-      } else {
-        // Sample data to pass to the EJS template
-        const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
+// function redirect_admin(req, res) {
+//   fs.readFile('./src/views/admin_page.ejs', 'utf8', (err, data) => {
+//       if (err) {
+//         console.error(err);
+//         res.writeHead(500, { 'Content-Type': 'text/plain' });
+//         res.end('Internal Server Error');
+//       } else {
+//         // Sample data to pass to the EJS template
+//         const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
 
-        // Render the EJS template with data
-        const renderedHtml = ejs.render(data, dataToRender);
+//         // Render the EJS template with data
+//         const renderedHtml = ejs.render(data, dataToRender);
 
-        // Set the response header and send the rendered HTML
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(renderedHtml);
+//         // Set the response header and send the rendered HTML
+//         res.writeHead(200, { 'Content-Type': 'text/html' });
+//         res.end(renderedHtml);
+//       }
+//     });
+// }
+
+async function redirect_admin(req, res, data) {
+  try {
+      const user_id = validateToken(req.headers.cookie); // Validate token
+      if (!user_id) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: "User not Authenticated" }));
+        return;
       }
-    });
+      
+    var filterCriteria = {};
+    if (req.method === 'POST') {
+        filterCriteria = {
+          reported_id: data.reported_id || '',
+          reported_by: data.reported_by || '',
+          report_type: data.report_type || '',
+          keyword: data.keyword || '',
+        };
+    }
+
+      const reportData = await new Promise((resolve, reject) => {
+          ReportModel.getReport(user_id, (err, result) => {
+              if (err) reject(err);
+              else resolve(result);
+          });
+      });
+
+      // Read the EJS template file
+      const template = await fs_promise.readFile('./src/views/admin_page.ejs', 'utf8');
+
+      // Render the template with your data
+      const renderedHtml = ejs.render(template, {
+          title: 'admin_page',
+          reportData: reportData,
+      });
+
+      // Send the rendered HTML as a response
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(renderedHtml);
+  } catch (err) {
+      console.error(err);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+  }
 }
-
-
 
 
 

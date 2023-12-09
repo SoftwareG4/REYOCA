@@ -3,9 +3,71 @@
 <head>
     <title>Admin Dashboard</title>
     <!-- Add CSS links here -->
+    <style>
+        /* Inline CSS for demonstration */
+        .logout-button {
+            position: fixed; /* Fixed position */
+            right: 20px; /* 20px from the right */
+            top: 20px; /* 20px from the top */
+        }
+    </style>
 </head>
 <body>
+    <div class="logout-button">
+        <!-- Logout Button -->
+        <form action="/logout" method="post">
+            <button type="submit">Signout</button>
+        </form>
+    </div>
     <h1>Admin Dashboard</h1>
+
+    <!-- Report Resolution Form -->
+ 
+    <section>
+        <h2>Reports Pending:</h2>
+        <p>Filter Reports:</p>
+        <form action="/admin/filter-reports" method="post">
+            <input type="text" name="reported_id" placeholder="Reported ID">
+            <input type="text" name="reported_by" placeholder="Reported By">
+            <input type="text" name="report_type" placeholder="Report Type">
+            <input type="text" name="keyword" placeholder="Keyword in Description">
+            <button type="submit">Filter</button>
+        </form>
+        <% if (reportData && reportData.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Reported By</th>
+                        <th>Reported ID</th>
+                        <th>Description</th>
+                        <th>Report Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% reportData.forEach(function(report) { %>
+                        <tr>
+                            <td><%= report.id %></td>
+                            <td><%= report.reported_by %></td>
+                            <td><%= report.reported_id %></td>
+                            <td><%= report.description %></td>
+                            <td><%= report.report_type %></td>
+                            <td>
+                                <!-- Resolve Button -->
+                                <!-- Note: You might need to adjust the form's action URL -->
+                                <form action="/admin/deletereport" method="post">
+                                    <input type="hidden" name="_ID" value="<%= report.id %>">
+                                    <button type="submit">Resolve</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>No reports found.</p>
+        <% } %>
+    </section>
     
     <!-- Review Deletion Form -->
     <section>
@@ -16,30 +78,7 @@
         </form>
     </section>
 
-    <!-- Report Resolution Form -->
-    <section>
-        <h2>Resolve Report</h2>
-        <form action="/admin/deletereport" method="DELETE">
-            <input type="text" name="_ID" placeholder="Enter Report ID" required>
-            <button type="submit">Resolve Report</button>
-        </form>
-    </section>
-
-    <section>
-        <h2>Reports</h2>
-        <% if (reportData && reportData.length > 0) { %>
-            <% reportData.forEach(function(report) { %>
-                <div class="report">
-                    <p>ID: <%= report.id %></p>
-                    <p>Stars: <%= report.stars %></p>
-                    <p>Description: <%= report.description %></p>
-                    <p>Rated By: <%= report.ratedBy %></p>
-                </div>
-            <% }); %>
-        <% } else { %>
-            <p>No reports found.</p>
-        <% } %>
-    </section>
+    
 
     <!-- User Deletion Form -->
     <section>
