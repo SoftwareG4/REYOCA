@@ -34,6 +34,32 @@ function redirect_login(req, res) {
       });
 }
 
+function redirect_passreset(req, res) {
+  if(req.method!="GET"){
+      res.writeHead(405, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+      return;
+  }
+  fs.readFile('./src/views/passwordreset.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        // Sample data to pass to the EJS template
+        const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
+
+        // Render the EJS template with data
+        const renderedHtml = ejs.render(data, dataToRender);
+
+        // Set the response header and send the rendered HTML
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
+    });
+}
+
+
 function red_reg_rentee(req, res) {
     if(req.method!="GET"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
@@ -132,6 +158,9 @@ function redirect_route(req, res){
     switch(path){
         case "/dev_page_route/loginpage":
             redirect_login(req, res);
+        break
+        case "/dev_page_route/passreset":
+            redirect_passreset(req, res);
         break
         case "/dev_page_route/registerrentee":
             red_reg_rentee(req, res);

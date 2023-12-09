@@ -38,8 +38,6 @@ passport.deserializeUser(function(user, done) {
 
 const app = express();
 
-
-
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
