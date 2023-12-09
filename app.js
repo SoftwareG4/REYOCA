@@ -4,6 +4,8 @@ const url = require('url');
 const qs = require('querystring');
 const mysql = require('mysql2');
 const fs = require('fs');
+const passport = require('passport');
+// require('./googleauth');
 
 // Import Routes
 const {register_login_route} = require('./src/routes/register_login');
@@ -12,6 +14,7 @@ const {review_route} = require('./src/routes/review');
 const {report_route} = require('./src/routes/report');
 const {transaction_route} = require('./src/routes/order'); 
 const {admin_route} = require('./src/routes/admin');
+const {redirect_route} = require('./src/routes/page_redirect');
 
 const searchApi = require('./src/routes/searchAPI');
 const messageApi = require('./src/routes/messageAPI');
@@ -45,7 +48,6 @@ const server = http.createServer(async (req, res) => {
   const method = req.method;
   let path =  req.url;
   console.log(contentType,method,path)
-
   if (path.startsWith("/login")){
     register_login_route(req,res)
   }
@@ -63,6 +65,9 @@ const server = http.createServer(async (req, res) => {
   }
   else if (path.startsWith("/admin")){
     admin_route(req,res)
+  }
+  else if (path.startsWith("/dev_page_route")){
+    redirect_route(req,res)
   }
 
   else if (req.url.startsWith(searchPath) || req.url.startsWith(recommendationPath)) {
@@ -119,6 +124,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
+
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);

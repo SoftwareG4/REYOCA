@@ -1,0 +1,54 @@
+
+<!-- views/profile.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- Link to CSS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="profile-container">
+        <img src="<%= profile.photo %>" alt="Profile Photo">
+        <div class="star-ratings">
+            <% for(var i=0; i < user_rating; i++) { %>
+                <img src="/star.png" alt="star">
+            <% } %>
+        </div>
+        <p>Name:</p>
+        <h2 id="name" contenteditable="true"><%= profile.name %></h2>
+        <p>Address:</p>
+        <p id="address" contenteditable="true"><%= profile.address %></p>
+        <p id="government_id" style="display: none;"><%= profile.government_id %></p>
+        <button id="toggleGovID">Show Government ID</button>
+        <button id="saveProfile">Save Changes</button>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $('#toggleGovID').click(function(){
+                $('#government_id').toggle();
+            });
+            $('#saveProfile').click(function(){
+                // AJAX call to save the edited profile details
+                $.ajax({
+                    url: '/update_profile',
+                    type: 'POST',
+                    data: {
+                        name: $('#name').text(),
+                        address: $('#address').text(),
+                        // Additional fields as required
+                    },
+                    success: function(response) {
+                        // Handle success
+                    },
+                    error: function(error) {
+                        // Handle error
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
