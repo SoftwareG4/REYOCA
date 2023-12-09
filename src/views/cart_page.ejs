@@ -164,14 +164,14 @@
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: 'include',
             body: JSON.stringify({
                 "final_amount" : total,
                 // "book_from": cars.from_date,
                 // "book_to": cars.to_date,
-                // "vehicle_id" : cars.vehicle_id,
                 "book_from": new Date(),
                 "book_to": new Date(),
-                "vehicle_id" : cars.vehicle_id,
+                "vehicle_id" : cars[0].vehicle_id,
             })
         };
         fetch("/checkout", options)

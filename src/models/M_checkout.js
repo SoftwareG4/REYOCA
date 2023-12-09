@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
 dotenv.config();
-
+const crypto = require('crypto');
 
 class CheckoutModel {
     static async validate_coupon(requestData, callback) {
@@ -17,6 +17,42 @@ class CheckoutModel {
           } else {
             return callback(null, {"message" : 'Coupon code cannot be empty.'} );
           }
+    }
+
+    static async store_transaction(requestData, callback) {
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+        });
+        connection.connect((err) => {
+            if (err) {
+              return callback(err, null);
+            }
+            const transactionQuery = `
+                    INSERT INTO transaction_history (payment_id, rentee_id, vehicle_id, amount, start_ts, booking_start, booking_end)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            const rentee_id = requestData['rentee_id'];
+            const vehicle_id = requestData['vehicle_id'];
+            const amount = requestData['final_amount'];
+            
+            let payment_id =  crypto.randomInt(100000, 999999);
+            if (rentee_id && vehicle_id) {
+                connection.query(
+                    transactionQuery,
+                    [payment_id, rentee_id, vehicle_id, amount, new Date(), new Date(), new Date()],
+                    (error, results) => {
+                        if (error) {
+                            callback(err, null);
+                        } else {
+                            return callback(null, "Insert sucessful !!");
+                        }
+                    }
+                );
+            }
+        });
     }
 
     static async checkout(ids, callback) {

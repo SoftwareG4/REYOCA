@@ -8,12 +8,13 @@
 <script>
     function redirect(params) {
         setTimeout(() => {
+            alert("Cancelled transaction. Backing up!!")
             window.location.href = "/cart"
         }, 100)
          
     }
 </script>
 <body onload="redirect()" > 
-    Cancelled transaction. Backing up!!
+    
 </body>
 </html>

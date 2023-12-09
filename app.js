@@ -26,7 +26,7 @@ const userAPI = require('./src/routes/getUserAPI');
 
 const {view_cart} = require('./src/routes/view_cart');
 const {delete_car} = require('./src/routes/delete_car');
-const {validate_coupon, checkout, store_transaction} = require('./src/routes/checkout');
+const {validate_coupon, checkout} = require('./src/routes/checkout');
 const {view_pay_method} = require('./src/routes/view_payment_method');
 
 const viewcart = '/cart';
@@ -103,8 +103,6 @@ const server = http.createServer(async (req, res) => {
     validate_coupon(req, res);
   } else if (req.url.startsWith(checkoutcart)) {
     checkout(req, res);
-  } else if (req.url.startsWith('/store_transaction')) {
-    store_transaction(req, res);
   } else if (req.url.startsWith(paymentmethods)) {
     view_pay_method(req, res);
   } else if (req.url.startsWith('/view_cart_route')) {
