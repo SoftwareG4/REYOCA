@@ -180,10 +180,10 @@ class UserModel {
             if (err) {
               return callback(err, null);
             }
-
+            console.log(requestData)
             const query = "SELECT * FROM user WHERE email=?";
             connection.query(query,[requestData["email"]], async (err, results) => {
-                connection.end(); // Close the connection
+                // Close the connection
                 if (err) {
                 return callback(err, null);
                 }
@@ -194,12 +194,15 @@ class UserModel {
                 else{
                     const pass=gen_password()
                     const encrypted =await encrypt(pass);
+                    console.log(encrypted)
                     const query ="UPDATE user SET password=? WHERE email=?"
                     connection.query(query,[encrypted,requestData["email"]] ,(err, results) => {
                         connection.end(); // Close the connection
                         if (err) {
-                        return callback(err, null);
+                            console.log(err)
+                            return callback(err, null);
                         }
+                        // console.log(results)
                         sendEmail(requestData["email"],"REYOCA - Password Change Request","Dear User, Please the given password to login to your account: "+pass)
                         return callback(null, "Password Updated Successfully");
                     });

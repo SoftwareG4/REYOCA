@@ -111,6 +111,27 @@ function red_reg_renter(req, res) {
       });
 }
 
+function redirect_admin(req, res) {
+  fs.readFile('./src/views/admin_page.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        // Sample data to pass to the EJS template
+        const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
+
+        // Render the EJS template with data
+        const renderedHtml = ejs.render(data, dataToRender);
+
+        // Set the response header and send the rendered HTML
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
+    });
+}
+
+
 function red_reg_profilepage(req, res) {
   if (req.method !== "GET") {
     res.writeHead(405, { 'Content-Type': 'application/json' });
@@ -180,4 +201,4 @@ function redirect_route(req, res){
 
 
 
-module.exports = {redirect_route};
+module.exports = {redirect_route,redirect_admin};

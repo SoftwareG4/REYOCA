@@ -3,6 +3,7 @@ const {createTokens, validateToken}= require('../services/JWTauth');
 const jwt = require('jsonwebtoken')
 const cookie = require('cookie');
 const dotenv = require('dotenv');
+const {redirect_admin}=require("./page_redirect")
 dotenv.config();
 
 require('../../global.js');
@@ -119,7 +120,7 @@ function register_renter(req, res) {
 }
 
 function login_user(req, res) {
-    if(req.method!="GET"){
+    if(req.method!="POST"){
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
         return;
@@ -153,12 +154,18 @@ function login_user(req, res) {
               res.writeHead(400, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ message: result }));
             } else{
+                console.log(result)
                 const accessToken=createTokens(result[0])
                 res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: "Login Success" }));
+                if (result[0].role=="admin"){
+                    redirect_admin(req,res)
+
+                }
+                else{
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: "Login Success", role:result[0].role }));
+                }
             }
-            
           });
     });
 }
