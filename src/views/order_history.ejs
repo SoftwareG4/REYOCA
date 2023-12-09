@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <link rel="stylesheet" type="text/css" href="../../public/styles.css">
+</head>
+<body>
+    <div class="order-history-container">
+        <h1>Order History</h1>
+
+        <!-- Filter Options -->
+        <div class="filter-options">
+            <input type="text" id="filterPaymentId" placeholder="Filter by Payment ID">
+            <input type="text" id="filterVehicleId" placeholder="Filter by Vehicle ID">
+            <input type="text" id="filterAmount" placeholder="Filter by Amount">
+            <input type="text" id="filterStartTs" placeholder="Filter by Start Timestamp">
+            <input type="text" id="filterBookingStart" placeholder="Filter by Booking Start">
+            <input type="text" id="filterBookingEnd" placeholder="Filter by Booking End">
+            <input type="text" id="filterRenteeId" placeholder="Filter by Rentee ID">
+            <button onclick="applyFilters()">Apply Filters</button>
+        </div>
+
+        <!-- Order History Table -->
+        <table id="orderHistoryTable">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Payment ID</th>
+                    <th>Vehicle ID</th>
+                    <th>Amount</th>
+                    <th>Booking Start</th>
+                    <th>Booking End</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                <% order.forEach(function(row) { %>
+                    <tr>
+                        <td><%= row.id %></td>
+                        <td><%= row.payment_id %></td>
+                        <td><%= row.vehicle_id %></td>
+                        <td><%= row.amount %></td>
+                        <td><%= row.booking_start %></td>
+                        <td><%= row.booking_end %></td>
+                        <!-- Add more cells as needed -->
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="order_history.js">
+        function collectFilterCriteria() {
+            return {
+                payment_id: document.getElementById('filterPaymentId').value,
+                vehicle_id: document.getElementById('filterVehicleId').value,
+                amount: document.getElementById('filterAmount').value,
+                start_ts: document.getElementById('filterStartTs').value,
+                booking_start: document.getElementById('filterBookingStart').value,
+                booking_end: document.getElementById('filterBookingEnd').value,
+                rentee_id: document.getElementById('filterRenteeId').value
+            };
+        }
+        
+        function populateTable(data) {
+            const tableBody = document.getElementById('orderHistoryTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear existing rows
+            data.forEach(row => {
+                const newRow = tableBody.insertRow();
+                Object.values(row).forEach(value => {
+                    const newCell = newRow.insertCell();
+                    newCell.textContent = value;
+                });
+            });
+        }
+        
+        function applyFilters() {
+            const filterCriteria = collectFilterCriteria();
+            // Assuming filterOrder is available in the scope
+            filterOrder(filterCriteria, (err, results) => {
+                if (err) {
+                    // Handle error (e.g., display an alert or log to console)
+                    return;
+                }
+                populateTable(results);
+            });
+        }
+        
+    </script>
+</body>
+</html>

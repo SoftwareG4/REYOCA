@@ -164,11 +164,13 @@ function update_password(req, res) {
 } 
 
 function update_prof(req, res) {
-  if(req.method!="GET"){
+    console.log("ininin")
+  if(req.method!="POST"){
       res.writeHead(405, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Method Not Allowed' }));
       return;
   }
+
   const user_id=validateToken(req.headers.cookie)
   if (user_id==false){
       res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -188,7 +190,7 @@ function update_prof(req, res) {
           for (var pair of parsedData.entries()) {
               requestData[pair[0]] = pair[1];
           }
-          // console.log("DataObj: ", requestData);
+          console.log("DataObj: ", requestData);
 
       } catch (error) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -342,7 +344,6 @@ function rating_get(req, res) {
       });
   });
 }
-
 
 function update_profile_route(req, res){
     path=req.url

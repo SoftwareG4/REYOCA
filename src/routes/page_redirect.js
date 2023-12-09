@@ -5,6 +5,7 @@ const ejs = require('ejs');
 const dotenv = require('dotenv');
 dotenv.config();
 const profileModel = require('../models/M_update_profile.js');
+const OrderModel = require('../models/M_order.js');
 require('../../global.js');
 
 // const invalidatedTokens = new Set();
@@ -132,7 +133,68 @@ function redirect_admin(req, res) {
 }
 
 
-function red_reg_profilepage(req, res) {
+
+
+
+async function red_reg_profilepage(req, res) {
+  try {
+    if (req.method !== "GET") {
+      res.writeHead(405, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+      return;
+    }
+
+    // Assuming validateToken gets the user_id from the request
+    const user_id=validateToken(req.headers.cookie); // This should be retrieved from a function or middleware
+    if (!user_id) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
+    }
+
+    // Fetch profile and rating data
+    const profileData = await new Promise((resolve, reject) => {
+      profileModel.prof_view(user_id, (err, result) => {
+        if (err) reject(err);
+        else resolve(result[0]); // Assuming result[0] contains the profile data
+      });
+    });
+
+    const ratingData = await new Promise((resolve, reject) => {
+      profileModel.getRatingById(user_id, (err, result) => {
+        if (err) reject(err);
+        else resolve(result); // Assuming result contains the rating data
+      });
+    });
+
+    // Combine profile and rating data
+    const dataToRender = {
+      title: 'User Profile',
+      profile: profileData,
+      rating: ratingData
+    };
+
+    // Read and render the EJS file with user profile and rating data
+    fs.readFile('./src/views/profile_page.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        const renderedHtml = ejs.render(data, dataToRender);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
+    });
+
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message || 'Internal Server Error' }));
+  }
+}
+
+
+function red_reg_orderhist(req, res){
   if (req.method !== "GET") {
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
@@ -140,26 +202,20 @@ function red_reg_profilepage(req, res) {
   }
 
   // Assuming validateToken gets the user_id from the request
-  const user_id = 5;
-  if (user_id == false){
-    res.writeHead(401, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: "User not Authenticated" }));
-    return;
-  }
 
-  profileModel.prof_view(user_id, (err, result) => {
+  OrderModel.getOrderById(user_id, (err, result) => {
     if (err) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err }));
     } else {
       // Read and render the EJS file with user profile data
-      fs.readFile('./src/views/profile_page.ejs', 'utf8', (err, data) => {
+      fs.readFile('./src/views/order_history.ejs', 'utf8', (err, data) => {
         if (err) {
           console.error(err);
           res.writeHead(500, { 'Content-Type': 'text/plain' });
           res.end('Internal Server Error');
         } else {
-          const dataToRender = { title: 'User Profile', profile: result[0] }; // Assuming result[0] is the user profile object
+          const dataToRender = { title: 'Order History', order: result }; // Assuming result[0] is the user profile object
           const renderedHtml = ejs.render(data, dataToRender);
           res.writeHead(200, { 'Content-Type': 'text/html' });
           res.end(renderedHtml);
@@ -191,6 +247,9 @@ function redirect_route(req, res){
         break
         case "/dev_page_route/profilepage":
           red_reg_profilepage(req, res);
+        break
+        case "/dev_page_route/profilepage/order_history":
+          red_reg_orderhist(req, res);
         break
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });

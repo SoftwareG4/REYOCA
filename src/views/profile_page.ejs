@@ -1,30 +1,61 @@
-<!-- views/profile.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <link rel="stylesheet" href="/styles.css"> <!-- Link to CSS -->
+    <!-- <link rel="stylesheet" type="text/css" href="../../public/styles.css"> Link to CSS -->
 </head>
 <body>
     <div class="profile-container">
-        <img src="<%= profile.photo %>" alt="Profile Photo">
-        <p>Name:</p>
+        <img src="<%= profile.photo %>" alt="Profile Photo" style="width: 100px; height: auto;">
+        <button id="updatePhotoButton" onclick="triggerFileInput()">Update Photo</button>
+        <!-- Add this under the profile photo -->
+        
+        <div style="display: flex; align-items: center;">
+            <p id="user_rating_title" style="margin-right: 10px;">Rating:</p>
+            <p id="userRating" style="margin: 0;"><%= rating %></p>
+        </div>
+
+        <!-- Hidden File Input -->
+        <input type="file" id="photoInput" style="display: none;" onchange="handleFileChange()">
+        <p></p>
         <h2 id="first_name" style="display: inline-block;"><%= profile.first_name %></h2>
         <h2 id="last_name" style="display: inline-block;"><%= profile.last_name %></h2>
-        <p>Gender:</p>
-        <p id="gender"><%= profile.gender %></p>
-        <p>Phone:</p>
-        <p id="phone"><%= profile.phone %></p>
-        <p>Government ID:</p>
-        <div id="government_id_container">
-            <p id="government_id" style="display: none;"><%= profile.government_id %></p>
-            <button id="btn_hide" onclick="toggleGovernmentID()">Unhide</button>
+
+        <div style="display: flex; align-items: center;">
+            <p style="margin-right: 10px;">Gender:</p>
+            <div id="gender" class="gender-dropdown">
+                <select style="display: none;">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+                <p style="margin: 0;"><%= profile.gender %></p>
+            </div>
         </div>
+        <div style="display: flex; align-items: center;">
+            <p id="phone_title" style="margin-right: 10px;">Phone:</p>
+            <p id="phone" style="margin: 0;"><%= profile.phone %></p>
+        </div>
+        
+
+        <div style="display: flex; align-items: center;">
+            <p style="margin-right: 10px;">Government ID:</p>
+            <div id="government_id_container" style="flex-grow: 1;">
+                <p id="government_id" style="display: none; margin: 0;"><%= profile.government_id %></p>
+                <button id="btn_hide" onclick="toggleGovernmentID()">Unhide</button>
+            </div>
+        </div>
+
         <button id="editButton" onclick="editProfile()">Edit</button>
         <button onclick="orderHistory()">View Order History</button>
+        <button id="updatepassword" onclick="updatepassword()">Update Password</button>
+        <button id="deleteButton" onclick="deleteAccount()">Delete Account</button>
+        <button id="logoutButton" onclick="logout()">Logout</button>
+
     </div>
+
     <script>
         let isEditing = false;
 
@@ -36,42 +67,52 @@
         }
 
         function editProfile() {
+            
+            
             if (!isEditing) {
                 makeEditable('first_name');
                 makeEditable('last_name');
-                makeEditable('gender');
+                const genderElement = document.getElementById('gender');
+                const genderValue = genderElement.innerText;
+                genderElement.innerHTML = `<select>
+                                              <option value="male">Male</option>
+                                              <option value="female">Female</option>
+                                              <option value="other">Other</option>
+                                           </select>`;
+                genderElement.querySelector('select').value = genderValue.toLowerCase();
+
                 makeEditable('phone');
                 makeEditable('government_id');
                 document.getElementById('editButton').innerText = 'Save';
             } else {
-                // Retrieve updated values
                 const updatedProfile = {
                     first_name: document.getElementById('first_name').querySelector('input').value,
                     last_name: document.getElementById('last_name').querySelector('input').value,
-                    gender: document.getElementById('gender').querySelector('input').value,
+                    gender: document.getElementById('gender').querySelector('select').value,
                     phone: document.getElementById('phone').querySelector('input').value,
-                    government_id: document.getElementById('government_id').querySelector('input').value
+                    // Add other fields if necessary
                 };
-    
-                // Send data to server using AJAX
-                fetch('/update_prof', {
+                const updatedProfileJson = JSON.stringify(updatedProfile);
+                console.log(updatedProfileJson);
+        
+                fetch('/profile/updateprofile', { // Update this URL to your actual server route
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(updatedProfile),
+                    body: updatedProfile, // Include user_id if necessary
                 })
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
                     // Refresh the page or update the UI to reflect changes
+                    location.reload(); // Reload the page to show updated data
                 })
                 .catch((error) => {
                     console.error('Error:', error);
                 });
-    
+        
                 document.getElementById('editButton').innerText = 'Edit';
-                // Reset isEditing
                 isEditing = false;
             }
             isEditing = !isEditing;
@@ -84,8 +125,50 @@
         }
 
         function orderHistory() {
-            // Logic to handle viewing order history
-            alert('Order history functionality not implemented');
+            window.location.href = '/dev_page_route/profilepage/order_history';
+        }
+
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                // Logic to handle account deletion
+                // Typically involves sending a request to the server
+                alert('Account deletion functionality not implemented');
+            }
+        }
+    
+        function logout() {
+            // Logic to log the user out
+            // Could be as simple as redirecting to a login page or calling a logout API
+            alert('Logout functionality not implemented');
+        }
+
+        function triggerFileInput() {
+            document.getElementById('photoInput').click();
+        }
+    
+        function handleFileChange() {
+            const fileInput = document.getElementById('photoInput');
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                console.log('Selected file:', file.name);
+    
+                // Optional: Display the file name or handle the file upload
+                // Example: displayFileName(file.name);
+                // Example: uploadFile(file);
+            }
+        }
+    
+        // Optional: Function to display file name
+        function displayFileName(fileName) {
+            // Logic to display the selected file name
+            alert('Selected file: ' + fileName);
+        }
+    
+        // Optional: Function to upload file
+        function uploadFile(file) {
+            // Logic to upload the file to the server
+            // Typically involves creating FormData and sending it through AJAX
+            alert('File upload functionality not implemented');
         }
     </script>
 </body>

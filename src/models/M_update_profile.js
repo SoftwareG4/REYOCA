@@ -41,6 +41,7 @@ class Profile_Model {
                 else{
                     const user = results.map(user => {
                         return {
+                            photo: user.img_url,
                             first_name: user.first_name,
                             last_name: user.last_name,
                             gender: user.gender,
@@ -147,10 +148,9 @@ class Profile_Model {
                     let query = "UPDATE user SET "; // Replace '*' with specific columns if needed
                     let conditions = [];
                     let values = [];
-
                     if (requestData.first_name) { 
                         conditions.push("first_name = ?");
-                        values.push(requestData.rating_for);
+                        values.push(requestData.first_name);
                     }
                     if (requestData.last_name) { 
                         conditions.push("last_name = ?");
@@ -172,6 +172,7 @@ class Profile_Model {
                     if (conditions.length > 0) {
                         query += conditions.join(",") + " WHERE _ID=" + user_id;
                     }
+                    console.log(query);
                     connection.query(query, values, (err, results) => {
                         connection.end(); // Close the connection
                         if (err) {
