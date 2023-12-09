@@ -66,4 +66,4 @@ app.get('/auth/google/failure', (req, res) => {
   res.send('Failed to authenticate..');
 });
 
-app.listen(8080, () => console.log('listening on port: 8080'));
+app.listen(8080);

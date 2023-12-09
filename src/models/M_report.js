@@ -40,7 +40,7 @@ class ReportModel {
         });
     }
 
-    static async getReportById(reported_id, callback) {
+    static async getReport(reported_id, callback) {
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -52,8 +52,8 @@ class ReportModel {
             if (err) {
               return callback(err, null);
             }
-            const query = "SELECT * FROM report WHERE reported_id=?";
-            connection.query(query, reported_id, async (err, results) => {
+            const query = "SELECT * FROM report";
+            connection.query(query, async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);

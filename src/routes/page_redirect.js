@@ -156,14 +156,14 @@ async function red_reg_profilepage(req, res) {
     const profileData = await new Promise((resolve, reject) => {
       profileModel.prof_view(user_id, (err, result) => {
         if (err) reject(err);
-        else resolve(result[0]); // Assuming result[0] contains the profile data
+        else resolve(result[0]); 
       });
     });
 
     const ratingData = await new Promise((resolve, reject) => {
       profileModel.getRatingById(user_id, (err, result) => {
         if (err) reject(err);
-        else resolve(result); // Assuming result contains the rating data
+        else resolve(result); 
       });
     });
 
@@ -200,7 +200,12 @@ function red_reg_orderhist(req, res){
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
     return;
   }
-
+  const user_id=validateToken(req.headers.cookie); // This should be retrieved from a function or middleware
+    if (!user_id) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: "User not Authenticated" }));
+      return;
+    }
   // Assuming validateToken gets the user_id from the request
 
   OrderModel.getOrderById(user_id, (err, result) => {

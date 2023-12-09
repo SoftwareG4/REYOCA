@@ -17,7 +17,7 @@ class AdminModel{
               return callback(err, null);
             }
             const query ="DELETE FROM reviews WHERE _ID = ?";
-            connection.query(query, id, (err, results) => {
+            connection.query(query, data[_ID], (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
@@ -39,9 +39,8 @@ class AdminModel{
             if (err) {
               return callback(err, null);
             }
-            
             const query ="DELETE FROM report WHERE _ID = ?";
-            connection.query(query, data["_ID"], (err, results) => {
+            connection.query(query, data[_ID], (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
@@ -63,14 +62,12 @@ class AdminModel{
             if (err) {
               return callback(err, null);
             }
-            let id;
-            if(user_id === 1) {
-                id = data["_ID"];
-            } else {
-                id = user_id
+            let userID = user_id
+            if(user_id === 1){
+                userID = data[_ID];
             }
             const query ="DELETE FROM user WHERE _ID = ?";
-            connection.query(query, data["_ID"], (err, results) => {
+            connection.query(query, userID, (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
@@ -92,7 +89,6 @@ class AdminModel{
             if (err) {
               return callback(err, null);
             }
-
             const query ="DELETE FROM vehicles WHERE _ID = ?";
             connection.query(query, data["_ID"], (err, results) => {
                 connection.end(); // Close the connection

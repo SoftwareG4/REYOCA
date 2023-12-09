@@ -90,17 +90,14 @@
                     last_name: document.getElementById('last_name').querySelector('input').value,
                     gender: document.getElementById('gender').querySelector('select').value,
                     phone: document.getElementById('phone').querySelector('input').value,
-                    // Add other fields if necessary
                 };
-                const updatedProfileJson = JSON.stringify(updatedProfile);
-                console.log(updatedProfileJson);
         
                 fetch('/profile/updateprofile', { // Update this URL to your actual server route
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: updatedProfile, // Include user_id if necessary
+                    body: JSON.stringify(updatedProfile),
                 })
                 .then(response => response.json())
                 .then(data => {

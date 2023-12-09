@@ -129,7 +129,7 @@ class Profile_Model {
             database: process.env.DB_NAME,
             port: process.env.DB_PORT,
         });
-        // console.log(user_id,requestData)
+        // console.log(JSON.parse(requestData));
         connection.connect((err) => {
             if (err) {
               return callback(err, null);

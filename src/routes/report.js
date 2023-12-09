@@ -91,7 +91,7 @@ function report_get(req, res) {
         return;
     }
     
-    ReportModel.getReportById(user_id, (err, result) => {
+    ReportModel.getReport(user_id, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));

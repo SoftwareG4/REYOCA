@@ -164,7 +164,6 @@ function update_password(req, res) {
 } 
 
 function update_prof(req, res) {
-    console.log("ininin")
   if(req.method!="POST"){
       res.writeHead(405, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Method Not Allowed' }));
@@ -197,7 +196,8 @@ function update_prof(req, res) {
           res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
           return;
       }
-
+      requestData = Object.keys(requestData)[0];
+      requestData = JSON.parse(requestData);
       profile_Model.profile_update(user_id,requestData, (err, result) => {
       if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });

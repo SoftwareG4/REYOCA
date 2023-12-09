@@ -1,8 +1,65 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>ReYoCa:your car renting solution</title>
-    </head>
-    <body>
-        THIS IS ADMIN PAGE 
+<head>
+    <title>Admin Dashboard</title>
+    <!-- Add CSS links here -->
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    
+    <!-- Review Deletion Form -->
+    <section>
+        <h2>Delete Review</h2>
+        <form action="/admin/deletereview" method="DELETE">
+            <input type="text" name="_ID" placeholder="Enter Review ID" required>
+            <button type="submit">Delete Review</button>
+        </form>
+    </section>
+
+    <!-- Report Resolution Form -->
+    <section>
+        <h2>Resolve Report</h2>
+        <form action="/admin/deletereport" method="DELETE">
+            <input type="text" name="_ID" placeholder="Enter Report ID" required>
+            <button type="submit">Resolve Report</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Reports</h2>
+        <% if (reportData && reportData.length > 0) { %>
+            <% reportData.forEach(function(report) { %>
+                <div class="report">
+                    <p>ID: <%= report.id %></p>
+                    <p>Stars: <%= report.stars %></p>
+                    <p>Description: <%= report.description %></p>
+                    <p>Rated By: <%= report.ratedBy %></p>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No reports found.</p>
+        <% } %>
+    </section>
+
+    <!-- User Deletion Form -->
+    <section>
+        <h2>Delete User</h2>
+        <form action="/admin/deleteuser" method="DELETE">
+            <input type="text" name="_ID" placeholder="Enter User ID" required>
+            <button type="submit">Delete User</button>
+        </form>
+    </section>
+
+    <!-- Listing Deletion Form -->
+    <section>
+        <h2>Delete Car Listing</h2>
+        <form action="/admin/deletelisting" method="DELETE">
+            <input type="text" name="_ID" placeholder="Enter Listing ID" required>
+            <button type="submit">Delete Listing</button>
+        </form>
+    </section>
+
+    <!-- Add JavaScript here if necessary -->
+
 </body>
 </html>
