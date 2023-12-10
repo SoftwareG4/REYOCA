@@ -138,12 +138,15 @@ function login_user(req, res) {
             for (var pair of parsedData.entries()) {
                 requestData[pair[0]] = pair[1];
             }
-            // console.log("DataObj: ", requestData);
+            console.log("DataObj: ", requestData);
         } catch (error) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
             return;
         }
+        requestData = Object.keys(requestData)[0];
+      requestData = JSON.parse(requestData);
+      console.log(requestData)
         // console.log(requestData)
         UserModel.login_verify(requestData, (err, result) => {
             if (err) {
@@ -151,16 +154,17 @@ function login_user(req, res) {
               res.end(JSON.stringify({ error: err }));
             } else if (typeof(result)=="string") {
               res.writeHead(400, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ message: result }));
+              res.end(JSON.stringify({ "invalid": result }));
             } else{
-                // console.log(result)
-                const accessToken=createTokens(result[0])
+                console.log(result);
+                const accessToken=createTokens(result[0]);
                 res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
                 if (result[0].role=="admin"){
-                    red_reg_adminpage(req,res,requestData)
-
+                    console.log("inside admin");
+                    red_reg_adminpage(req,res,requestData);
                 }
                 else{
+                    console.log("inside user")
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: "Login Success", role:result[0].role }));
                 }

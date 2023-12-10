@@ -81,8 +81,8 @@
             <input type="text" id="filterPaymentId" placeholder="Filter by Payment ID">
             <input type="text" id="filterVehicleId" placeholder="Filter by Vehicle ID">
             <input type="text" id="filterAmount" placeholder="Filter by Amount">
-            <input type="text" id="filterBookingStart" placeholder="Filter by Booking Start">
-            <input type="text" id="filterBookingEnd" placeholder="Filter by Booking End">
+            <input type="datetime-local" id="filterBookingStart" placeholder="Filter by Booking Start">
+            <input type="datetime-local" id="filterBookingEnd" placeholder="Filter by Booking End">
             <button onclick="applyFilters()">Apply Filters</button>
         </div>
 
@@ -101,7 +101,7 @@
             </thead>
             <tbody>
                 <% order.forEach(function(row) { %>
-                    <tr>
+                    <tr class="row">
                         <td><%= row.id %></td>
                         <td><%= row.payment_id %></td>
                         <td><%= row.vehicle_id %></td>
@@ -159,6 +159,8 @@
         }
 
         function postreview() {
+            const vehicleID=documents.getElementsByClassName('row').value;
+            alert(vehicleID);
             window.location.href = 'http://localhost:3000/dev_page_route/profilepage/postreview';
         }
         
