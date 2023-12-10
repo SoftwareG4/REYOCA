@@ -10,6 +10,15 @@
     <div class="review-history-container">
         <h1>Review Page</h1>
 
+        <!-- Filter Options -->
+        <div class="filter-options">
+            <input type="text" id="filterStars" placeholder="Filter by Stars">
+            <input type="text" id="filterRatedBy" placeholder="Filter by Rated By">
+            <input type="text" id="filterRatedFor" placeholder="Filter by Rated For">
+            <input type="text" id="filterKeyword" placeholder="Filter by Keyword">
+            <button onclick="applyFilters()">Apply Filters</button>
+        </div>
+
         <!-- Review Table -->
         <table id="reviewTable">
             <thead>
@@ -54,10 +63,7 @@
     <!-- Add any necessary JavaScript at the bottom -->
     <script>
         function reportReview(reviewId) {
-            // Logic to report a review
-            // This might involve sending a POST request to your server
-            console.log('Report review with ID:', reviewId);
-            // Example: POST request to /report-review with { reviewId }
+            
         }
         
         function deleteReview(reviewId) {

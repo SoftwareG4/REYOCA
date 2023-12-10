@@ -134,10 +134,9 @@ function delete_user(req, res) {
     }
     requestData = Object.keys(requestData)[0];
     requestData = JSON.parse(requestData);
-    
+    console.log(requestData);
     AdminModel.user_delete(user_id,requestData, (err, result) => {
         if (err) {
-          console.log(requestData);
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {

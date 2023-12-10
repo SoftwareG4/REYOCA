@@ -65,11 +65,14 @@ class AdminModel{
             if (err) {
               return callback(err, null);
             }
-            let userID = user_id
+            var userID = user_id
             if(user_id === 1){
-                userID = data[_ID];
+                userID = data["_ID"];
+                // console.log(userID);
             }
+            
             const query ="DELETE FROM user WHERE _ID = ?";
+            console.log(query);
             connection.query(query, userID, (err, results) => {
                 
                 connection.end(); // Close the connection

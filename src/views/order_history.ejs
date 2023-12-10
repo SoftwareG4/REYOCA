@@ -15,10 +15,8 @@
             <input type="text" id="filterPaymentId" placeholder="Filter by Payment ID">
             <input type="text" id="filterVehicleId" placeholder="Filter by Vehicle ID">
             <input type="text" id="filterAmount" placeholder="Filter by Amount">
-            <input type="text" id="filterStartTs" placeholder="Filter by Start Timestamp">
             <input type="text" id="filterBookingStart" placeholder="Filter by Booking Start">
             <input type="text" id="filterBookingEnd" placeholder="Filter by Booking End">
-            <input type="text" id="filterRenteeId" placeholder="Filter by Rentee ID">
             <button onclick="applyFilters()">Apply Filters</button>
         </div>
 
@@ -44,6 +42,12 @@
                         <td><%= row.amount %></td>
                         <td><%= row.booking_start %></td>
                         <td><%= row.booking_end %></td>
+                        <td>
+                            <button id="review" onclick="postreview()">Give Review</button>
+                        </td>
+                        <td>
+                            <button id="report" onclick="postreport()">Report Car</button>
+                        </td>
                         <!-- Add more cells as needed -->
                     </tr>
                 <% }) %>
@@ -51,7 +55,7 @@
         </table>
     </div>
 
-    <script src="order_history.js">
+    <script>
         function collectFilterCriteria() {
             return {
                 payment_id: document.getElementById('filterPaymentId').value,
@@ -87,7 +91,14 @@
                 populateTable(results);
             });
         }
+
+        function postreview() {
+            window.location.href = '/dev_page_route/profilepage/postreview';
+        }
         
+        function postreport() {
+            window.location.href = '/dev_page_route/profilepage/postreport';
+        }
     </script>
 </body>
 </html>

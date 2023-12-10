@@ -69,7 +69,7 @@
     <section>
         <h2>Delete Review</h2>
         <form action="/admin/deletereview" method="DELETE">
-            <input type="text" name="_ID" id="userID" placeholder="Enter Review ID" required>
+            <input type="text" name="_ID" id="reviewID" placeholder="Enter Review ID" required>
             <button type="submit">Delete Review</button>
         </form>
     </section>
@@ -118,23 +118,23 @@
             alert('An error occurred');
         });
     }
-    function deleteuser() {
-        var userID = document.getElementById('userID').value;
-        var user_id = {
-            _ID: userID  
+    function deletereview() {
+        var reviewId = document.getElementById(reviewID).value;
+        var data = {
+            _ID: reviewId
         };
-        fetch('/admin/deleteuser', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user_id)
+        fetch('/admin/deletereview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         })
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert(data.error); // or display the error message in the UI
+                alert(data.error); 
             } else {
-                alert('User deleted successfully');
-                // Additional logic after successful deletion (like redirecting)
+                alert('Successfully Deleted');
+                location.reload();
             }
         })
         .catch(error => {
@@ -142,23 +142,24 @@
             alert('An error occurred');
         });
     }
-    function deletereview() {
-        var reviewID = document.getElementById('reviewID').value;
-        var user_id = {
-            _ID: userID  
+    function deleteuser() {
+        var user_id = document.getElementById(userID).value;
+        console.log(user_id);
+        var data = {
+            _ID: user_id
         };
         fetch('/admin/deletereview', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user_id)
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         })
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert(data.error); // or display the error message in the UI
+                alert(data.error); 
             } else {
-                alert('User deleted successfully');
-                // Additional logic after successful deletion (like redirecting)
+                alert('User Successfully Deleted');
+                location.reload();
             }
         })
         .catch(error => {
