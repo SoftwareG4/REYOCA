@@ -6,9 +6,69 @@
     <!-- Bootstrap CSS link -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
     <!-- Custom CSS link -->
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- <link rel="stylesheet" type="text/css" href="./public/styles.css"> -->
+    <style>
+        body {
+            padding-top: 20px;
+        }
+    
+        .navbar {
+            margin-bottom: 20px;
+        }
+    
+        .jumbotron {
+            background-image: url('background.jpg');
+            background-size: cover;
+            color: white;
+            padding: 150px 0;
+        }
+    
+        .card {
+            border: none;
+        }
+    
+        .card-title {
+            font-size: 1.25rem;
+        }
+
+        footer {
+            padding: 20px 0;
+            background-color: #333;
+            color: white;
+        }
+    </style>
     <!-- Places API -->
     <script>
+        window.onload = function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else { 
+                alert("Geo-location not supported by browser");
+            }
+        }
+        async function showPosition (position) {
+            let lat = position.coords.latitude;
+            let lng = position.coords.longitude;
+
+            let user_loc = [lat, lng];
+            let data = {"userLocation": user_loc};
+            console.log("User Location: ", user_loc);
+            const response = await fetch('/recommendations', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+            console.log(response);
+            if (response.status == 200) {
+                console.log("Success");
+            }
+        }
+        function showError(error) {
+            alert("Unable to fetch user location");
+        }
+
         let autocomplete;
         function initSearch() {
             autocomplete = new google.maps.places.Autocomplete(
@@ -34,32 +94,54 @@
                 let lng = placeSelected.geometry.location.lng();
                 
                 let user_loc = [lat, lng];
+                let locationStr = document.getElementById('location').value;
                 let start_date = document.getElementById('start_date').value;
                 let end_date = document.getElementById('end_date').value;
-                
+
                 let data = {
                     "userLocation": user_loc,
                     "startDate": start_date,
-                    "endDate": end_date
+                    "endDate": end_date,
+                    "userLocationStr": locationStr
                 };
 
-                const response = await fetch('/search', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                });
-                let content = await response.text();
-                console.log(content);
-                document.getElementById('test').textContent = content;
+                localStorage.setItem('lastSearchQuery', JSON.stringify(data));
+
+                console.log("redirecting");
+                var targetUrl = 'http://localhost:3000/views/search';
+                redirectToAnotherUrl(targetUrl, data);
             }
         }
+
+        function redirectToAnotherUrl(url, jsonData) {
+        var form = document.createElement('form');
+        form.method = 'post';
+        form.action = url;
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'jsonData';
+        input.value = JSON.stringify(jsonData);
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
     </script>
 </head>
 
 <body class="bg-light">
     <header>
+        <style>
+            ul {
+                list-style-type: none;
+            }
+            li a {
+                display: block;
+                float: left;
+                padding-left: 16px;
+            }
+        </style>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="#">RentYourCar(REYOCA)</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -72,32 +154,33 @@
                         <a class="nav-link" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Rent a Car</a>
+                        <a class="nav-link" href="#">Notifications</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Services</a>
+                        <a class="nav-link" href="#">Customer Support</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact Us</a>
+                        <a class="nav-link" href="/dev_page_route/loginpage">Login / Register</a>
                     </li>
                 </ul>
             </div>
         </nav>
+        <br>
     </header>
     <main role="main">
-        <section class="jumbotron text-center">
+        <!-- <section class="jumbotron text-center">
             <div class="container">
                 <h1 class="display-4">Rent the Perfect Car</h1>
                 <p class="lead">Find the best cars for your next adventure.</p>
                 <a href="#" class="btn btn-primary">Get Started</a>
             </div>
-        </section>
+        </section> -->
 
         <div class="container">
             <div class="row">
                 <div class="col-md">
                     <div class="card mb-4 box-shadow">
-                        <form>
+                        <form style="padding-top: 8px;">
                             <label for="location">Location</label>
                             <input type="text" id="location" name="location">
                             <label for="start_date">From</label>
@@ -106,54 +189,22 @@
                             <input type="datetime-local" id="end_date" name="start_date">
                             <button type="button" value="Search" onclick="submitForm()">Search</button>
                         </form>
-                        <p id="test"></p>
-                        <p id="geometry"></p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="big_container">
+            <div id="left_container">
+                <p>Recommendations</p>
             </div>
         </div>
         
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top" src="https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?cs=srgb&dl=pexels-mike-bird-3729464.jpg&fm=jpg" alt="Car 1">
-                        <div class="card-body">
-                            <h5 class="card-title">Luxury Cars</h5>
-                            <p class="card-text">Explore our luxury car selection.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top" src="https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?cs=srgb&dl=pexels-mike-bird-3729464.jpg&fm=jpg" alt="Car 2">
-                        <div class="card-body">
-                            <h5 class="card-title">Affordable Prices</h5>
-                            <p class="card-text">Rent a car at affordable rates.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top" src="https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?cs=srgb&dl=pexels-mike-bird-3729464.jpg&fm=jpg" alt="Car 3">
-                        <div class="card-body">
-                            <h5 class="card-title">24/7 Support</h5>
-                            <p class="card-text">We're here to assist you anytime.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
-    <footer class="text-muted text-center">
-        <div class="container">
-            <p>&copy; 2023 Car Rental</p>
-        </div>
-    </footer>
     <!-- Bootstrap JS and Popper.js -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
     <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlxjdoI_JGnoGMDcZzuz-mBKVNnZqODmA&libraries=places&callback=initSearch">
     </script>

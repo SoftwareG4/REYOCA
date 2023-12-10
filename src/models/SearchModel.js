@@ -9,8 +9,8 @@ const searchQuery_part1 = `
     SELECT v.*
     FROM vehicles v
     LEFT JOIN transaction_history th ON v._ID = th.vehicle_id
-    WHERE (th.vehicle_id IS NULL)
-    OR (th.booking_end < ? OR th.booking_start > ?)
+    WHERE ((th.vehicle_id IS NULL)
+    OR (th.booking_end < ? OR th.booking_start > ?))
 `;
 
 const searchQuery_part2 = `
@@ -67,17 +67,33 @@ class SearchModel {
                     });
 
                     let destinationList = searchRadiusResult.map(item => {return {lat: item['latitude'], lng: item['longitude']}});
-                    console.log("Destination List: ", destinationList);
-                    let distanceList = await distanceService.getTravelDistance([{lat: 35.1200959, lng: -106.6003826}], destinationList);
-                    console.log("distanceList: ", distanceList);
+                    console.log("Destination List: ", destinationList, destinationList.length);
+                    if(destinationList.length != 0) {
+                        let remainingNum = destinationList.length%25;
+                        let iterNum = (destinationList.length - remainingNum)/25;
+                        let distanceListTemp, distanceList = [];
+                        let i = 0;
+                        while(i < iterNum) {
+                            distanceListTemp = await distanceService.getTravelDistance([{lat: this.#userLocation[0], lng: this.#userLocation[1]}], destinationList.slice(i*25, (i+1)*25));
+                            console.log("distanceListTemp: ", distanceListTemp);
+                            distanceList = distanceList.concat(distanceListTemp);
+                            i++;
+                        }
+                        if(remainingNum != 0) {
+                            distanceListTemp = await distanceService.getTravelDistance([{lat: this.#userLocation[0], lng: this.#userLocation[1]}], destinationList.slice(i*25, destinationList.length));
+                            console.log("distanceListTemp: ", distanceListTemp);
+                            distanceList = distanceList.concat(distanceListTemp);
+                        }
 
-                    searchRadiusResult.forEach((item, index, arr) => {
-                        arr[index].travelDist = distanceList[index];
-                    });
-
-                    result = JSON.stringify({"response": searchRadiusResult});
-                    return callback(null, result);
-                    return callback(null, JSON.stringify({"response": result}));
+                        searchRadiusResult.forEach((item, index, arr) => {
+                            arr[index].travelDist = distanceList[index];
+                        });
+                        result = JSON.stringify({"response": searchRadiusResult});
+                        return callback(null, result);
+                    } else {
+                        result = JSON.stringify({"response": []});
+                        return callback(null, result);
+                    }
                 });
             });
         } catch(err) {
@@ -172,8 +188,8 @@ class SearchModel {
             console.log(today);
             // Start and end date can only be in the future
             if (today > startDate || today > endDate) {
-                console.log(today < startDate);
-                console.log(today < endDate);
+                console.log(today > startDate);
+                console.log(today > endDate);
                 return false;
             }
             // Start date can only be before the end date

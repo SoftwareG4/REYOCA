@@ -10,7 +10,7 @@ const { Client } = require('@googlemaps/google-maps-services-js');
  * @returns {number} Distance of location 1 and location 2
  */
 function getAerialDistance(lat1, lon1, lat2, lon2) {
-    console.log(lat1, lon1, lat2, lon2);
+    // console.log(lat1, lon1, lat2, lon2);
     if ((lat1 == lat2) && (lon1 == lon2)) {
         return 0;
     }
@@ -26,7 +26,7 @@ function getAerialDistance(lat1, lon1, lat2, lon2) {
         dist = Math.acos(dist);
         dist = dist * 180/Math.PI;
         dist = dist * 60 * 1.1515;
-        console.log(dist);
+        // console.log(dist);
         return dist;
     }
 }
@@ -53,14 +53,14 @@ function getTravelDistance(originList, destinationList) {
         client.distancematrix({ params: params })
         .then(response => {
             const elements = response.data.rows[0].elements;
-            console.log("distance elements: ", elements);
+            // console.log("distance elements: ", elements);
             distanceList = elements.map((item) => {
-                return parseFloat(item.distance.text.slice(0, -3));
+                return parseFloat(item.distance.text.slice(0, -3).replaceAll(',', ''));
             })
             resolve(distanceList);
         })
         .catch(error => {
-            console.error('Error fetching distance matrix:', error.response.data.error_message);
+            console.error('Error fetching distance matrix:', error);
             reject(error);
         });
     });

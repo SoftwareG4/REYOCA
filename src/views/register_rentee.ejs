@@ -117,7 +117,7 @@ input[type="submit"]{
                 if(password.value != confirm_password.value) {
                     confirm_password.setCustomValidity("Passwords Don't Match");
                 }
-                else if(!isPasswordValid(password)){
+                else if(!isPasswordValid(password.value)){
                 password.setCustomValidity(`Password does not meet criteria. Make sure:
                 - Contains atleast one Uppercase character
                 - Contains atleast one Lowercase character

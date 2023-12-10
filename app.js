@@ -4,6 +4,9 @@ const url = require('url');
 const qs = require('querystring');
 const mysql = require('mysql2');
 const fs = require('fs');
+const ejs = require('ejs');
+const {redirectView} = require('./src/routes/redirectViews');
+const {validateToken, getRole} = require('./src/services/JWTauth');
 const passport = require('passport');
 require('./googleauth');
 
@@ -25,6 +28,7 @@ const transactionApi = require('./src/routes/transactionAPIs');
 const vehicleApi = require('./src/routes/vehicleAPIs');
 const favouritesApi = require('./src/routes/favouritesAPIs');
 const loyaltyApi = require('./src/routes/loaltyPointsAPI');
+const userAPI = require('./src/routes/getUserAPI');
 
 const {view_cart} = require('./src/routes/view_cart');
 const {delete_car} = require('./src/routes/delete_car');
@@ -47,14 +51,19 @@ const server = http.createServer(async (req, res) => {
   const contentType = req.headers['content-type'];
   const method = req.method;
   let path =  req.url;
+  
   console.log(method,path)
-  if (path.startsWith("/login")){
+  console.log(req.url);
+  if(path.startsWith("/views/")) {
+    redirectView(req, res);
+  }
+  else if (path.startsWith("/login")){
     register_login_route(req,res)
   }
   else if (path.startsWith("/profile")){
     update_profile_route(req,res)
   }
-  else if (path.startsWith("/review")){
+  else if (path.startsWith("/review") && !path.startsWith("/reviews")){
     review_route(req,res)
   }
   else if (path.startsWith("/report")){
@@ -81,7 +90,8 @@ const server = http.createServer(async (req, res) => {
   else if (req.url.startsWith('/cart')) {
     cartApi(req, res);
   }
-  else if (req.url.startsWith('/reviews')) {
+  else if (path.startsWith('/reviews')) {
+    console.log("Path should reach here");
     ReviewsApi(req, res);
   }
   else if (req.url.startsWith('/vehicle')) {
@@ -96,7 +106,9 @@ const server = http.createServer(async (req, res) => {
   else if (req.url.startsWith('/loyalty')) {
     loyaltyApi(req, res);
   }
-
+  else if (req.url.startsWith('/user')) {
+    userAPI(req, res);
+  }
   else if (req.url.startsWith(deletecar)) {
     delete_car(req, res);
   } else if (req.url.startsWith(validatecoupon)) {
@@ -108,16 +120,31 @@ const server = http.createServer(async (req, res) => {
   }
 
   else if (req.url === noPath) {
-    fs.readFile('./public/index.html', function (err, html) {
-
-      if (err) {
-        console.log(err);
+    let file_name = './public/index.ejs';
+    let user_id = validateToken(req.headers.cookie);
+    if (user_id === false) {
+      file_name = './public/index.ejs';
+    } else {
+      let user_role = await getRole(user_id);
+      if (user_role === "renter") {
+        file_name = './public/index_renter.ejs';
+      } else if (user_role === "rentee") {
+        file_name = './public/index_rentee.ejs';
       }
-      res.writeHead(200, {"Content-Type": "text/html"});
-      res.write(html);
-      res.end();
+    }
+    fs.readFile(file_name, 'utf8', (err, html) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        const dataToRender = { title: 'User Profile' };
+        const renderedHtml = ejs.render(html, dataToRender);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
     });
-  } 
+  }
   else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Page Not Found');
