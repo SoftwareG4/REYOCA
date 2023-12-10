@@ -192,12 +192,12 @@ h2{
               </div>
             <div class="btn--container">
       
-              <button id="editButton" onclick="editProfile()">Edit</button>
-              <button onclick="orderHistory()">View Order History</button>
-              <button onclick="viewReviews()">View Reviews</button>
-              <button id="updatepassword" onclick="updatepassword()">Update Password</button>
-              <button id="deleteButton" onclick="deleteAccount()">Delete Account</button>
-              <button id="logoutButton" onclick="logout()">Logout</button>
+              <button type="button" id="editButton" onclick="editProfile()">Edit</button>
+              <button type="button" onclick="orderHistory()">View Order History</button>
+              <button type="button" onclick="viewReviews()">View Reviews</button>
+              <button type="button" id="updatepassword" onclick="updatepassword()">Update Password</button>
+              <button type="button" id="deleteButton" onclick="deleteAccount()">Delete Account</button>
+              <button type="button" id="logoutButton" onclick="logout()">Logout</button>
       </div>
           </div>
       
@@ -316,6 +316,7 @@ h2{
                     alert(data.error); // or display the error message in the UI
                 } else {
                     alert('Logout Successful');
+                    window.location.href("http://localhost:3000")
                     // Additional logic after successful deletion (like redirecting)
                 }
             })
