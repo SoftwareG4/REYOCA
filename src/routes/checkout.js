@@ -4,11 +4,18 @@
 const cookie = require('cookie');
 const CheckoutModel = require('../models/M_checkout');
 const dotenv = require('dotenv');
-const stripe = require('stripe')(process.env.STRIPE_PVT_KEY);
 dotenv.config();
+const stripe = require('stripe')(process.env.STRIPE_PVT_KEY);
+const {validateToken}= require('../services/JWTauth');
 
 function validate_coupon(req, res) {
     const chunks = [];
+    // const user_id=validateToken(req.headers.cookie)
+      // if (user_id==false){
+      //     res.writeHead(401, { 'Content-Type': 'application/json' });
+      //     res.end(JSON.stringify({ error: "User not Authenticated" }));
+      //     return;
+      // }
     let code;
     req.on("data", (chunk) => {
         chunks.push(chunk);
@@ -45,6 +52,12 @@ function validate_coupon(req, res) {
 
 function checkout(req, res) {
     const chunks = [];
+     // const user_id=validateToken(req.headers.cookie)
+      // if (user_id==false){
+      //     res.writeHead(401, { 'Content-Type': 'application/json' });
+      //     res.end(JSON.stringify({ error: "User not Authenticated" }));
+      //     return;
+      // }
     req.on("data", (chunk) => {
         chunks.push(chunk);
     });
@@ -93,9 +106,9 @@ async function store_transaction(cart_info){
     // Store transaction details in the database
     CheckoutModel.store_transaction(cart_info, (err, result) => {
         if (err) {
-            return 0;
+            return false;
         } else {
-            return 1;
+            return true;
         }
     });
 }

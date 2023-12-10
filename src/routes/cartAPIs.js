@@ -38,7 +38,7 @@ function cartApi(req, res) {
     } else if (req.method === 'GET') {
       const chunks = [];
       let id;
-      // const user_id=validateToken(req.headers.cookie)
+      // const user_id = validateToken(req.headers.cookie)
       // if (user_id==false){
       //     res.writeHead(401, { 'Content-Type': 'application/json' });
       //     res.end(JSON.stringify({ error: "User not Authenticated" }));
@@ -51,14 +51,8 @@ function cartApi(req, res) {
         req.on('end', () => { 
           let requestData = {};
           try {
-            // const data = Buffer.concat(chunks);
-            // const stringData = data.toString();
-            // const parsedData = new URLSearchParams(stringData);
-            // for (var pair of parsedData.entries()) {
-            //   requestData[pair[0]] = pair[1];
-            // }
-            // id = requestData['id'];
             id = cookie.parse(req.headers.cookie)['id'];
+            // id = user_id;
           } catch (error) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid formatting of the request' }));
@@ -84,8 +78,6 @@ function cartApi(req, res) {
                   res.end(renderedHtml);
                 }
               });
-              // res.writeHead(200, { 'Content-Type': 'application/json' });                 
-              // res.end(JSON.stringify(result));
             }
           });
         });
