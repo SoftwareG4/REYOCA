@@ -68,16 +68,19 @@ class SearchModel {
 
                     let destinationList = searchRadiusResult.map(item => {return {lat: item['latitude'], lng: item['longitude']}});
                     console.log("Destination List: ", destinationList);
-                    let distanceList = await distanceService.getTravelDistance([{lat: 35.1200959, lng: -106.6003826}], destinationList);
-                    console.log("distanceList: ", distanceList);
+                    if(destinationList.length != 0) {
+                        let distanceList = await distanceService.getTravelDistance([{lat: 35.1200959, lng: -106.6003826}], destinationList);
+                        console.log("distanceList: ", distanceList);
 
-                    searchRadiusResult.forEach((item, index, arr) => {
-                        arr[index].travelDist = distanceList[index];
-                    });
-
-                    result = JSON.stringify({"response": searchRadiusResult});
-                    return callback(null, result);
-                    return callback(null, JSON.stringify({"response": result}));
+                        searchRadiusResult.forEach((item, index, arr) => {
+                            arr[index].travelDist = distanceList[index];
+                        });
+                        result = JSON.stringify({"response": searchRadiusResult});
+                        return callback(null, result);
+                    } else {
+                        result = JSON.stringify({"response": []});
+                        return callback(null, result);
+                    }
                 });
             });
         } catch(err) {

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .search-bar {
+            background-color: #eee;
+            padding: 0px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-style: ridge;
+        }
+
+        .search-bar img {
+            width: 50px;
+            margin-right: 10px;
+        }
+
+        .search-bar label,
+        .search-bar input,
+        .search-bar button {
+            margin-right: 10px;
+        }
+
+        .filter-bar {
+            background-color: #eee;
+            padding: 10px;
+            margin-top: 40px;
+            border-style: ridge;
+            position: fixed;
+            width: 100vw;
+        }
+
+        .filter-bar label,
+        .filter-bar select {
+            margin-right: 10px;
+        }
+
+        #container {
+            display: flex;
+            height: 90vh;
+            padding-top: 7.5vh;
+        }
+
+        #scrollable-content {
+            flex: 1;
+            overflow-y: scroll;
+            padding: 20px;
+            width: 30vw;
+        }
+
+        #map-container {
+            flex: 3;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #google-map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .car-list {
+            height: 100%;
+            display: flex;
+            justify-content: left;
+            flex-direction: column;
+        }
+
+        .car {
+            display: flex;
+            width: 600px;
+            margin: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .car img {
+            width: 200px;
+            height: auto;
+        }
+
+        .car-info {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            flex-grow: 1;
+        }
+
+        .car-info h2,
+        .car-info p {
+            margin: 0;
+        }
+
+        .price {
+            display: flex;
+            flex-grow: 1;
+            justify-content: right;
+            text-align-last: right;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .car:hover {
+            border-style: solid;
+            border-width: 5px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+    </style>
+    <title>Car Rental</title>
+</head>
+
+<body>
+
+    <form style="padding-top: 8px;" class="search-bar" id="searchBar">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location">
+        <label for="start_date">From</label>
+        <input type="datetime-local" id="start_date" name="start_date">
+        <label for="end_date">Until</label>
+        <input type="datetime-local" id="end_date" name="start_date">
+        <button type="button" value="Search">Search</button>
+    </form>
+
+    <form method="post" class="filter-bar" id="filter-bar">
+        <label for="type">Car Type:</label>
+        <select id="type" name="type">
+            <option value="all">All</option>
+            <option value="car">Car</option>
+            <option value="suv">SUV</option>
+        </select>
+
+        <label for="fuel_type">Fuel Type:</label>
+        <select id="fuel_type" name="fuel_type">
+            <option value="all">All</option>
+            <option value="GASOLINE">Gasoline</option>
+            <option value="ELECTRIC">Electric</option>
+            <option value="HYBRID">Hybrid</option>
+        </select>
+
+        <label for="seater">Seater:</label>
+        <select id="seater" name="seater">
+            <option value="all">All</option>
+            <option value="5">5</option>
+            <option value="7">7</option>
+        </select>
+
+        <label for="sort">Sort:</label>
+        <select id="sort" name="sort">
+            <option value="none">None</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_des">Price: high to low</option>
+            <option value="rating_asc">Rating: low to high</option>
+            <option value="rating_des">Rating: high to low</option>
+        </select>
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <div id="container">
+        <div id="scrollable-content">
+            <div class="car-list">
+                <h1 id="car_status" style="visibility: hidden;">No Cars Available!!</h1>
+            </div>
+        </div>
+        <div id="map-container">
+            <div id="google-map"></div>
+        </div>
+    </div>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlxjdoI_JGnoGMDcZzuz-mBKVNnZqODmA&libraries=places&callback=initMap"> </script>
+    <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlxjdoI_JGnoGMDcZzuz-mBKVNnZqODmA&libraries=places&callback=initSearch"> -->
+    </script>
+    <script>
+        window.onload = function () {
+            let lastSearchQuery = localStorage.getItem('lastSearchQuery');
+            console.log("lastSearchQuery: ", lastSearchQuery);
+            let searchParamJSON = JSON.parse(lastSearchQuery);
+
+            let locationElement = document.getElementById('location');
+            locationElement.value = searchParamJSON.userLocationStr;
+            let startDateElement = document.getElementById('start_date');
+            startDateElement.value = searchParamJSON.startDate;
+            let endDateElement = document.getElementById('end_date');
+            endDateElement.value = searchParamJSON.endDate;
+
+            sendRequest("http://localhost:3000/search", lastSearchQuery);
+        }
+        let userMarker;
+        let autocomplete;
+
+        function initMap() {
+            let lastSearchQuery = localStorage.getItem('lastSearchQuery');
+            console.log("lastSearchQuery: ", lastSearchQuery);
+            let searchParamJSON = JSON.parse(lastSearchQuery);
+
+            autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('location'),
+                {
+                    types: ['locality'],
+                    componentRestrictions: {'country': ['US']},
+                    fields: ['place_id', 'geometry', 'name']
+                }
+            );
+
+            const myLatLng = { lat: searchParamJSON.userLocation[0], lng: searchParamJSON.userLocation[1] };
+            console.log("type: ", typeof(searchParamJSON.userLocation[0]));
+            const map = new google.maps.Map(document.getElementById("google-map"), {
+                zoom: 12,
+                center: myLatLng,
+            });
+
+            // Add a marker with a number
+            userMarker = new google.maps.Marker({
+                position: { lat: searchParamJSON.userLocation[0], lng: searchParamJSON.userLocation[1] },
+                map: map,
+                // label: {
+                //     text: '70.5$', // Display number on the marker
+                //     color: 'blue', // Marker number text color
+                // },
+                // icon: {
+                //     url: 'https://banner2.cleanpng.com/20180405/cvq/kisspng-computer-icons-download-text-box-5ac5b94e408a30.7305793215229074702644.jpg',
+                //     scaledSize: new google.maps.Size(80, 40),
+                // },
+                // icon: svgMarker,
+            });
+            console.log("map init done");
+        }
+
+        window.initMap = initMap;
+
+        function sendRequest(url, body) {
+            console.log("requesting:", url)
+            fetch(url, {
+                method: "POST",
+                body: body,
+            })
+            .then((response) => {
+                console.log("response: ", response, typeof (response));
+                return response.json();
+            })
+            .then((resp) => {
+                data = resp.response;
+                console.log("data", data);
+                console.log("type", typeof (data));
+
+                destinationList = data.map(val => { return { lat: val['latitude'], lng: val['longitude'] } });
+                console.log("destinationList", destinationList);
+
+                list = document.getElementsByClassName("car-list")[0];
+                let carList = "";
+
+                if(data.length != 0) {
+                    for (item in data) {
+                        console.log(`added car ${item}`, data[item]["_ID"]);
+                        carList += addCar("https://images.turo.com/media/vehicle/images/ODKlll-_QdGlU75HUD3kow.1440x700.jpg", data[item]["make"] + " " + data[item]["model"], data[item]["rating"], data[item]["city"], data[item]["travelDist"], data[item]["price"], data[item]["_ID"]);
+                        list.innerHTML = carList;
+                    };
+                } else {
+                    list.innerHTML = '<h1>No Cars Available!!</h1>'
+                }
+
+            })
+            .catch((error) => {
+                // Handle error
+                console.log("error ", error);
+            });
+        }
+
+        function addCar(image, title, rating, location, distance, price, vehicleID) {
+            var htmlStr = `<article class="car" data-object-data='{"vehicleID": ${vehicleID}}' onclick="selected(event)">
+                        <img src=${image} alt="">
+                        <div class="car-info">
+                            <h2>${title}</h2>
+                            <p>${rating}</p>
+                            <p>${location} (${distance} mi)</p>
+                            <p class="price">Price: $${price}/day</p>
+                        </div>
+                    </article>`;
+            return htmlStr;
+        }
+
+        function selected(event) {
+            console.log("selected");
+            const element = event.currentTarget;
+            const data = element.dataset.objectData;
+
+            // Use the data as needed (for example, log to console)
+            console.log("Element Data: ", JSON.parse(data));
+        }
+
+        function submitSearchForm(e) {
+            console.log("submit form");
+            e.preventDefault();
+
+            if (!autocomplete) {
+                console.log("Some error occurred");
+            }
+            let placeSelected = autocomplete.getPlace();
+            console.log("Loc: ", placeSelected.name);
+            if (!placeSelected.geometry) {
+                document.getElementById('location').placeholder = "Please select a location";
+                alert("Please select a location before searching." );
+            } else {
+                let lat = placeSelected.geometry.location.lat();
+                let lng = placeSelected.geometry.location.lng();
+                
+                let user_loc = [lat, lng];
+                let locationStr = document.getElementById('location').value;
+                let start_date = document.getElementById('start_date').value;
+                let end_date = document.getElementById('end_date').value;
+                
+                let data = {
+                    "userLocation": user_loc,
+                    "startDate": start_date,
+                    "endDate": end_date,
+                    "userLocationStr": locationStr
+                };
+
+                let searchParamString = JSON.stringify(data);
+                localStorage.setItem('lastSearchQuery', searchParamString);
+                sendRequest("http://localhost:3000/search", searchParamString);
+            }
+        }
+
+        let myform = document.getElementById("searchBar");
+        myform.addEventListener("submit", submitSearchForm);
+
+
+        function submitFilterForm(e) {
+            console.log("submit filter form");
+            e.preventDefault();
+
+            let data = new FormData(e.target);
+            var myform = document.getElementById("filter-bar");
+            data = [...data.entries()];
+            console.log(data);
+
+            let searchParamString = localStorage.getItem('lastSearchQuery');
+            let searchParamJSON = JSON.parse(searchParamString);
+            let bodyJSON = {};
+            bodyJSON.userLocation = searchParamJSON.userLocation;
+            bodyJSON.startDate = searchParamJSON.startDate;
+            bodyJSON.endDate = searchParamJSON.endDate;
+            bodyJSON.columns = {}
+
+            // data.forEach((value, idx) => {
+            //   if(value[1] === 'all') { return; }
+            //   bodyJSON.columns[value[0]] = value[1];
+            // })
+            for (let i = 0; i < data.length; i++) {
+                if (data[i][1] === 'all') { continue; }
+                if (i == data.length - 1) {
+                    if (data[i][1] === 'none') {
+                        bodyJSON.sortCol = null;
+                        bodyJSON.isDesc = false;
+                    }
+                    else {
+                        let colSort = data[i][1].split('_');
+                        bodyJSON.sortCol = colSort[0];
+                        bodyJSON.isDesc = (colSort[1] == "asc") ? false : true;
+                    }
+                }
+                else {
+                    bodyJSON.columns[data[i][0]] = data[i][1];
+                }
+            }
+
+            console.log("bodyJSON: ", bodyJSON);
+            sendRequest("http://localhost:3000/search/filter", JSON.stringify(bodyJSON));
+        }
+
+        var filterForm = document.getElementById("filter-bar");
+        filterForm.addEventListener("submit", submitFilterForm);
+
+        function toggleBounce() {
+            if (marker.getAnimation() !== null) {
+                marker.setAnimation(null);
+            } else {
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+            }
+        }
+
+        // let carElement = document.getElementById('specialcar');
+        // carElement.addEventListener('mouseover',
+        //                             (event) => {
+        //                               toggleBounce();
+        //                             }, false);
+        // carElement.addEventListener('mouseout',
+        //                             (event) => {
+        //                               toggleBounce();
+        //                             }, false);
+        // carElement.addEventListener('click', (event) => {
+        //   // Retrieve data from the clicked element
+        //   const element = event.currentTarget;
+        //   const data = element.dataset.objectData;
+
+        //   // Use the data as needed (for example, log to console)
+        //   console.log("Element Data: ", JSON.parse(data));
+        // })
+    </script>
+</body>
+
+</html>

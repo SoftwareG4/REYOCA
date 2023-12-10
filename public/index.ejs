@@ -6,7 +6,37 @@
     <!-- Bootstrap CSS link -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
     <!-- Custom CSS link -->
-    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <!-- <link rel="stylesheet" type="text/css" href="./public/styles.css"> -->
+    <style>
+        body {
+            padding-top: 20px;
+        }
+    
+        .navbar {
+            margin-bottom: 20px;
+        }
+    
+        .jumbotron {
+            background-image: url('background.jpg');
+            background-size: cover;
+            color: white;
+            padding: 150px 0;
+        }
+    
+        .card {
+            border: none;
+        }
+    
+        .card-title {
+            font-size: 1.25rem;
+        }
+    
+        footer {
+            padding: 20px 0;
+            background-color: #333;
+            color: white;
+        }
+    </style>
     <!-- Places API -->
     <script>
         let autocomplete;
@@ -34,29 +64,39 @@
                 let lng = placeSelected.geometry.location.lng();
                 
                 let user_loc = [lat, lng];
+                let locationStr = document.getElementById('location').value;
                 let start_date = document.getElementById('start_date').value;
                 let end_date = document.getElementById('end_date').value;
                 
                 let data = {
                     "userLocation": user_loc,
                     "startDate": start_date,
-                    "endDate": end_date
+                    "endDate": end_date,
+                    "userLocationStr": locationStr
                 };
 
-                const response = await fetch('/search', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(data)
-                });
-                let content = await response.text();
-                // if (response.status == 200) {
-                    console.log("OK");
-                    return response.redirect('test.ejs');
-                // }
+                localStorage.setItem('lastSearchQuery', JSON.stringify(data));
+
+                console.log("redirecting");
+                var targetUrl = 'http://localhost:3000/views/search';
+                redirectToAnotherUrl(targetUrl, data);
             }
         }
+
+        function redirectToAnotherUrl(url, jsonData) {
+        var form = document.createElement('form');
+        form.method = 'post';
+        form.action = url;
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'jsonData';
+        input.value = JSON.stringify(jsonData);
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
     </script>
 </head>
 

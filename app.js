@@ -5,6 +5,7 @@ const qs = require('querystring');
 const mysql = require('mysql2');
 const fs = require('fs');
 const ejs = require('ejs');
+const {redirectView} = require('./src/routes/redirectViews');
 
 // Import Routes
 const {register_login_route} = require('./src/routes/register_login');
@@ -49,7 +50,11 @@ const server = http.createServer(async (req, res) => {
   
   console.log(contentType,method,path)
   console.log(req.url);
-  if (path.startsWith("/login")){
+
+  if(path.startsWith("/views/")) {
+    redirectView(req, res);
+  }
+  else if (path.startsWith("/login")){
     register_login_route(req,res)
   }
   else if (path.startsWith("/profile")){
@@ -97,7 +102,6 @@ const server = http.createServer(async (req, res) => {
   else if (req.url.startsWith('/user')) {
     userAPI(req, res);
   }
-
   else if (req.url.startsWith(deletecar)) {
     delete_car(req, res);
   } else if (req.url.startsWith(validatecoupon)) {

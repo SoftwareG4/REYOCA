@@ -1,6 +1,10 @@
 
 // Import Model
 const SearchModel = require('../models/SearchModel');
+const url = require('url');
+const querystring = require('querystring');
+const ejs = require('ejs');
+const path = require("path");
 
 function searchApi(req, res) {
     let priceColName = "price";
@@ -100,13 +104,14 @@ function searchApi(req, res) {
                         if (body) {
                             const jsonData = JSON.parse(body);
 
+                            console.log("filber data:", jsonData);
                             let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
                                 jsonData.startDate,
                                 jsonData.endDate,
                                 jsonData.columns,
-                                null,
-                                false
+                                jsonData.sortCol,
+                                jsonData.isDesc
                             );
                             if (!isValid) {
                                 res.writeHead(400, {'Content-Type': 'application/json'});
@@ -284,9 +289,9 @@ function searchApi(req, res) {
             console.log("ERROR: ", err);
             res.writeHead(500, {'Content-Type': 'application/json'});
             res.end(JSON.stringify({"error": "Internal Server Error"}));
-        } else if (vehicleList && vehicleList.length) {
+        } else if (vehicleList) {
             res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify(result));
+            res.end(result);
         } else {
             res.writeHead(404, {'Content-Type': 'application/json'});
             res.end(JSON.stringify({"error": "No entries with these filters exist."}));
