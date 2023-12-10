@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancel</title>
+</head>
+<script>
+    function redirect(params) {
+        setTimeout(() => {
+            alert("Cancelled transaction. Backing up!!")
+            window.location.href = "/cart"
+        }, 100)
+         
+    }
+</script>
+<body onload="redirect()" > 
+    
+</body>
+</html>

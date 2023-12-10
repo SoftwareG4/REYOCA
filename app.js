@@ -110,6 +110,33 @@ const server = http.createServer(async (req, res) => {
     checkout(req, res);
   } else if (req.url.startsWith(paymentmethods)) {
     view_pay_method(req, res);
+  } else if (req.url.startsWith('/view_cart_route')) {
+      fs.readFile('./public/dummybeforecart.html', function (err, html) {
+        if (err) {
+          console.log(err);
+        }
+        res.writeHead(200, {"Content-Type": "text/html"});
+        res.write(html);
+        res.end();
+      });
+  } else if (req.url.startsWith('/success')) {
+      fs.readFile('./public/success.html', function (err, html) {
+        if (err) {
+          console.log(err);
+        }
+        res.writeHead(200, {"Content-Type": "text/html"});
+        res.write(html);
+        res.end();
+      });
+  } else if (req.url.startsWith('/cancel')) {
+      fs.readFile('./public/cancel.html', function (err, html) {
+        if (err) {
+          console.log(err);
+        }
+        res.writeHead(200, {"Content-Type": "text/html"});
+        res.write(html);
+        res.end();
+      });
   }
 
   else if (req.url === noPath) {

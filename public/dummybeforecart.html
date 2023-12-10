@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dummy</title>
+</head>
+<script>
+    document.cookie = "id=6";
+
+    const options = {
+        method: "GET",
+        credentials: 'include',
+        cache: "default",
+    };
+    function handleViewCart() {
+        
+        fetch("/cart", options)
+            .then(res => res.text())
+            .then((data) => {
+                document.open();
+                document.write(data);
+                document.close();
+            })
+    }
+</script>
+<body>
+    <button onclick="handleViewCart()">
+        View your cart
+        <a href="/cart">
+        </a>
+    </button>
+</body>
+</html>

@@ -143,7 +143,7 @@ class CartModel {
         return callback(err, null);
       }
       connection.query(
-        'SELECT * FROM cart WHERE rentee_id = ?',
+        'SELECT * FROM cart as c inner join vehicles as v WHERE rentee_id = ? and c.vehicle_id = v._ID',
         [id],
         (error, results) => {
           if (error) {

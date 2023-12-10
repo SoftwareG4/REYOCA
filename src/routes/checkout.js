@@ -1,15 +1,21 @@
 // 1. check coupon
 // 2. complete checkout
 // 1. View cart for a particular user.
-
+const cookie = require('cookie');
 const CheckoutModel = require('../models/M_checkout');
 const dotenv = require('dotenv');
-const stripe = require('stripe')(process.env.STRIPE_PVT_KEY);
-
 dotenv.config();
+const stripe = require('stripe')(process.env.STRIPE_PVT_KEY);
+const {validateToken}= require('../services/JWTauth');
 
 function validate_coupon(req, res) {
     const chunks = [];
+    // const user_id=validateToken(req.headers.cookie)
+      // if (user_id==false){
+      //     res.writeHead(401, { 'Content-Type': 'application/json' });
+      //     res.end(JSON.stringify({ error: "User not Authenticated" }));
+      //     return;
+      // }
     let code;
     req.on("data", (chunk) => {
         chunks.push(chunk);
@@ -18,12 +24,9 @@ function validate_coupon(req, res) {
         req.on('end', () => {
             let requestData = {};
             try {
-                const data = Buffer.concat(chunks);
-                const stringData = data.toString();
-                const parsedData = new URLSearchParams(stringData);
-                for (var pair of parsedData.entries()) {
-                    requestData[pair[0]] = pair[1];
-                }
+                const urlParams = new URLSearchParams(req.url.split('?')[1]);
+                const code = urlParams.get('code');
+                requestData['code'] = code;
             }
             catch (error) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -34,14 +37,11 @@ function validate_coupon(req, res) {
                 if (err) {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: err }));
-                } else if (typeof(result)=="string") {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ message: result }));
                 } else {
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                   
+                    
                     res.end(JSON.stringify(result));
-                    }
+                }
             });
         });
     } else {
@@ -52,6 +52,12 @@ function validate_coupon(req, res) {
 
 function checkout(req, res) {
     const chunks = [];
+     // const user_id=validateToken(req.headers.cookie)
+      // if (user_id==false){
+      //     res.writeHead(401, { 'Content-Type': 'application/json' });
+      //     res.end(JSON.stringify({ error: "User not Authenticated" }));
+      //     return;
+      // }
     req.on("data", (chunk) => {
         chunks.push(chunk);
     });
@@ -59,6 +65,8 @@ function checkout(req, res) {
         req.on('end', async () => {
             try {
                 let cart_info = JSON.parse(chunks);
+                const rentee_id = cookie.parse(req.headers.cookie)['id'];
+                cart_info['rentee_id'] = rentee_id;
                 const session = await stripe.checkout.sessions.create({
                     payment_method_types: ["card"],
                     mode: "payment",
@@ -75,8 +83,13 @@ function checkout(req, res) {
                     success_url: `${process.env.CLIENT_URL}/success.html`,
                     cancel_url: `${process.env.CLIENT_URL}/cancel.html`,
                   });
-                  res.writeHead(200, { "Content-Type": "application/json" });
-                  res.end(JSON.stringify({ url: session.url }));
+                  if(store_transaction(cart_info)){
+                      res.writeHead(200, { "Content-Type": "application/json" });
+                      res.end(JSON.stringify({ url: session.url }), );
+                    } else{
+                      res.writeHead(500, { "Content-Type": "application/json" });
+                      res.end(JSON.stringify({ url: `${process.env.CLIENT_URL}/cancel.html` }));
+                    }
                 } catch (error) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Invalid formatting of the request'+error }));
@@ -87,6 +100,17 @@ function checkout(req, res) {
         res.writeHead(405, { 'Content-Type': 'text/plain' });
         res.end('Method Not Allowed');
     }
+}
+
+async function store_transaction(cart_info){
+    // Store transaction details in the database
+    CheckoutModel.store_transaction(cart_info, (err, result) => {
+        if (err) {
+            return false;
+        } else {
+            return true;
+        }
+    });
 }
 
 module.exports = {validate_coupon, checkout};
