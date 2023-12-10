@@ -47,7 +47,7 @@ const server = http.createServer(async (req, res) => {
   const contentType = req.headers['content-type'];
   const method = req.method;
   let path =  req.url;
-  console.log(contentType,method,path)
+  console.log(method,path)
   if (path.startsWith("/login")){
     register_login_route(req,res)
   }

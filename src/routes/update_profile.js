@@ -131,6 +131,8 @@ function update_password(req, res) {
     req.on("data", (chunk) => {
         chunks.push(chunk);
     });
+    // requestData = Object.keys(requestData)[0];
+    // requestData = JSON.parse(requestData);
     req.on('end', () => {
         let requestData = {};
         try {
@@ -316,6 +318,7 @@ function rating_get(req, res) {
   req.on("data", (chunk) => {
       chunks.push(chunk);
   });
+
   req.on('end',async () => {
     let requestData = {};
     try {

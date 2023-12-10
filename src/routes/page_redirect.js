@@ -8,6 +8,9 @@ dotenv.config();
 const profileModel = require('../models/M_update_profile.js');
 const OrderModel = require('../models/M_order.js');
 const ReportModel = require('../models/M_report.js');
+const review_Model = require('../models/M_review.js');
+const UserModel = require('../models/M_register_login.js');
+const Profile_Model = require('../models/M_update_profile.js');
 require('../../global.js');
 
 // const invalidatedTokens = new Set();
@@ -246,12 +249,11 @@ function red_reg_orderhist(req, res){
     return;
   }
   const user_id=validateToken(req.headers.cookie); // This should be retrieved from a function or middleware
-    if (!user_id) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: "User not Authenticated" }));
-      return;
-    }
-  // Assuming validateToken gets the user_id from the request
+  if (!user_id) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: "User not Authenticated" }));
+    return;
+  }
 
   OrderModel.getOrderById(user_id, (err, result) => {
     if (err) {
@@ -275,6 +277,149 @@ function red_reg_orderhist(req, res){
   });
 }
 
+function red_reg_get_reviews(req, res){
+  if (req.method !== "GET") {
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
+  }
+  const user_id=validateToken(req.headers.cookie); // This should be retrieved from a function or middleware
+  if (!user_id) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: "User not Authenticated" }));
+    return;
+  }
+
+  review_Model.getReviewById(user_id, (err, result) => {
+    if (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err }));
+    } else {
+      fs.readFile('./src/views/reviews.ejs', 'utf8', (err, data) => {
+        if (err) {
+          // ... error handling
+        } else {
+          const dataToRender = {
+            title: 'Reviews',
+            review: result // Assuming result is an array of review objects
+          };
+          console.log(result);
+          const renderedHtml = ejs.render(data, dataToRender);
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(renderedHtml);
+        }
+      });
+    }
+  });
+}
+
+function red_reg_update_pass(req, res) {
+  if (req.method === 'GET') {
+      // Read the EJS file
+      fs.readFile('./src/views/update_password.ejs', 'utf8', (err, data) => {
+          if (err) {
+              console.error(err);
+              res.writeHead(500, { 'Content-Type': 'text/plain' });
+              res.end('Internal Server Error');
+              return;
+          }
+
+          // Render the EJS template with data
+          const dataToRender = { title: 'Update Password', message: 'Enter your details' };
+          const renderedHtml = ejs.render(data, dataToRender);
+
+          // Send the rendered HTML as a response
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(renderedHtml);
+      });
+  } else if (req.method === 'POST') {
+    let body = '';
+
+    // Collect data chunks
+    req.on('data', chunk => {
+        body += chunk.toString(); // Convert Buffer to string
+    });
+
+    req.on('end', () => {
+        // Parse the POST data
+        const parsedBody = new URLSearchParams(body);
+
+        // Extracting the data
+        const curr_pass = parsedBody.get('curr_pass');
+        const new_pass = parsedBody.get('new_pass');
+        // const email = parseBody.get('email');
+
+        const userId = req.session.userId; // Assuming user ID is stored in session
+        const requestData = { curr_pass, new_pass };
+        console.log(requestData);
+
+        // Now use your update_pass function with this data
+        Profile_Model.update_pass(userId, requestData, (err, result) => {
+            if (err) {
+                // Send error response
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Error updating password');
+            } else {
+                // Send success response
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end('Password updated successfully');
+                res.redirect('./src/views/profile_page.ejs'); 
+            }
+        });
+    });
+  }
+}
+
+
+
+// function red_reg_update_pass(req, res) {
+//   // Collect data from the POST request
+//   let body = '';
+//   req.on('data', chunk => {
+//       body += chunk.toString();
+//   });
+//   req.on('end', () => {
+//       const requestData = new URLSearchParams(body);
+//       const userEmail = requestData.get('email');
+//       const currentPassword = requestData.get('currentPassword');
+//       const newPassword = requestData.get('newPassword');
+//       const confirmPassword = requestData.get('confirmPassword');
+
+//       // Verify the current password
+//       UserModel.login_verify({ email: userEmail, password: currentPassword }, (err, result) => {
+//           if (err) {
+//               res.writeHead(500, { 'Content-Type': 'application/json' });
+//               res.end(JSON.stringify({ error: err }));
+//               return;
+//           }
+//           if (result === "Invalid Password") {
+//               // Handle invalid current password
+//               res.writeHead(401, { 'Content-Type': 'application/json' });
+//               res.end(JSON.stringify({ error: "Invalid current password" }));
+//               return;
+//           }
+
+//           // Check if new password and confirm password match
+//           if (newPassword !== confirmPassword) {
+//               res.writeHead(400, { 'Content-Type': 'application/json' });
+//               res.end(JSON.stringify({ error: "New passwords do not match" }));
+//               return;
+//           }
+
+//           // Update the password
+//           Profile_Model.update_pass({ email: userEmail, new_pass: newPassword }, (err, updateResult) => {
+//               if (err) {
+//                   res.writeHead(500, { 'Content-Type': 'application/json' });
+//                   res.end(JSON.stringify({ error: err }));
+//                   return;
+//               }
+//               // Handle successful password update
+//               res.writeHead(200, { 'Content-Type': 'application/json' });
+//               res.end(JSON.stringify({ message: "Password updated successfully" }));
+//           });
+//       });
+//   });
+// }
 
 
 function redirect_route(req, res){
@@ -298,8 +443,14 @@ function redirect_route(req, res){
         case "/dev_page_route/profilepage":
           red_reg_profilepage(req, res);
         break
-        case "/dev_page_route/profilepage/order_history":
+        case "/dev_page_route/profilepage/orderhistory":
           red_reg_orderhist(req, res);
+        break
+        case "/dev_page_route/profilepage/updatepassword":
+          red_reg_update_pass(req, res);
+        break
+        case "/dev_page_route/profilepage/reviews":
+          red_reg_get_reviews(req, res);
         break
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });

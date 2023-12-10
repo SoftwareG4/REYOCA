@@ -52,13 +52,13 @@ class review_Model {
             if (err) {
               return callback(err, null);
             }
-            const query = "SELECT * FROM user_reviews WHERE rating_for=?";
-            connection.query(query,[user_id], async (err, results) => {
+            const query = "SELECT * FROM user_reviews WHERE rating_for=? OR rating_by=?";
+            connection.query(query,[user_id, user_id], async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
                 }
-                // console.log(results)
+                console.log(results)
                 if(results.length==0){
                     return callback(null, "No Reviews Found");
                 }
@@ -68,9 +68,12 @@ class review_Model {
                             id: review._ID,
                             stars: review.stars,
                             description: review.description,
-                            ratedBy: review.rating_by
+                            ratedBy: review.rating_by,
+                            ratedFor: review.rating_for,
+                            userID: user_id
                         };
                     });
+                    console.log(reviews);
                     connection.end(); // Close the connection
                     return callback(null, reviews);
                 }

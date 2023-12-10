@@ -46,6 +46,7 @@ class Profile_Model {
                             last_name: user.last_name,
                             gender: user.gender,
                             phone: user.phone,
+                            email: user.email,
                             government_id: user.government_id
                         };
                     });
@@ -93,7 +94,7 @@ class Profile_Model {
               return callback(err, null);
             }
             const query = "SELECT * FROM user WHERE _ID=?";
-            connection.query(query,[user_id], async (err, results) => {
+            connection.query(query,user_id, async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
@@ -167,6 +168,10 @@ class Profile_Model {
                     if (requestData.gender) { 
                         conditions.push("gender = ?");
                         values.push(requestData.gender);
+                    }
+                    if (requestData.government_id) { 
+                        conditions.push("government_id = ?");
+                        values.push(requestData.government_id);
                     }
 
                     if (conditions.length > 0) {

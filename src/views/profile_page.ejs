@@ -73,6 +73,18 @@ h2{
 #userRating{
   color: #F1C40F
 }
+.star-rating {
+  display: inline-block;
+}
+
+.star {
+  font-size: 20px;
+  color: gray;
+}
+
+.star.golden {
+  color: gold;
+}
 .btn--container{
   flex-shrink:0;
   width:300px;
@@ -123,11 +135,18 @@ h2{
           <h3 id="first_name" style="display: inline-block;"><%= profile.first_name %></h3>
               <h3 id="last_name" style="display: inline-block;"><%= profile.last_name %></h3>
           </div>
-            <div style="display: flex; align-items: center;">
-                  <p id="user_rating_title" style="margin-right: 10px;">Rating:</p>
-                  <p id="userRating" style="margin: 0;"><%= rating %></p>
-              </div>
+          <div style="display: flex; align-items: center;">
+            <p id="user_rating_title" style="margin-right: 10px;">Rating:</p>
+            <div id="userRating" class="star-rating">
+                <% for (let i = 1; i <= 5; i++) { %>
+                    <% if (i <= rating) { %>
+                        <span class="star golden">&#9733;</span> <!-- Golden Star -->
+                    <% } else { %>
+                        <span class="star">&#9734;</span> <!-- Gray Star -->
+                    <% } %>
+                <% } %>
             </div>
+          </div>
         </div>
         
               <!-- Add this under the profile photo -->
@@ -156,6 +175,11 @@ h2{
                   <p id="phone_title" style="margin-right: 10px;">Phone:</p>
                   <p id="phone" style="margin: 0;"><%= profile.phone %></p>
               </div>
+
+              <div style="display: flex; align-items: center;">
+                <p id="email_title" style="margin-right: 10px;">Email:</p>
+                <p id="email" style="margin: 0;"><%= profile.email %></p>
+            </div>
               
       
               <div style="display: flex; align-items: center;">
@@ -170,6 +194,7 @@ h2{
       
               <button id="editButton" onclick="editProfile()">Edit</button>
               <button onclick="orderHistory()">View Order History</button>
+              <button onclick="viewReviews()">View Reviews</button>
               <button id="updatepassword" onclick="updatepassword()">Update Password</button>
               <button id="deleteButton" onclick="deleteAccount()">Delete Account</button>
               <button id="logoutButton" onclick="logout()">Logout</button>
@@ -189,8 +214,6 @@ h2{
         }
 
         function editProfile() {
-            
-            
             if (!isEditing) {
                 makeEditable('first_name');
                 makeEditable('last_name');
@@ -204,6 +227,7 @@ h2{
                 genderElement.querySelector('select').value = genderValue.toLowerCase();
 
                 makeEditable('phone');
+                makeEditable('email');
                 makeEditable('government_id');
                 document.getElementById('editButton').innerText = 'Save';
             } else {
@@ -212,6 +236,8 @@ h2{
                     last_name: document.getElementById('last_name').querySelector('input').value,
                     gender: document.getElementById('gender').querySelector('select').value,
                     phone: document.getElementById('phone').querySelector('input').value,
+                    email: document.getElementById('email').querySelector('input').value,
+                    government_id: document.getElementById('government_id').querySelector('input').value
                 };
         
                 fetch('/profile/updateprofile', { // Update this URL to your actual server route
@@ -244,7 +270,15 @@ h2{
         }
 
         function orderHistory() {
-            window.location.href = '/dev_page_route/profilepage/order_history';
+            window.location.href = '/dev_page_route/profilepage/orderhistory';
+        }
+
+        function viewReviews() {
+          window.location.href = '/dev_page_route/profilepage/reviews';
+      }
+
+        function updatepassword() {
+          window.location.href = '/dev_page_route/profilepage/updatepassword';
         }
 
         function deleteAccount() {

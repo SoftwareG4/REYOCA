@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Page</title>
+    <link rel="stylesheet" type="text/css" href="../../public/styles.css">
+</head>
+<body>
+    <div class="review-history-container">
+        <h1>Review Page</h1>
+
+        <!-- Review Table -->
+        <table id="reviewTable">
+            <thead>
+                <tr>
+                    <th>Review ID</th>
+                    <th>Stars</th>
+                    <th>Description</th>
+                    <th>Rated By</th>
+                    <th>Rated For</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                <% if (Array.isArray(review)) { %>
+                    <% review.forEach(function(row) { %>
+                        <tr>
+                            <td><%= row.id %></td>
+                            <td><%= row.stars %></td>
+                            <td><%= row.description %></td>
+                            <td><%= row.ratedBy %></td>
+                            <td><%= row.ratedFor %></td>
+                            <td>
+                                <% if (row.ratedBy === row.userID) { %>
+                                    <!-- Delete Button for own reviews -->
+                                    <button onclick="deleteReview('<%= row.id %>')">Delete</button>
+                                <% } else { %>
+                                    <!-- Report Button for others' reviews -->
+                                    <button onclick="reportReview('<%= row.id %>')">Report</button>
+                                <% } %>
+                            </td>
+                            
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <p>No reviews found.</p>
+                <% } %>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add any necessary JavaScript at the bottom -->
+    <script src="review.js">
+        function reportReview(reviewId) {
+            // Logic to report a review
+            // This might involve sending a POST request to your server
+            console.log('Report review with ID:', reviewId);
+            // Example: POST request to /report-review with { reviewId }
+        }
+
+        function deleteReview(reviewId) {
+            // Logic to delete a review
+            // This might involve sending a DELETE request to your server
+            console.log('Delete review with ID:', reviewId);
+            // Example: DELETE request to /delete-review with { reviewId }
+        }
+    </script>
+</body>
+</html>
