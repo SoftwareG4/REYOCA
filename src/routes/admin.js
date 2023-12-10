@@ -40,12 +40,8 @@ function delete_review(req, res) {
           res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
           return;
       }
-      const foul_words=await verify_foul(requestData["description"])
-      if (foul_words.length>0){
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ found_bad_words : foul_words }));
-      }
-
+      requestData = Object.keys(requestData)[0];
+      requestData = JSON.parse(requestData);
       AdminModel.review_delete(user_id,requestData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -90,7 +86,8 @@ function delete_report(req, res) {
         res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
         return;
     }
-    
+    requestData = Object.keys(requestData)[0];
+    requestData = JSON.parse(requestData);
     AdminModel.report_delete(user_id,requestData, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -135,12 +132,16 @@ function delete_user(req, res) {
         res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
         return;
     }
+    requestData = Object.keys(requestData)[0];
+    requestData = JSON.parse(requestData);
     
     AdminModel.user_delete(user_id,requestData, (err, result) => {
         if (err) {
+          console.log(requestData);
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
+          
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }
@@ -180,7 +181,8 @@ function delete_listing(req, res) {
           res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
           return;
       }
-      
+      requestData = Object.keys(requestData)[0];
+      requestData = JSON.parse(requestData);
       AdminModel.listing_delete(user_id,requestData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });

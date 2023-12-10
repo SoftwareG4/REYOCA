@@ -52,19 +52,36 @@
     </div>
 
     <!-- Add any necessary JavaScript at the bottom -->
-    <script src="review.js">
+    <script>
         function reportReview(reviewId) {
             // Logic to report a review
             // This might involve sending a POST request to your server
             console.log('Report review with ID:', reviewId);
             // Example: POST request to /report-review with { reviewId }
         }
-
+        
         function deleteReview(reviewId) {
-            // Logic to delete a review
-            // This might involve sending a DELETE request to your server
-            console.log('Delete review with ID:', reviewId);
-            // Example: DELETE request to /delete-review with { reviewId }
+            var data = {
+                _ID: reviewId
+            };
+            fetch('/admin/deletereview', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); 
+                } else {
+                    alert('Successfully Deleted');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
         }
     </script>
 </body>

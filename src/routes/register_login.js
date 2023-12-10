@@ -153,7 +153,6 @@ function login_user(req, res) {
             } else if (typeof(result)=="string") {
               res.writeHead(400, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ message: result }));
-                // res.end("<html><script>alert("+result+")</script></html>")
             } else{
                 console.log(result)
                 const accessToken=createTokens(result[0])

@@ -275,7 +275,7 @@ h2{
 
         function viewReviews() {
           window.location.href = '/dev_page_route/profilepage/reviews';
-      }
+        }
 
         function updatepassword() {
           window.location.href = '/dev_page_route/profilepage/updatepassword';
@@ -283,17 +283,47 @@ h2{
 
         function deleteAccount() {
             if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
-                // Logic to handle account deletion
-                // Typically involves sending a request to the server
-                alert('Account deletion functionality not implemented');
+              fetch('/admin/deleteuser', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+                
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.error) {
+                      alert(data.error); // or display the error message in the UI
+                  } else {
+                      alert('User deleted successfully');
+                      // Additional logic after successful deletion (like redirecting)
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  alert('An error occurred');
+              });
             }
         }
     
         function logout() {
-            // Logic to log the user out
-            // Could be as simple as redirecting to a login page or calling a logout API
-            alert('Logout functionality not implemented');
-        }
+          fetch('/login/logout', {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' }
+              
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); // or display the error message in the UI
+                } else {
+                    alert('Logout Successful');
+                    // Additional logic after successful deletion (like redirecting)
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+          }
 
         function triggerFileInput() {
             document.getElementById('photoInput').click();

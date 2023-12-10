@@ -12,14 +12,17 @@ class AdminModel{
             database: process.env.DB_NAME,
             port: process.env.DB_PORT,
         });
+        console.log(data,data);
         connection.connect((err) => {
             if (err) {
               return callback(err, null);
             }
-            const query ="DELETE FROM reviews WHERE _ID = ?";
-            connection.query(query, data[_ID], (err, results) => {
+            const query ="DELETE FROM user_reviews WHERE _ID = ?";
+            console.log(query);
+            connection.query(query, data["_ID"], (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
+                    console.log(err);
                 return callback(err, null);
                 }
                 return callback(null, "Review Deleted Successfully");
@@ -40,7 +43,7 @@ class AdminModel{
               return callback(err, null);
             }
             const query ="DELETE FROM report WHERE _ID = ?";
-            connection.query(query, data[_ID], (err, results) => {
+            connection.query(query, data["_ID"], (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
@@ -68,6 +71,7 @@ class AdminModel{
             }
             const query ="DELETE FROM user WHERE _ID = ?";
             connection.query(query, userID, (err, results) => {
+                
                 connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);

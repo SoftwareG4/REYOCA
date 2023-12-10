@@ -13,12 +13,8 @@
     </style>
 </head>
 <body>
-    <div class="logout-button">
-        <!-- Logout Button -->
-        <form action="/logout" method="post">
-            <button type="submit">Signout</button>
-        </form>
-    </div>
+    
+    <button id="logoutButton" onclick="logout()">Logout</button>
     <h1>Admin Dashboard</h1>
 
     <!-- Report Resolution Form -->
@@ -73,7 +69,7 @@
     <section>
         <h2>Delete Review</h2>
         <form action="/admin/deletereview" method="DELETE">
-            <input type="text" name="_ID" placeholder="Enter Review ID" required>
+            <input type="text" name="_ID" id="userID" placeholder="Enter Review ID" required>
             <button type="submit">Delete Review</button>
         </form>
     </section>
@@ -84,8 +80,8 @@
     <section>
         <h2>Delete User</h2>
         <form action="/admin/deleteuser" method="DELETE">
-            <input type="text" name="_ID" placeholder="Enter User ID" required>
-            <button type="submit">Delete User</button>
+            <input type="text" name="_ID" id="userID" placeholder="Enter User ID" required>
+            <button type="submit" onclick="deleteuser()">Delete User</button>
         </form>
     </section>
 
@@ -93,7 +89,7 @@
     <section>
         <h2>Delete Car Listing</h2>
         <form action="/admin/deletelisting" method="DELETE">
-            <input type="text" name="_ID" placeholder="Enter Listing ID" required>
+            <input type="text" name="_ID" id="listingID" placeholder="Enter Listing ID" required>
             <button type="submit">Delete Listing</button>
         </form>
     </section>
@@ -101,4 +97,74 @@
     <!-- Add JavaScript here if necessary -->
 
 </body>
+<script>
+    function logout() {
+        fetch('/login/logout', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+            
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error); // or display the error message in the UI
+            } else {
+                alert('Logout Successful');
+                // Additional logic after successful deletion (like redirecting)
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+    function deleteuser() {
+        var userID = document.getElementById('userID').value;
+        var user_id = {
+            _ID: userID  
+        };
+        fetch('/admin/deleteuser', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user_id)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error); // or display the error message in the UI
+            } else {
+                alert('User deleted successfully');
+                // Additional logic after successful deletion (like redirecting)
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+    function deletereview() {
+        var reviewID = document.getElementById('reviewID').value;
+        var user_id = {
+            _ID: userID  
+        };
+        fetch('/admin/deletereview', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user_id)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error); // or display the error message in the UI
+            } else {
+                alert('User deleted successfully');
+                // Additional logic after successful deletion (like redirecting)
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+</script>
 </html>
