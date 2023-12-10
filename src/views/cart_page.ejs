@@ -89,7 +89,8 @@
                     <img class="card-img-top" src="https://media.ed.edmunds-media.com/tesla/model-3/2022/oem/2022_tesla_model-3_sedan_performance_fq_oem_1_1600.jpg" alt="Car Image">
                     <div class="card-body">
                       <h5 class="card-title"><b><%= car.make %> - <%= car.model %></b></h5>
-                      <p class="card-text"><b>Price :</b> $<%= car.price %></p>
+                      <p class="card-text"><b>Base price of car:</b> $<%= car.price %></p>
+                      <p class="card-text"><b>Requested Add ons:</b> <%= car.extras %></p>
                       <p class="card-text"><b>Number of days requested :</b> <%= car.quantity %></p>
                       <p class="card-text"><b>Booking from Date :</b> <%= car.from_date %></p>
                       <p class="card-text"><b>Booking till Date :</b> <%= car.to_date %></p>
@@ -126,7 +127,7 @@
     let total = 0;
     cars = '<%- JSON.stringify(cars) %>';
     cars = JSON.parse(cars);
-    cars.forEach((car) => { total += car.price;});
+    cars.forEach((car) => { total += parseInt(car.total_cost);});
     document.getElementById('total_amount').innerHTML = total
 
     
