@@ -143,7 +143,7 @@
         <label for="location">Location</label>
         <input type="text" id="location" name="location">
         <label for="start_date">From</label>
-        <input type="datetime-local" id="start_date" name="start_date">
+        <input type="datetime-local" id="start_date" name="start_date" onchange="updateEndDateLimit()">
         <label for="end_date">Until</label>
         <input type="datetime-local" id="end_date" name="start_date">
         <button type="submit">Search</button>
@@ -209,12 +209,18 @@
             console.log("lastSearchQuery: ", lastSearchQuery);
             let searchParamJSON = JSON.parse(lastSearchQuery);
 
+            const currentDate = new Date();
+            const formattedCurrentDate = currentDate.toISOString().slice(0, 16);
+
             let locationElement = document.getElementById('location');
             locationElement.value = searchParamJSON.userLocationStr;
             let startDateElement = document.getElementById('start_date');
             startDateElement.value = searchParamJSON.startDate;
+            startDateElement.min = formattedCurrentDate;
             let endDateElement = document.getElementById('end_date');
             endDateElement.value = searchParamJSON.endDate;
+
+            updateEndDateLimit();
 
             sendRequest("http://localhost:3000/search", lastSearchQuery);
         }
@@ -452,6 +458,14 @@
             if (carMarkers[data.vehicleID].getAnimation() !== null) {
                 carMarkers[data.vehicleID].setAnimation(null);
             }
+        }
+
+        function updateEndDateLimit() {
+            const startDateInput = document.getElementById('start_date');
+            const startDateValue = startDateInput.value;
+
+            const endDateInput = document.getElementById('end_date');
+            endDateInput.min = startDateValue;
         }
     </script>
 </body>

@@ -83,6 +83,15 @@
             } else { 
                 alert("Geo-location not supported by browser");
             }
+
+            const currentDate = new Date();
+            const formattedCurrentDate = currentDate.toISOString().slice(0, 16);
+
+            const startDateInput = document.getElementById('start_date');
+            startDateInput.value = formattedCurrentDate;
+            startDateInput.min = formattedCurrentDate;
+
+            updateEndDateLimit();
         }
         async function showPosition (position) {
             let lat = position.coords.latitude;
@@ -211,6 +220,14 @@
         </article>`;
         return htmlStr;
     }
+
+    function updateEndDateLimit() {
+            const startDateInput = document.getElementById('start_date');
+            const startDateValue = startDateInput.value;
+
+            const endDateInput = document.getElementById('end_date');
+            endDateInput.min = startDateValue;
+        }
     </script>
 </head>
 
@@ -268,9 +285,9 @@
                             <label for="location">Location</label>
                             <input type="text" id="location" name="location">
                             <label for="start_date">From</label>
-                            <input type="datetime-local" id="start_date" name="start_date">
+                            <input type="datetime-local" id="start_date" name="start_date" onchange="updateEndDateLimit()">
                             <label for="end_date">Until</label>
-                            <input type="datetime-local" id="end_date" name="start_date">
+                            <input type="datetime-local" id="end_date" name="end_date">
                             <button type="button" value="Search" onclick="submitForm()">Search</button>
                         </form>
                     </div>
