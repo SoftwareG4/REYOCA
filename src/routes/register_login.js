@@ -3,7 +3,7 @@ const {createTokens, validateToken}= require('../services/JWTauth');
 const jwt = require('jsonwebtoken')
 const cookie = require('cookie');
 const dotenv = require('dotenv');
-const {redirect_admin}=require("./page_redirect")
+const {redirect_admin, red_reg_adminpage}=require("./page_redirect")
 dotenv.config();
 
 require('../../global.js');
@@ -157,7 +157,7 @@ function login_user(req, res) {
                 const accessToken=createTokens(result[0])
                 res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
                 if (result[0].role=="admin"){
-                    redirect_admin(req,res,requestData)
+                    red_reg_adminpage(req,res,requestData)
 
                 }
                 else{

@@ -67,6 +67,7 @@ const server = http.createServer(async (req, res) => {
     admin_route(req,res)
   }
   else if (path.startsWith("/dev_page_route")){
+    console.log("app")
     redirect_route(req,res)
   }
 

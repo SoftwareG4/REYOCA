@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Review</title>
+    <style>
+        body {
+            font-family: 'Rethink Sans', sans-serif;
+            background: #F7F9F9;
+            text-align: center;
+        }
+        .review-container {
+            background: white;
+            width: 60vw;
+            margin: 50px auto;
+            padding: 30px;
+            box-shadow: 0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+                        0px 5px 10px rgba(0, 0, 0, 0.025),
+                        0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+                        0px 40px 80px rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+        }
+        select, textarea {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #bc4749;
+            padding: 10px;
+        }
+        button {
+            background: #bc4749;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            filter: brightness(90%);
+        }
+    </style>
+</head>
+<body>
+    <div class="review-container">
+        <h1>Report:</h1>
+
+        <select id="reportType">
+            <option value="">Select Report Type</option>
+            <option value="car">Car</option>
+            <option value="user">User</option>
+        </select>
+
+        <textarea id="reportDescription" placeholder="Write your review here..."></textarea>
+        <input type="text" id="userID" placeholder="Report User">
+        <button onclick="submitReport()">Report</button>
+    </div>
+
+    <script>
+        function submitReport() {
+            // Function to handle review submission
+            // Collect the report type and the text from the textarea
+            var userID = document.getElementById('userID').value;
+            var reportType = document.getElementById('reportType').value;
+            var description = document.getElementById('reportDescription').value;
+            var data = {
+                reported_id: userID,
+                report_type: reportType,
+                description: description
+            };
+            fetch('http://localhost:3000/report/postreport', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); 
+                } else {
+                    alert('Review Added Successfully');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+        }
+    </script>
+</body>
+</html>

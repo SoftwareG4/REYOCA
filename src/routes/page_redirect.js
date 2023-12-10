@@ -316,7 +316,7 @@ function red_reg_get_reviews(req, res){
 function red_reg_update_pass(req, res) {
   if (req.method === 'GET') {
       // Read the EJS file
-      fs.readFile('./src/views/update_password.ejs', 'utf8', (err, data) => {
+      fs.readFile('./src/views/admin_page.ejs', 'utf8', (err, data) => {
           if (err) {
               console.error(err);
               res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -324,13 +324,6 @@ function red_reg_update_pass(req, res) {
               return;
           }
 
-          // Render the EJS template with data
-          const dataToRender = { title: 'Update Password', message: 'Enter your details' };
-          const renderedHtml = ejs.render(data, dataToRender);
-
-          // Send the rendered HTML as a response
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end(renderedHtml);
       });
   } else if (req.method === 'POST') {
     let body = '';
@@ -422,11 +415,76 @@ function red_reg_update_pass(req, res) {
 // }
 
 
+function red_reg_adminpage(req, res) {
+  fs.readFile('./src/views/admin_main.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        // Sample data to pass to the EJS template
+        const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
+
+        // Render the EJS template with data
+        const renderedHtml = ejs.render(data, dataToRender);
+
+        // Set the response header and send the rendered HTML
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
+    });
+}
+
+function red_reg_postreview(req, res) {
+  console.log("in")
+  fs.readFile('./src/views/postreview.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        // Sample data to pass to the EJS template
+        const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
+
+        // Render the EJS template with data
+        const renderedHtml = ejs.render(data, dataToRender);
+
+        // Set the response header and send the rendered HTML
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
+    });
+}
+
+function red_reg_postreport(req, res) {
+  console.log("in")
+  fs.readFile('./src/views/postreport.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        // Sample data to pass to the EJS template
+        const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
+
+        // Render the EJS template with data
+        const renderedHtml = ejs.render(data, dataToRender);
+
+        // Set the response header and send the rendered HTML
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
+    });
+}
+
+
+
 function redirect_route(req, res){
     path=req.url
     if(path[path.length-1]=='/'){
         path=path.substring(0,path.length-1)
     }
+    console.log(path)
     switch(path){
         case "/dev_page_route/loginpage":
             redirect_login(req, res);
@@ -452,6 +510,17 @@ function redirect_route(req, res){
         case "/dev_page_route/profilepage/reviews":
           red_reg_get_reviews(req, res);
         break
+        case "/dev_page_route/profilepage/adminpage":
+          redirect_admin(req, res);
+        break
+        case "/dev_page_route/profilepage/postreview":
+          console.log("path")
+          red_reg_postreview(req, res);
+        break
+        case "/dev_page_route/profilepage/postreport":
+          red_reg_postreport(req, res);
+        break
+
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('Page Not Found');
@@ -461,4 +530,4 @@ function redirect_route(req, res){
 
 
 
-module.exports = {redirect_route,redirect_admin};
+module.exports = {redirect_route,red_reg_adminpage};

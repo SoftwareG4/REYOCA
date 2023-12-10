@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Review</title>
+    <style>
+        body {
+            font-family: 'Rethink Sans', sans-serif;
+            background: #F7F9F9;
+            text-align: center;
+        }
+        .review-container {
+            background: white;
+            width: 60vw;
+            margin: 50px auto;
+            padding: 30px;
+            box-shadow: 0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+                        0px 5px 10px rgba(0, 0, 0, 0.025),
+                        0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+                        0px 40px 80px rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+        }
+        .star-rating {
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .star {
+            font-size: 25px;
+            color: gray;
+            cursor: pointer;
+        }
+        .star.golden {
+            color: gold;
+        }
+        .star-rating .star {
+            font-size: 25px;
+            color: gray;
+            cursor: pointer;
+        }
+        .star-rating .star.golden {
+            color: gold;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #bc4749;
+            padding: 10px;
+        }
+        button {
+            background: #bc4749;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            filter: brightness(90%);
+        }
+    </style>
+</head>
+<body>
+    <div class="review-container">
+        <h1>Submit Your Review</h1>
+
+        <div id="starRating" class="star-rating">
+            <span class="star" data-value="1">&#9734;</span>
+            <span class="star" data-value="2">&#9734;</span>
+            <span class="star" data-value="3">&#9734;</span>
+            <span class="star" data-value="4">&#9734;</span>
+            <span class="star" data-value="5">&#9734;</span>
+        </div>
+
+        <textarea id="reviewDescription" placeholder="Write your review here..."></textarea>
+        <input type="text" id="userID" placeholder="User ID">
+        <button onclick="submitReview()">Submit Review</button>
+    </div>
+
+    <script>
+        // JavaScript for interactive stars
+        let selectedRating = 0;
+        const stars = document.querySelectorAll('#starRating .star');
+
+        stars.forEach(star => {
+            star.onclick = function() {
+                selectedRating = this.getAttribute('data-value');
+                updateStarDisplay(selectedRating);
+            };
+        });
+
+        function updateStarDisplay(rating) {
+            stars.forEach(star => {
+                if (star.getAttribute('data-value') <= rating) {
+                    star.classList.add('golden');
+                } else {
+                    star.classList.remove('golden');
+                }
+            });
+        }
+
+        function submitReview() {
+            
+            // Function to handle review submission
+            // Collect the report type and the text from the textarea
+            var description = document.getElementById('reviewDescription').value;
+            var userID = document.getElementById('userID').value;
+            //alert(selectedRating)
+            var data = {
+                description: description,
+                rating_for: userID,
+                star: selectedRating
+            };
+            alert(data)
+            fetch('http://localhost:3000/review/postreview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); 
+                } else {
+                    alert('Review Added Successfully');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+        }
+    </script>
+</body>
+</html>

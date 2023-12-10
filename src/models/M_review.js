@@ -28,7 +28,7 @@ class review_Model {
                 }
                 else{
                     const sql="INSERT INTO user_reviews(`stars`,`description`,`rating_for`,`rating_by`) VALUES (?,?,?,?);"
-                    connection.query(query, [data["star"],data["description"],data["rating_for"],user_id],(err, result) => {
+                    connection.query(query, [data["star"],data["description"],5,user_id],(err, result) => {
                         connection.end(); // Close the connection
                         if (err) {
                         return callback(err, null);

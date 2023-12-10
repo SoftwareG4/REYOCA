@@ -20,6 +20,7 @@ function add_review(req, res) {
       res.end(JSON.stringify({ error: "User not Authenticated" }));
       return;
   }
+  console.log("user",user_id)
   const chunks = [];
   req.on("data", (chunk) => {
       chunks.push(chunk);
@@ -45,7 +46,8 @@ function add_review(req, res) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ found_bad_words : foul_words }));
       }
-
+      requestData = Object.keys(requestData)[0];
+      requestData = JSON.parse(requestData);
       review_Model.post_review(user_id,requestData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });

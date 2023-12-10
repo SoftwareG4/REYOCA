@@ -22,7 +22,7 @@
     <section>
         <h2>Reports Pending:</h2>
         <p>Filter Reports:</p>
-        <form action="/admin/filter-reports" method="post">
+        <form>
             <input type="text" name="reported_id" placeholder="Reported ID">
             <input type="text" name="reported_by" placeholder="Reported By">
             <input type="text" name="report_type" placeholder="Report Type">
@@ -51,7 +51,7 @@
                             <td>
                                 <!-- Resolve Button -->
                                 <!-- Note: You might need to adjust the form's action URL -->
-                                <form action="/admin/deletereport" method="post">
+                                <form>
                                     <input type="hidden" name="_ID" value="<%= report.id %>">
                                     <button type="submit">Resolve</button>
                                 </form>
@@ -68,7 +68,7 @@
     <!-- Review Deletion Form -->
     <section>
         <h2>Delete Review</h2>
-        <form action="/admin/deletereview" method="DELETE">
+        <form>
             <input type="text" name="_ID" id="reviewID" placeholder="Enter Review ID" required>
             <button type="submit">Delete Review</button>
         </form>
@@ -79,7 +79,7 @@
     <!-- User Deletion Form -->
     <section>
         <h2>Delete User</h2>
-        <form action="/admin/deleteuser" method="DELETE">
+        <form>
             <input type="text" name="_ID" id="userID" placeholder="Enter User ID" required>
             <button type="submit" onclick="deleteuser()">Delete User</button>
         </form>
@@ -88,9 +88,9 @@
     <!-- Listing Deletion Form -->
     <section>
         <h2>Delete Car Listing</h2>
-        <form action="/admin/deletelisting" method="DELETE">
+        <form>
             <input type="text" name="_ID" id="listingID" placeholder="Enter Listing ID" required>
-            <button type="submit">Delete Listing</button>
+            <button type="submit" onclick="deletelisting()">Delete Listing</button>
         </form>
     </section>
 
@@ -118,13 +118,37 @@
             alert('An error occurred');
         });
     }
-    function deletereview() {
-        var reviewId = document.getElementById(reviewID).value;
+    function deletelisting() {
+        var reviewId = document.getElementById('listingID').value;
         var data = {
             _ID: reviewId
         };
         fetch('/admin/deletereview', {
-            method: 'DELETE',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error); 
+            } else {
+                alert('Successfully Deleted');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+    function deletereview() {
+        var reviewId = document.getElementById('reviewID').value;
+        var data = {
+            _ID: reviewId
+        };
+        fetch('/admin/deletereview', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
@@ -143,13 +167,13 @@
         });
     }
     function deleteuser() {
-        var user_id = document.getElementById(userID).value;
+        var user_id = document.getElementById('userID').value;
         console.log(user_id);
         var data = {
             _ID: user_id
         };
-        fetch('/admin/deletereview', {
-            method: 'DELETE',
+        fetch('http://localhost:3000/admin/deleteuser', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })

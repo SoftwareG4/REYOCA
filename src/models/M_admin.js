@@ -66,9 +66,10 @@ class AdminModel{
               return callback(err, null);
             }
             var userID = user_id
+            console.log(user_id,data["_ID"])
             if(user_id === 1){
                 userID = data["_ID"];
-                // console.log(userID);
+                console.log(userID);
             }
             
             const query ="DELETE FROM user WHERE _ID = ?";
@@ -77,8 +78,10 @@ class AdminModel{
                 
                 connection.end(); // Close the connection
                 if (err) {
+                    console.log("error");
                 return callback(err, null);
                 }
+                console.log("sucess");
                 return callback(null, "User Deleted Successfully");
             });
         });

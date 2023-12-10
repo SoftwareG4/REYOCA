@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: 'Rethink Sans', sans-serif;
+            background: #F7F9F9;
+            text-align: center;
+        }
+        .admin-container {
+            background: white;
+            width: 60vw;
+            margin: 50px auto;
+            padding: 30px;
+            box-shadow: 0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+                        0px 5px 10px rgba(0, 0, 0, 0.025),
+                        0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+                        0px 40px 80px rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+        }
+        button {
+            background: #bc4749;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            filter: brightness(90%);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Welcome, Admin!</h1>
+        <button onclick="redirectToPage()">Manage Users</button>
+    </div>
+
+    <script>
+        function redirectToPage() {
+            // Redirect to the specific admin page. Update the URL as needed.
+            window.location.href = 'http://localhost:3000/dev_page_route/profilepage/adminpage';
+        }
+    </script>
+</body>
+</html>

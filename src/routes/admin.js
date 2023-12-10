@@ -101,7 +101,7 @@ function delete_report(req, res) {
 }
 
 function delete_user(req, res) {
-  if(req.method!="DELETE"){
+  if(req.method!="POST"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
     return;
@@ -207,6 +207,7 @@ function admin_route(req, res){
           delete_report(req, res);
           break
       case "/admin/deleteuser":
+          console.log("path")
           delete_user(req, res);
           break
       case "/admin/deletelisting":
