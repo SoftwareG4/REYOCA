@@ -131,7 +131,7 @@
 <div class="container container-custom">
   <div class="car-section row">
     <div class="col-md-6">
-      <img src="https://www.notateslaapp.com/images/news/2023/model-x-sunset.jpg" alt="Car Image" class="img-fluid rounded">
+      <img src="https://cdn.carbuzz.com/gallery-images/1600/592000/300/592367.jpg" alt="Car Image" class="img-fluid rounded">
     </div>
     <div class="col-md-6">
       <div class="car-info">
@@ -226,10 +226,26 @@
 
 <script>
 
+function disableForm() {
+      // Get the form element
+      const form = document.getElementById('bookingform');
+
+      // Disable the entire form
+      form.disabled = true;
+    }
+  
+    function enableForm() {
+      // Get the form element
+      const form = document.getElementById('bookingform');
+
+      // Disable the entire form
+      form.disabled = false;
+    }
+
 document.addEventListener('DOMContentLoaded', function() {
 
-let vehicleId = 2;
-let userId = 1;
+let vehicleId = 6;
+let userId = 6;
 let pickUpDate = "2024-02-02";
 let dropOffDate = "2024-02-03";
 
@@ -275,21 +291,26 @@ var addToCartButton = document.getElementById('add-to-cart-btn');
             if (!data.message) {
                 addToCartButton.style.display = 'none';
                 document.getElementById("checkoutbutton").style.display = '';
+                disableForm()
             }
             else{
               addToCartButton.style.display = '';
               document.getElementById("checkoutbutton").style.display = 'none';
+              enableForm()
             }
         })
         .catch(error => console.error('Error:', error));
 
-calculateDynamicPrice(vehicleId,pickUpDate,dropOffDate, 0, 0, 1, null).then(function(calcprice) {
+        getVehicleDetails(vehicleId).then((data)=> {
+        const basePrice = data.price;
+calculateDynamicPrice(basePrice,pickUpDate,dropOffDate, 0, 0, 1, null).then(function(calcprice) {
     const displayElement = document.getElementById('priceapiData');
     console.log(calcprice);
     const outputHTML = `
-    <p>Estimated Price: $${calcprice.price}</p>`;
+    <h2><p>Estimated Price: $${calcprice.price}</p></h2>`;
     displayElement.innerHTML = outputHTML;
 })
+        })
 
 let form = document.getElementById("bookingform")
 let cartForm = function(event) {
@@ -305,13 +326,19 @@ let price = function(event){
     let form = document.getElementById("bookingform");
     console.log(form.insurance.value);
     document.getElementById("returnDate").min=document.getElementById("pickupDate").value;
-    calculateDynamicPrice(vehicleId, form.pickupDate.value, form.returnDate.value, form.additionalDrivers.value, form.childSeats.value, form.insurance.value, null).then(function(calcprice) {
+
+    getVehicleDetails(vehicleId).then((data)=> {
+        const basePrice = data.price;
+    
+    calculateDynamicPrice(basePrice, form.pickupDate.value, form.returnDate.value, form.additionalDrivers.value, form.childSeats.value, form.insurance.value, null).then(function(calcprice) {
         const displayElement = document.getElementById('priceapiData');
         console.log(calcprice);
         const outputHTML = `
-        <p>Estimated Price: $${calcprice.price}</p>`;
+        <h2><p>Estimated Price: $${calcprice.price}</p></h2>`;
         displayElement.innerHTML = outputHTML;
     })
+
+  })
 }
 form.addEventListener("change",price, true)
 
@@ -450,16 +477,16 @@ const displayElement = document.getElementById('vehicleapiData');
 const make = data.make || 'N/A';
 const model = data.model || 'N/A';
 const type = data.type || 'N/A';
-const seats = data.seater || 'N/A';
+const seats = data.seater || '5';
 const price = data.price || 'N/A';
 
 // Construct the output HTML
 const outputHTML = `
-    <p>Make: ${make}</p>
+    <h3><p>Make: ${make}</p></h3>
     <p>Model: ${model}</p>
     <p>Type: ${type}</p>
     <p>Seats: ${seats}</p>
-    <p>Price: $${price}</p>
+    <p>Price per day: $${price}</p>
 `;
 
 // Set the innerHTML of the display element
@@ -479,13 +506,13 @@ let result = await response.json();
 return await result; 
 }
 
-async function calculateDynamicPrice(vehicleId, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns){
+async function calculateDynamicPrice(basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns){
 const fetchOptions = {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ vehicleId, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns }),
+    body: JSON.stringify({ basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns }),
 };
 let response = await fetch("http://localhost:3000/vehicle/calculate-price", fetchOptions);
 let result = await response.json();
@@ -591,18 +618,23 @@ let quantity = 1;
 checkVehicleAvailability(vehicleId, form.pickupDate.value, form.returnDate.value).then(function(response){
 
     if(response.message === "Yes") {
-        calculateDynamicPrice(vehicleId, form.pickupDate.value, form.returnDate.value, form.additionalDrivers.value, form.childSeats.value, form.insurance.value, null).then(function(price) {
+      getVehicleDetails(vehicleId).then((data)=> {
+        const basePrice = data.price;
+
+        calculateDynamicPrice(basePrice, form.pickupDate.value, form.returnDate.value, form.additionalDrivers.value, form.childSeats.value, form.insurance.value, null).then(function(price) {
             const displayElement = document.getElementById('priceapiData');
             const outputHTML = `
-            <p>Estimated Price: $${price.price}</p>`;
+            <h2><p>Estimated Price: $${price.price}</p></h2>`;
             displayElement.innerHTML = outputHTML;
             // console.log(startDate, endDate, "start/end2");
             addToCartfunc(vehicleId,renteeId,extras,quantity,price.price, form.pickupDate.value, form.returnDate.value).then(function(cartstatus){
               document.getElementById("add-to-cart-btn").style.display = 'none';
               document.getElementById("checkoutbutton").style.display = '';
+              disableForm()
                 alert(cartstatus.message);
             })
         })
+      })
 
     }
     else {

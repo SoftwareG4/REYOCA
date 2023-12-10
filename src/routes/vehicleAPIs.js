@@ -61,10 +61,10 @@ function vehicleApi(req, res) {
         const postBody = JSON.parse(body);
 
         // Extract parameters from postBody
-        const { vehicleId, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns } = postBody;
+        const { basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns } = postBody;
 
         // Calculate the price using the pricing service
-        const price = pricingService.calculatePrice(vehicleId, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns);
+        const price = pricingService.calculatePrice(basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns);
 
         // Return the price in the response
         res.writeHead(200, { 'Content-Type': 'application/json' });
