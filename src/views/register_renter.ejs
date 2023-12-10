@@ -1,55 +1,147 @@
 <html>
     <head>
         <title>ReYoCa:Create an account</title>
+        <style>
+            body{
+  font-family: 'Rethink Sans', sans-serif;
+  background: #F7F9F9;
+}
+.register-rentee--container{
+  background: white;
+  width: 500px;
+  margin: 0 auto;
+  box-shadow:
+  0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+  0px 5px 10px rgba(0, 0, 0, 0.025),
+  0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+  0px 40px 80px rgba(0, 0, 0, 0.05)
+;
+  border-radius:15px;
+  margin-top:50px;
+  padding: 30px;
+  box-sizing: border-box;
+}
+h2{
+  color: #bc4749;
+  margin-bottom:60px;
+}
+form{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:20px;
+}
+label{
+  color: #808B96;
+  font-weight:500;
+  font-size:14px;
+  margin-bottom:5px;
+}
+input{
+  width:100%;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding:10px;
+  border: 1px solid #D5D8DC;
+  outline:none;
+  margin-bottom: 20px;
+}
+input[type="submit"]{
+  background: #bc4749;
+  color:white;
+  padding:10px;
+  font-size:14px;
+  font-weight:500;
+  margin-bottom:0;
+  border: none;
+  margin-top:20px;
+  width:100%;
+  grid-column: 1 / span 2;
+}
+        </style>
     </head>
     <body>
-        <form action="http://localhost:3000/login/create-renter" method="POST">
-            <label for="firstname">First Name</label>
-            <input type="text" name="firstname" required>
-            <label for="lastname">Last Name</label>
-            <input type="text" name="lastname"><br><br>
-            <label for="email">Email</label>
-            <input type="email" name="email" required><br><br>
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" required>
-            <label for="c_password">Confirm Password</label>
-            <input type="password" name="c_password" id="confirm_password" required><br><br>
-            <label for="phone">Contact Number</label>
-            <input type="number" name="phone" id="phone"><br><br>
-            <label for="gov_id">Gender</label>
-            <select name="gender" id="gender" required>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select><br><br>
-            <input type="submit" value="Register">
-        </form>
+        <div class="register-rentee--container">
+            <h2>Register Rentee</h2>
+            <form action="http://localhost:3000/login/create-renter" method="POST">
+              <div class="input--wrapper">
+                <label for="firstname">First Name</label>
+                <input type="text" name="firstname" required>
+              </div>
+              <div class="input--wrapper">
+                <label for="lastname">Last Name</label>
+                <input type="text" name="lastname">
+              </div>
+              <div class="input--wrapper">
+                <label for="email">Email</label>
+                <input type="email" name="email" required>
+              </div>
+              <div class="input--wrapper">
+                <label for="phone">Contact Number</label>
+                <input type="text" name="phone" id="phone">
+              </div>
+              <div class="input--wrapper">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+              </div>
+              <div class="input--wrapper">
+                <label for="c_password">Confirm Password</label>
+                <input type="password" name="c_password" id="confirm_password" required>
+              </div>
+              <div class="input--wrapper">
+                <label for="gov_id">Gender</label>
+                <select name="gender" id="gender" required>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              </select>
+              </div>
+              <input type="submit" value="Register">
+            </form>
+          </div>
         <script>
             var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
+
+            function isPasswordValid(pass) {
+                const minLength = 8;  // Minimum length
+                const containsUppercase = /[A-Z]/.test(pass); // At least one uppercase letter
+                const containsLowercase = /[a-z]/.test(pass); // At least one lowercase letter
+                const containsDigit = /\d/.test(pass); // At least one digit
+                const containsSpecialChar = /[!@#$%^&*()-_+=<>?]/.test(pass); // At least one special character
+            
+                if (pass.length >= minLength &&containsUppercase &&containsLowercase &&containsDigit &&containsSpecialChar) {
+                    return true; 
+                }
+                return false; 
+            }
 
             function validatePassword(){
                 if(password.value != confirm_password.value) {
                     confirm_password.setCustomValidity("Passwords Don't Match");
-                } else {
+                }
+                else if(!isPasswordValid(password)){
+                password.setCustomValidity(`Password does not meet criteria. Make sure:
+                - Contains atleast one Uppercase character
+                - Contains atleast one Lowercase character
+                - Contains atleast one special character
+                - Contains atleast one digit
+                - Has a minimum length of 8 characters
+                `);
+            } 
+                else {
                     confirm_password.setCustomValidity('');
                 }
             }
             password.onchange = validatePassword;
             confirm_password.onkeyup = validatePassword;
             
-            // var DL = document.getElementById("dl")
-            // function validateDL(){
-            //     if(!DL.value.startsWith("DL")) {
-            //         DL.setCustomValidity("Driving License not Valid");
-            //     } else {
-            //         DL.setCustomValidity('');
-            //     }
-            // }
-            // DL.onchange = validateDL;
-            // DL.onkeyup = validateDL;
-
             var phone = document.getElementById("phone")
+
+            function isValidPhoneNumber(phoneNumber) {
+                const cleanedPhoneNumber = phoneNumber.replace(/\D/g, '');
+                return cleanedPhoneNumber.length === 10;
+            }
+            
             function validatephone(){
-                if(String(phone.value).length!=10) {
+                if(!isValidPhoneNumber(phone)) {
                     phone.setCustomValidity("Number not Valid");
                 } else {
                     phone.setCustomValidity('');

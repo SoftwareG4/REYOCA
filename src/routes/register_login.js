@@ -139,7 +139,6 @@ function login_user(req, res) {
                 requestData[pair[0]] = pair[1];
             }
             // console.log("DataObj: ", requestData);
-
         } catch (error) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
@@ -154,7 +153,7 @@ function login_user(req, res) {
               res.writeHead(400, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ message: result }));
             } else{
-                console.log(result)
+                // console.log(result)
                 const accessToken=createTokens(result[0])
                 res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
                 if (result[0].role=="admin"){

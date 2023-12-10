@@ -77,7 +77,7 @@ input[type="submit"]{
               </div>
               <div class="input--wrapper">
                 <label for="phone">Contact Number</label>
-                <input type="number" name="phone" id="phone">
+                <input type="text" name="phone" id="phone">
               </div>
               <div class="input--wrapper">
                 <label for="password">Password</label>
@@ -100,30 +100,48 @@ input[type="submit"]{
         <script>
             var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
 
+            function isPasswordValid(pass) {
+                const minLength = 8;  // Minimum length
+                const containsUppercase = /[A-Z]/.test(pass); // At least one uppercase letter
+                const containsLowercase = /[a-z]/.test(pass); // At least one lowercase letter
+                const containsDigit = /\d/.test(pass); // At least one digit
+                const containsSpecialChar = /[!@#$%^&*()-_+=<>?]/.test(pass); // At least one special character
+            
+                if (pass.length >= minLength &&containsUppercase &&containsLowercase &&containsDigit &&containsSpecialChar) {
+                    return true; 
+                }
+                return false; 
+            }
+
             function validatePassword(){
                 if(password.value != confirm_password.value) {
                     confirm_password.setCustomValidity("Passwords Don't Match");
-                } else {
+                }
+                else if(!isPasswordValid(password)){
+                password.setCustomValidity(`Password does not meet criteria. Make sure:
+                - Contains atleast one Uppercase character
+                - Contains atleast one Lowercase character
+                - Contains atleast one special character
+                - Contains atleast one digit
+                - Has a minimum length of 8 characters
+                `);
+            } 
+                else {
                     confirm_password.setCustomValidity('');
                 }
             }
             password.onchange = validatePassword;
             confirm_password.onkeyup = validatePassword;
             
-            // var DL = document.getElementById("dl")
-            // function validateDL(){
-            //     if(!DL.value.startsWith("DL")) {
-            //         DL.setCustomValidity("Driving License not Valid");
-            //     } else {
-            //         DL.setCustomValidity('');
-            //     }
-            // }
-            // DL.onchange = validateDL;
-            // DL.onkeyup = validateDL;
-
             var phone = document.getElementById("phone")
+
+            function isValidPhoneNumber(phoneNumber) {
+                const cleanedPhoneNumber = phoneNumber.replace(/\D/g, '');
+                return cleanedPhoneNumber.length === 10;
+            }
+            
             function validatephone(){
-                if(String(phone.value).length!=10) {
+                if(!isValidPhoneNumber(phone)) {
                     phone.setCustomValidity("Number not Valid");
                 } else {
                     phone.setCustomValidity('');
