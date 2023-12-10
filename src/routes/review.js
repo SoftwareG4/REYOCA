@@ -41,15 +41,19 @@ function add_review(req, res) {
           res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
           return;
       }
+      requestData = Object.keys(requestData)[0];
+      requestData = JSON.parse(requestData);
+      console.log(requestData)
       const foul_words=await verify_foul(requestData["description"]);
+      console.log(foul_words.length)
       if (foul_words.length>0){
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ found_bad_words : foul_words }));
       }
-      requestData = Object.keys(requestData)[0];
-      requestData = JSON.parse(requestData);
+      else{
       review_Model.post_review(user_id,requestData, (err, result) => {
           if (err) {
+            console.log(err)
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err }));
           } else {
@@ -57,6 +61,7 @@ function add_review(req, res) {
             res.end(JSON.stringify({ message: result }));
           }
         });
+      }
   });
 }
 

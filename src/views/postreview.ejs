@@ -76,7 +76,7 @@
         </div>
 
         <textarea id="reviewDescription" placeholder="Write your review here..."></textarea>
-        <input type="text" id="userID" placeholder="User ID">
+        <input type="text" id="userID" placeholder="Vehicle ID">
         <button onclick="submitReview()">Submit Review</button>
     </div>
 
@@ -111,10 +111,10 @@
             //alert(selectedRating)
             var data = {
                 description: description,
-                rating_for: userID,
+                vehicle_id: userID,
                 star: selectedRating
             };
-            alert(data)
+            // alert(data)
             fetch('http://localhost:3000/review/postreview', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -122,10 +122,11 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.error) {
-                    alert(data.error); 
+                if (data.message) {
+                    alert(data.message); 
                 } else {
-                    alert('Review Added Successfully');
+                    alert("Please refrain from using the following words: "+data.found_bad_words);
+                    // password.setCustomValidity(data.found_bad_words.toString());
                     location.reload();
                 }
             })

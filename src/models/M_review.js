@@ -17,22 +17,26 @@ class review_Model {
             if (err) {
               return callback(err, null);
             }
-            const query ="SELECT * FROM vehicles vc join transaction_history th on vc._ID=th.vehicle_id WHERE (th.rentee_id=? AND vc.renter_id=?) OR (th.rentee_id=? AND vc.renter_id=?);"
-            connection.query(query, [user_id,data["rating_for"],data["rating_for"],user_id],(err, results) => {
-                connection.end(); // Close the connection
+            // const query ="SELECT * FROM vehicles vc join transaction_history th on vc._ID=th.vehicle_id WHERE (th.rentee_id=? AND vc.renter_id=?) OR (th.rentee_id=? AND vc.renter_id=?);"
+            const query="SELECT * FROM vehicles WHERE _ID=?"
+            connection.query(query, [data["vehicle_id"]],(err, results) => {
+                // connection.end(); // Close the connection
                 if (err) {
                 return callback();
                 }
+                // console.log(results)
                 if (results.length==0){
                     return callback("Cannot review this user as no transaction in database", null);
                 }
+                
                 else{
                     const sql="INSERT INTO user_reviews(`stars`,`description`,`rating_for`,`rating_by`) VALUES (?,?,?,?);"
-                    connection.query(query, [data["star"],data["description"],5,user_id],(err, result) => {
+                    connection.query(sql, [data["star"],data["description"],results[0].renter_id,user_id],(err, result) => {
                         connection.end(); // Close the connection
                         if (err) {
                         return callback(err, null);
                         }
+                        // console.log("final",result)
                         return callback(null, "Review Added Successfully");
                     });
                 }
