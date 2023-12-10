@@ -41,6 +41,39 @@ function cartApi(req, res) {
           }
         });
       }
+
+      else if (req.url === '/cart/check-cart'){
+        
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk;
+          
+        });
+        
+
+        req.on('end', async () => {
+          try {
+            const postBody = JSON.parse(body);
+            // console.log(postBody, "body");
+            // console.log("line54");
+            CartModel.checkCart(postBody.userId, (err, result) => {
+              if (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Internal Server Error' }));
+              } else {
+                // console.log(result,"line59");
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: result }));
+              }
+            });
+          } catch (error) {
+            console.error('Error parsing request body:', error);
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Invalid request body' }));
+          }
+        });
+      }
+
     } else if (req.method === 'GET') {
       const chunks = [];
       let id;

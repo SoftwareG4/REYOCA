@@ -156,8 +156,8 @@
   <div class="highlight">
     <div id="priceapiData">Loading...</div>
   </div>
-  <button type="submit" class="btn btn-custom add-to-cart-btn">Add to cart</button>
-  <button id="checkoutbutton" hidden="hidden" type="button" class="btn btn-custom add-to-cart-btn">Checkout cart</button>
+  <button type="submit" class="btn btn-custom add-to-cart-btn" id = "add-to-cart-btn">Add to cart</button>
+  <button id="checkoutbutton"  type="button" class="btn btn-custom add-to-cart-btn">Go to cart</button>
 </form>
 
 
@@ -238,7 +238,33 @@ document.getElementById("pickupDate").value=pickUpDate;
 document.getElementById("returnDate").min=pickUpDate;
 document.getElementById("pickupDate").min=formattedYesterday;
 document.getElementById("returnDate").value=dropOffDate;
-// document.getElementById("pickupDate").max=dropOffDate;
+
+
+// Hides button if user already has something in cart.
+var addToCartButton = document.getElementById('add-to-cart-btn');
+    var checkCartData = {
+        userId: userId
+    };
+    fetch('/cart/check-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(checkCartData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data,"comment this");
+            if (!data.message) {
+                addToCartButton.style.display = 'none';
+                document.getElementById("checkoutbutton").style.display = '';
+            }
+            else{
+              addToCartButton.style.display = '';
+              document.getElementById("checkoutbutton").style.display = 'none';
+            }
+        })
+        .catch(error => console.error('Error:', error));
 
 calculateDynamicPrice(vehicleId,pickUpDate,dropOffDate, 0, 0, 1, null).then(function(calcprice) {
     const displayElement = document.getElementById('priceapiData');
@@ -338,7 +364,6 @@ fetch(`http://localhost:3000/user/get/${user_ID}`)
                 <p>First Name: ${firstName}</p>
                 <p>Last Name: ${lastName}</p>
                 <p>Email: ${email}</p>
-                <p>Phone: ${phone}</p>
             `;
 
             // Set the innerHTML of the display element
@@ -483,14 +508,16 @@ let response = await fetch("http://localhost:3000/reviews/", fetchOptions);
 
 }
 
-async function addToCartfunc(vehicleId, renteeId, extras,quantity,total){
+async function addToCartfunc(vehicleId, renteeId, extras,quantity,total, to_date, from_date){
+  console.log(to_date, from_date, "to/from");
 const fetchOptions = {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ vehicleId, renteeId, extras,quantity, total }),
+    body: JSON.stringify({ vehicleId, renteeId, extras,quantity, total, to_date, from_date }),
 };
+console.log(fetchOptions.body, "fetchOptions");
 let response = await fetch("http://localhost:3000/cart/add-to-cart", fetchOptions);
 let result = await response.json();
 return await result; 
@@ -525,14 +552,15 @@ const ans = arr.join(",");
 return ans;
 }
 
-function addToCart(vehicleId,userId,pickUpDate,dropOffDate) {
+function addToCart(vehicleId,userId) {
 let form = document.getElementById("bookingform");
 const renteeId = userId; // Example rentee ID
 const extras = setExtras(form); // Example extras
 let quantity = 1;
-let startDate = pickUpDate;
-let endDate = dropOffDate;
+// let startDate = pickUpDate;
+// let endDate = dropOffDate;
 
+// console.log(startDate, endDate, "start/end1");
 // const calculatePriceData = {
 //     vehicleId: vehicleId,
 //     startDate: startDate, // Replace with your start date
@@ -543,7 +571,7 @@ let endDate = dropOffDate;
 //     otherAddOns: "" // Example otherAddOns value
 // };
 
-checkVehicleAvailability(vehicleId, startDate, endDate).then(function(response){
+checkVehicleAvailability(vehicleId, form.pickupDate.value, form.returnDate.value).then(function(response){
 
     if(response.message === "Yes") {
         calculateDynamicPrice(vehicleId, form.pickupDate.value, form.returnDate.value, form.additionalDrivers.value, form.childSeats.value, form.insurance.value, null).then(function(price) {
@@ -551,9 +579,10 @@ checkVehicleAvailability(vehicleId, startDate, endDate).then(function(response){
             const outputHTML = `
             <p>Estimated Price: $${price.price}</p>`;
             displayElement.innerHTML = outputHTML;
-            console.log(price.price);
-            addToCartfunc(vehicleId,renteeId,extras,quantity,price.price).then(function(cartstatus){
-                document.getElementById("checkoutbutton").removeAttribute("hidden");
+            // console.log(startDate, endDate, "start/end2");
+            addToCartfunc(vehicleId,renteeId,extras,quantity,price.price, form.pickupDate.value, form.returnDate.value).then(function(cartstatus){
+              document.getElementById("add-to-cart-btn").style.display = 'none';
+              document.getElementById("checkoutbutton").style.display = '';
                 alert(cartstatus.message);
             })
         })

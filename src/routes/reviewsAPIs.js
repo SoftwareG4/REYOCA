@@ -3,7 +3,7 @@ const ReviewsModel = require('../models/reviewsModel');
 const authService = require('../services/authService');
 
 function reviewsApi(req, res) {
-  console.log("reaced API wrapper");
+  // console.log("reaced API wrapper");
   try {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');

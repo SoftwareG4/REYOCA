@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reyoca - city info</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+      /* display: flex; */
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .search-container {
+      text-align: center;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin: 10px;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .card h3 {
+      margin-bottom: 5px;
+    }
+    .card p {
+      margin: 5px 0;
+    }
+    .card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3 mt-5">
+        <div class="search-container">
+          <h2>Plan your trip</h2>
+          <form id="searchForm">
+            <div class="form-group">
+              <label for="cityInput">Enter City:</label>
+              <input type="text" class="form-control" id="cityInput" name="city" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="startSearch()">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" id="cardRow">
+        <div class="container mt-5">
+            <div class="row">
+              <div class="col-md-4">
+                <h2>Places of Interest</h2>
+                <div id="poiCards"></div>
+              </div>
+              <div class="col-md-4">
+                <h2>Hotels</h2>
+                <div id="hotelCards"></div>
+              </div>
+              <div class="col-md-4">
+                <h2>Airports</h2>
+                <div id="airportCards"></div>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+
+  <script>
+async function startSearch() {
+  const cityName = document.getElementById("cityInput").value;
+  const encodedCityName = encodeURIComponent(cityName);
+
+  const url = `https://hotels4.p.rapidapi.com/locations/v3/search?q=${encodedCityName}&locale=en_US&langid=1033&siteid=300000001`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': 'e46343686cmsh4cd61af7bc1d64bp163a60jsnaed7aa27ff3d',
+        'X-RapidAPI-Host': 'hotels4.p.rapidapi.com',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const jsonData = data;
+    DisplayCards(jsonData)
+    // console.log(jsonData);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+    
+
+    
+    // Function to create a card element
+  function createCard(title, details) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = title;
+
+    const detailsElement = document.createElement('p');
+    detailsElement.textContent = details;
+
+    card.appendChild(titleElement);
+    card.appendChild(detailsElement);
+
+    return card;
+  }
+
+  // Access the points of interest, hotels, and airports from the JSON object
+  function DisplayCards(jsonData){
+  const pointsOfInterest = jsonData.sr.filter(item => item.type === 'POI');
+  const hotels = jsonData.sr.filter(item => item.type === 'HOTEL');
+  const airports = jsonData.sr.filter(item => item.type === 'AIRPORT');
+
+  // Create cards for points of interest
+  const poiCards = document.getElementById('poiCards');
+  pointsOfInterest.forEach(pointOfInterest => {
+    const card = createCard(pointOfInterest.regionNames.fullName, 'Type: ' + pointOfInterest.type);
+    poiCards.appendChild(card);
+  });
+
+  // Create cards for hotels
+  const hotelCards = document.getElementById('hotelCards');
+  hotels.forEach(hotel => {
+    const card = createCard(hotel.regionNames.fullName, 'Type: ' + hotel.type);
+    hotelCards.appendChild(card);
+  });
+
+  // Create cards for airports
+  const airportCards = document.getElementById('airportCards');
+  airports.forEach(airport => {
+    const card = createCard(airport.regionNames.fullName, 'Type: ' + airport.type);
+    airportCards.appendChild(card);
+  });
+}
+
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

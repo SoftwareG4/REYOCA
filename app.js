@@ -4,6 +4,7 @@ const url = require('url');
 const qs = require('querystring');
 const mysql = require('mysql2');
 const fs = require('fs');
+const ejs = require('ejs');
 
 // Import Routes
 const {register_login_route} = require('./src/routes/register_login');
@@ -23,6 +24,7 @@ const vehicleApi = require('./src/routes/vehicleAPIs');
 const favouritesApi = require('./src/routes/favouritesAPIs');
 const loyaltyApi = require('./src/routes/loaltyPointsAPI');
 const userAPI = require('./src/routes/getUserAPI');
+const weatherAPI = require('./src/routes/weatherAPIs');
 
 const {view_cart} = require('./src/routes/view_cart');
 const {delete_car} = require('./src/routes/delete_car');
@@ -96,6 +98,9 @@ const server = http.createServer(async (req, res) => {
   else if (req.url.startsWith('/user')) {
     userAPI(req, res);
   }
+  else if (req.url.startsWith('/weather') && req.method === 'POST') {
+    weatherAPI(req, res);
+  }
 
   else if (req.url.startsWith(deletecar)) {
     delete_car(req, res);
@@ -140,6 +145,72 @@ const server = http.createServer(async (req, res) => {
       res.end(renderedHtml);
     });
   }
+
+else if (req.url === '/weather') {
+  // Read the EJS template file
+  fs.readFile('./src/views/weather.ejs', 'utf8', (err, data) => {
+    if (err) {
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+      return;
+    }
+
+    // Compile the EJS template
+    const compiledTemplate = ejs.compile(data);
+
+    // Render the template without any data (you can't pass dynamic data in this example)
+    const renderedHtml = compiledTemplate();
+
+    // Set response headers and send the rendered HTML
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(renderedHtml);
+  });
+} 
+
+else if (req.url === '/airbnbs_near_location') {
+  // Read the EJS template file
+  fs.readFile('./src/views/airbnb.ejs', 'utf8', (err, data) => {
+    if (err) {
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+      return;
+    }
+
+    // Compile the EJS template
+    const compiledTemplate = ejs.compile(data);
+
+    // Render the template without any data (you can't pass dynamic data in this example)
+    const renderedHtml = compiledTemplate();
+
+    // Set response headers and send the rendered HTML
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(renderedHtml);
+  });
+} 
+
+else if (req.url === '/attractions') {
+  // Read the EJS template file
+  fs.readFile('./src/views/attractions.ejs', 'utf8', (err, data) => {
+    if (err) {
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+      return;
+    }
+
+    // Compile the EJS template
+    const compiledTemplate = ejs.compile(data);
+
+    // Render the template without any data (you can't pass dynamic data in this example)
+    const renderedHtml = compiledTemplate();
+
+    // Set response headers and send the rendered HTML
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(renderedHtml);
+  });
+} 
+
+
+
   else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Page Not Found');
