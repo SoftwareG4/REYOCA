@@ -6,6 +6,7 @@ const mysql = require('mysql2');
 const fs = require('fs');
 const ejs = require('ejs');
 const {redirectView} = require('./src/routes/redirectViews');
+const {validateToken, getRole} = require('./src/services/JWTauth');
 
 // Import Routes
 const {register_login_route} = require('./src/routes/register_login');
@@ -113,6 +114,18 @@ const server = http.createServer(async (req, res) => {
   }
 
   else if (req.url === noPath) {
+    let file_name = './public/index.ejs';
+    let user_id = validateToken(req.headers.cookie);
+    if (user_id === false) {
+      file_name = './public/index.ejs';
+    } else {
+      let user_role = await getRole(user_id);
+      if (user_role === "renter") {
+        file_name = './public/index_renter.ejs';
+      } else if (user_role === "rentee") {
+        file_name = './public/index_rentee.ejs';
+      }
+    }
     fs.readFile('./public/index.ejs', 'utf8', (err, html) => {
       if (err) {
         console.error(err);

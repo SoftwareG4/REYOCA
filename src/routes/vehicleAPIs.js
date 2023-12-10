@@ -3,14 +3,78 @@ const url = require('url');
 // Import Models
 const TransactionHistoryModel = require('../models/transactionHistoryModel');
 const VehicleDetailsModel = require('../models/vehicleDetailsModel');
+const VehicleModel = require('../models/VehicleModel');
 
 // Import Services
 const pricingService = require('../services/pricingService');
+const {validateToken} = require('../services/JWTauth');
+const { is } = require('express/lib/request');
 
 function vehicleApi(req, res) {
   try {
+    let apiCall = req.url;
+    if (apiCall.endsWith('/')) {
+      apiCall = apiCall.subsstring(0, apiCall.length-1);
+    }
+
+    if (req.url === '/vehicle/new') {
+      if (req.method == 'POST') {
+        let body = '';
+        req.on ('data', (chunk) => {
+          body += chunk;
+        });
+
+        req.on('end', async () => {
+          if (body) {
+            const jsonData = JSON.parse(body);
+
+            const renter_id = validateToken(req.headers.cookie);
+            if (renter_id == false) {
+                res.writeHead(401, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({"error": "User not authenticated"}));
+                return;
+            }
+
+            let isValid = await VehicleModel.setInsertParam (
+              jsonData.make,
+              jsonData.model,
+              jsonData.type,
+              renter_id,
+              jsonData.price,
+              jsonData.latitude,
+              jsonData.longitude,
+              jsonData.state,
+              jsonData.city,
+              jsonData.fuel_type,
+              jsonData.year,
+              jsonData.address
+            );
+            console.log("isValid: ", isValid);
+
+            if (!isValid) {
+              res.writeHead(400, {'Content-Type': 'application/json'});
+              res.end(JSON.stringify({"error": "Bad request."}));
+            } else {
+              VehicleModel.insertVehicle( (err, result) => {
+                console.log(result);
+                if (!err && result) {
+                  res.writeHead(201, {'Content-Type': 'application/json'});
+                  res.end(JSON.stringify({"message": "Insert Success"}));
+                } else if (err) {
+                  res.writeHead(500, {'Content-Type': 'application/json'});
+                  res.end(JSON.stringify({"error": "Internal Server Error"}));
+                }
+              });
+            }
+          } else {
+            res.writeHead(400, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({"error": "Bad request."}));
+          }
+        });
+      }
+    }
     //============================================ To check vehicle availability before adding to cart ================================================
-    if (req.method === 'POST' && req.url === '/vehicle/check-availability') {
+    else if (req.method === 'POST' && req.url === '/vehicle/check-availability') {
       let body = '';
       req.on('data', (chunk) => {
         body += chunk;

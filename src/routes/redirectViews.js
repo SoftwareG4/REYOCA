@@ -23,6 +23,10 @@ function redirectView(req, res) {
                     }
                 })
                 break;
+            
+            case "/views/message":
+                console.log("");
+                break;
         }
     } catch (err) {
         res.writeHead(500, {'Content-Type': 'application/json'});

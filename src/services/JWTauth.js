@@ -2,6 +2,8 @@ const { sign, verify } = require("jsonwebtoken");
 const dotenv = require('dotenv');
 dotenv.config();
 const cookie = require('cookie');
+const db = require('../../dbcon');
+const res = require("express/lib/response.js");
 
 
 require('../../global.js');
@@ -33,5 +35,33 @@ function validateToken(cookieHeader){
   }
 }
 
+function getRole (user_id) {
+  return new Promise((resolve) => {
+    if (user_id) {
+      const dbCon = db();
+      dbCon.connect ((err) => {
+        if (err) {
+          resolve(false);
+        }
+        const query = `SELECT role FROM user WHERE _ID=?`;
+        console.log(query);
+  
+        dbCon.query(query, [user_id], (err, result) => {
+          if (err) {
+            console.log(err);
+            resolve(false);
+          }
+  
+          console.log("Role: ", result[0].role);
+          resolve(result[0].role);
+        });
+        console.log("query over");
+      });
+    } else {
+      resolve(false);
+    }
+  });
+}
 
-module.exports = { createTokens, validateToken };
+
+module.exports = { createTokens, validateToken, getRole };

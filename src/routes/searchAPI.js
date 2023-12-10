@@ -28,11 +28,14 @@ function searchApi(req, res) {
                         console.log("body: ", body, " end");
                         if (body) {
                             const jsonData = JSON.parse(body);
+                            const now = new Date();
+                            const start_date = new Date(now.getTime() + 3600000);
+                            const end_date = new Date(start_date.getTime() + 3600000);
 
                             let isValid = SearchModel.setSearchParam (
                                 jsonData.userLocation,
-                                jsonData.startDate,
-                                jsonData.endDate,
+                                start_date,
+                                end_date,
                                 jsonData.columns,
                                 priceColName,
                                 false

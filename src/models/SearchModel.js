@@ -188,8 +188,8 @@ class SearchModel {
             console.log(today);
             // Start and end date can only be in the future
             if (today > startDate || today > endDate) {
-                console.log(today < startDate);
-                console.log(today < endDate);
+                console.log(today > startDate);
+                console.log(today > endDate);
                 return false;
             }
             // Start date can only be before the end date
