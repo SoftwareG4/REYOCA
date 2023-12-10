@@ -52,7 +52,7 @@
         #container {
             display: flex;
             height: 90vh;
-            padding-top: 7.5vh;
+            padding-top: 12vh;
         }
 
         #scrollable-content {
@@ -63,7 +63,7 @@
         }
 
         #map-container {
-            flex: 3;
+            flex: 1;
             position: relative;
             overflow: hidden;
         }
@@ -306,11 +306,11 @@
                         console.log(`added car ${item}`, data[item]["_ID"]);
                         carList += addCar(imageUrl, data[item]["make"] + " " + data[item]["model"], data[item]["rating"], data[item]["address"], data[item]["travelDist"], data[item]["price"], data[item]["_ID"]);
                         createMarker(data[item]["_ID"], data[item]["latitude"], data[item]["longitude"], data[item]["price"]);
-                        list.innerHTML = carList;
                     };
                 } else {
-                    list.innerHTML = '<h1>No Cars Available!!</h1>'
+                    carList = '<h1>No Cars Available!!</h1>'
                 }
+                list.innerHTML = carList;
 
             })
             .catch((error) => {
