@@ -109,7 +109,7 @@
                         <td><%= row.booking_start %></td>
                         <td><%= row.booking_end %></td>
                         <td>
-                            <button id="review" onclick="postreview()">Give Review</button>
+                            <button id="review" value="<%= row.vehicle_id %>" onclick="postreview(this)">Give Review</button>
                         </td>
                         <td>
                             <button id="report" onclick="postreport()">Report Car</button>
@@ -158,9 +158,8 @@
             });
         }
 
-        function postreview() {
-            const vehicleID=documents.getElementsByClassName('row').value;
-            alert(vehicleID);
+        function postreview(obj) {
+            localStorage.setItem('rev_vehicle_id',obj.value)
             window.location.href = 'http://localhost:3000/dev_page_route/profilepage/postreview';
         }
         
