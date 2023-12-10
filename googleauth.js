@@ -20,12 +20,9 @@ async function(request, accessToken, refreshToken, profile, done) {
     if (err) {
       return done(null, "Authentication Failure");
     } else {
-      console.log(result)
       return done(null, result);
     }
   });
-
-  // return done(null, 23);
 }));
 
 passport.serializeUser(function(user, done) {
@@ -35,21 +32,14 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });
-
 const app = express();
-
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', (req, res) => {
-  res.send('<a href="/auth/google">Authenticate with Google</a>');
-});
-
 app.get('/auth/google',
   passport.authenticate('google', { scope: [ 'email', 'profile' ] }
 ));
-
 app.get( '/auth/google/callback',
   passport.authenticate( 'google', {
     successRedirect: '/protected',
@@ -58,8 +48,11 @@ app.get( '/auth/google/callback',
 );
 
 app.get('/protected', (req, res) => {
-  console.log(req.user)
-  res.send(`Hello ${req.user}`);
+  
+  const accessToken=createTokens(req.user);
+  console.log(req.user,accessToken)
+  res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
+  res.redirect("http://localhost:3000")
 });
 
 app.get('/auth/google/failure', (req, res) => {
