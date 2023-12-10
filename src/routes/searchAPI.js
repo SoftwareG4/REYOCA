@@ -282,7 +282,7 @@ function searchApi(req, res) {
     }
 
     function callback (err, result) {
-        console.log("result: ", result);
+        // console.log("result: ", result);
         vehicleList = JSON.parse(result).response;
         console.log("vehicleList: ", vehicleList);
         if (err) {

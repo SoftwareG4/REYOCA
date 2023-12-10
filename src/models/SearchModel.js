@@ -67,10 +67,23 @@ class SearchModel {
                     });
 
                     let destinationList = searchRadiusResult.map(item => {return {lat: item['latitude'], lng: item['longitude']}});
-                    console.log("Destination List: ", destinationList);
+                    console.log("Destination List: ", destinationList, destinationList.length);
                     if(destinationList.length != 0) {
-                        let distanceList = await distanceService.getTravelDistance([{lat: 35.1200959, lng: -106.6003826}], destinationList);
-                        console.log("distanceList: ", distanceList);
+                        let remainingNum = destinationList.length%25;
+                        let iterNum = (destinationList.length - remainingNum)/25;
+                        let distanceListTemp, distanceList = [];
+                        let i = 0;
+                        while(i < iterNum) {
+                            distanceListTemp = await distanceService.getTravelDistance([{lat: this.#userLocation[0], lng: this.#userLocation[1]}], destinationList.slice(i*25, (i+1)*25));
+                            console.log("distanceListTemp: ", distanceListTemp);
+                            distanceList = distanceList.concat(distanceListTemp);
+                            i++;
+                        }
+                        if(remainingNum != 0) {
+                            distanceListTemp = await distanceService.getTravelDistance([{lat: this.#userLocation[0], lng: this.#userLocation[1]}], destinationList.slice(i*25, destinationList.length));
+                            console.log("distanceListTemp: ", distanceListTemp);
+                            distanceList = distanceList.concat(distanceListTemp);
+                        }
 
                         searchRadiusResult.forEach((item, index, arr) => {
                             arr[index].travelDist = distanceList[index];
