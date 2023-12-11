@@ -145,7 +145,7 @@
         <h2>Delete Review</h2>
         <form>
             <input type="text" name="_ID" id="reviewID" placeholder="Enter Review ID" required>
-            <button type="submit">Delete Review</button>
+            <button type="button" onclick="deletereview()">Delete Review</button>
         </form>
     </section>
 
@@ -156,7 +156,7 @@
         <h2>Delete User</h2>
         <form>
             <input type="text" name="_ID" id="userID" placeholder="Enter User ID" required>
-            <button type="submit" onclick="deleteuser()">Delete User</button>
+            <button type="button" onclick="deleteuser()">Delete User</button>
         </form>
     </section>
 
@@ -165,7 +165,7 @@
         <h2>Delete Car Listing</h2>
         <form>
             <input type="text" name="_ID" id="listingID" placeholder="Enter Listing ID" required>
-            <button type="submit" onclick="deletelisting()">Delete Listing</button>
+            <button type="button" onclick="deletelisting()">Delete Listing</button>
         </form>
     </section>
 
@@ -185,6 +185,7 @@
                 alert(data.error); // or display the error message in the UI
             } else {
                 alert('Logout Successful');
+                window.location.href = "http://localhost:3000"
                 // Additional logic after successful deletion (like redirecting)
             }
         })
@@ -198,8 +199,8 @@
         var data = {
             _ID: reviewId
         };
-        fetch('/admin/deletereview', {
-            method: 'POST',
+        fetch('http://localhost:3000/admin/deletelisting', {
+            method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
@@ -222,8 +223,8 @@
         var data = {
             _ID: reviewId
         };
-        fetch('/admin/deletereview', {
-            method: 'POST',
+        fetch('http://localhost:3000/admin/deletereview', {
+            method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
@@ -248,7 +249,7 @@
             _ID: user_id
         };
         fetch('http://localhost:3000/admin/deleteuser', {
-            method: 'POST',
+            method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })

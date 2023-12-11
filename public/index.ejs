@@ -3,11 +3,78 @@
 
 <head>
     <title>Car Rental</title>
+    <style>
+        body{
+      font-family: 'Rethink Sans', sans-serif;
+      background: #F7F9F9;
+    }
+    .order-history-container{
+      background: white;
+      width: 90vw;
+      margin: 0 auto;
+      box-shadow:
+      0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+      0px 5px 10px rgba(0, 0, 0, 0.025),
+      0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+      0px 40px 80px rgba(0, 0, 0, 0.05)
+    ;
+      border-radius:15px;
+      margin-top:50px;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    h2{
+      color: #bc4749;
+      margin-bottom:60px;
+    }
+    .filter-options{
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      align-items:center;
+      gap:10px;
+      margin-bottom:20px;
+    }
+    .filter-options input{
+      box-sizing: border-box;
+      border-radius: 5px;
+      padding:10px;
+      border: 1px solid #D5D8DC;
+      outline:none;
+    }
+    .filter-options button{
+      background: #bc4749;
+      color:white;
+      padding:10px;
+      font-size:14px;
+      font-weight:500;
+      border: none;
+    }
+    table{
+      border-collapse: collapse;
+      width:100%;
+    }
+    table th {
+      padding: 12px;
+      text-align: left;
+      color: #bc4749;
+    }
+    table tr:nth-child(even){
+      background-color: #f2f2f2;
+    }
+    table button{
+      color: #bc4749;
+      border: none;
+      outline:none;
+      background:transparent;
+      cursor:pointer;
+    }
+    </style>
     <!-- Bootstrap CSS link -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
     <!-- Custom CSS link -->
     <!-- <link rel="stylesheet" type="text/css" href="./public/styles.css"> -->
     <style>
+<<<<<<< Updated upstream
         body {
             padding-top: 20px;
         }
@@ -74,6 +141,72 @@
             margin-top: 12px;
             margin-bottom: 12px;
         }
+=======
+        body{
+      font-family: 'Rethink Sans', sans-serif;
+      background: #F7F9F9;
+    }
+    .order-history-container{
+      background: white;
+      width: 90vw;
+      margin: 0 auto;
+      box-shadow:
+      0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+      0px 5px 10px rgba(0, 0, 0, 0.025),
+      0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+      0px 40px 80px rgba(0, 0, 0, 0.05)
+    ;
+      border-radius:15px;
+      margin-top:50px;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    h2{
+      color: #bc4749;
+      margin-bottom:60px;
+    }
+    .filter-options{
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      align-items:center;
+      gap:10px;
+      margin-bottom:20px;
+    }
+    .filter-options input{
+      box-sizing: border-box;
+      border-radius: 5px;
+      padding:10px;
+      border: 1px solid #D5D8DC;
+      outline:none;
+    }
+    .filter-options button{
+      background: #bc4749;
+      color:white;
+      padding:10px;
+      font-size:14px;
+      font-weight:500;
+      border: none;
+    }
+    table{
+      border-collapse: collapse;
+      width:100%;
+    }
+    table th {
+      padding: 12px;
+      text-align: left;
+      color: #bc4749;
+    }
+    table tr:nth-child(even){
+      background-color: #f2f2f2;
+    }
+    table button{
+      color: #bc4749;
+      border: none;
+      outline:none;
+      background:transparent;
+      cursor:pointer;
+    }
+>>>>>>> Stashed changes
     </style>
     <!-- Places API -->
     <script>
@@ -244,7 +377,7 @@
             }
         </style>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">RentYourCar(REYOCA)</a>
+            <a class="navbar-brand" href="#"><h2>RentYourCar(REYOCA)</h2></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

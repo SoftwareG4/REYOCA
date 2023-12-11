@@ -313,55 +313,82 @@ function red_reg_get_reviews(req, res){
   });
 }
 
+
 function red_reg_update_pass(req, res) {
-  if (req.method === 'GET') {
-      // Read the EJS file
-      fs.readFile('./src/views/admin_page.ejs', 'utf8', (err, data) => {
-          if (err) {
-              console.error(err);
-              res.writeHead(500, { 'Content-Type': 'text/plain' });
-              res.end('Internal Server Error');
-              return;
-          }
-
-      });
-  } else if (req.method === 'POST') {
-    let body = '';
-
-    // Collect data chunks
-    req.on('data', chunk => {
-        body += chunk.toString(); // Convert Buffer to string
-    });
-
-    req.on('end', () => {
-        // Parse the POST data
-        const parsedBody = new URLSearchParams(body);
-
-        // Extracting the data
-        const curr_pass = parsedBody.get('curr_pass');
-        const new_pass = parsedBody.get('new_pass');
-        // const email = parseBody.get('email');
-
-        const userId = req.session.userId; // Assuming user ID is stored in session
-        const requestData = { curr_pass, new_pass };
-        console.log(requestData);
-
-        // Now use your update_pass function with this data
-        Profile_Model.update_pass(userId, requestData, (err, result) => {
-            if (err) {
-                // Send error response
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.end('Error updating password');
-            } else {
-                // Send success response
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end('Password updated successfully');
-                res.redirect('./src/views/profile_page.ejs'); 
-            }
-        });
-    });
+  if(req.method!="GET"){
+      res.writeHead(405, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+      return;
   }
+  fs.readFile('./src/views/update_password.ejs', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+      } else {
+        // Sample data to pass to the EJS template
+        const dataToRender = { title: 'EJS Example', message: 'Hello, EJS!' };
+
+        // Render the EJS template with data
+        const renderedHtml = ejs.render(data, dataToRender);
+
+        // Set the response header and send the rendered HTML
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(renderedHtml);
+      }
+    });
 }
+
+
+// function red_reg_update_pass(req, res) {
+//   if (req.method === 'GET') {
+//       // Read the EJS file
+//       fs.readFile('./src/views/admin_page.ejs', 'utf8', (err, data) => {
+//           if (err) {
+//               console.error(err);
+//               res.writeHead(500, { 'Content-Type': 'text/plain' });
+//               res.end('Internal Server Error');
+//               return;
+//           }
+
+//       });
+//   } else if (req.method === 'POST') {
+//     let body = '';
+
+//     // Collect data chunks
+//     req.on('data', chunk => {
+//         body += chunk.toString(); // Convert Buffer to string
+//     });
+
+//     req.on('end', () => {
+//         // Parse the POST data
+//         const parsedBody = new URLSearchParams(body);
+
+//         // Extracting the data
+//         const curr_pass = parsedBody.get('curr_pass');
+//         const new_pass = parsedBody.get('new_pass');
+//         // const email = parseBody.get('email');
+
+//         const userId = req.session.userId; // Assuming user ID is stored in session
+//         const requestData = { curr_pass, new_pass };
+//         console.log(requestData);
+
+//         // Now use your update_pass function with this data
+//         Profile_Model.update_pass(userId, requestData, (err, result) => {
+//             if (err) {
+//                 // Send error response
+//                 res.writeHead(500, { 'Content-Type': 'text/plain' });
+//                 res.end('Error updating password');
+//             } else {
+//                 // Send success response
+//                 res.writeHead(200, { 'Content-Type': 'text/plain' });
+//                 res.end('Password updated successfully');
+//                 res.redirect('./src/views/profile_page.ejs'); 
+//             }
+//         });
+//     });
+//   }
+// }
 
 
 
@@ -505,6 +532,7 @@ function redirect_route(req, res){
           red_reg_orderhist(req, res);
         break
         case "/dev_page_route/profilepage/updatepassword":
+          console.log("in")
           red_reg_update_pass(req, res);
         break
         case "/dev_page_route/profilepage/reviews":
@@ -520,6 +548,9 @@ function redirect_route(req, res){
         case "/dev_page_route/profilepage/postreport":
           red_reg_postreport(req, res);
         break
+        case "/dev_page_route/admin_page_middleware":
+          red_reg_adminpage(req, res);
+        break
 
         default:
             res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -530,4 +561,4 @@ function redirect_route(req, res){
 
 
 
-module.exports = {redirect_route,red_reg_adminpage};
+module.exports = {redirect_route};

@@ -4,11 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Review Page</title>
-    <link rel="stylesheet" type="text/css" href="../../public/styles.css">
+    <!-- <link rel="stylesheet" type="text/css" href="../../public/styles.css"> -->
+    <style>
+        body{
+      font-family: 'Rethink Sans', sans-serif;
+      background: #F7F9F9;
+    }
+    .order-history-container{
+      background: white;
+      width: 90vw;
+      margin: 0 auto;
+      box-shadow:
+      0px 1.8px 3.6px rgba(0, 0, 0, 0.017),
+      0px 5px 10px rgba(0, 0, 0, 0.025),
+      0px 12.1px 24.1px rgba(0, 0, 0, 0.033),
+      0px 40px 80px rgba(0, 0, 0, 0.05)
+    ;
+      border-radius:15px;
+      margin-top:50px;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    h2{
+      color: #bc4749;
+      margin-bottom:60px;
+    }
+    .filter-options{
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      align-items:center;
+      gap:10px;
+      margin-bottom:20px;
+    }
+    .filter-options input{
+      box-sizing: border-box;
+      border-radius: 5px;
+      padding:10px;
+      border: 1px solid #D5D8DC;
+      outline:none;
+    }
+    .filter-options button{
+      background: #bc4749;
+      color:white;
+      padding:10px;
+      font-size:14px;
+      font-weight:500;
+      border: none;
+    }
+    table{
+      border-collapse: collapse;
+      width:100%;
+    }
+    table th {
+      padding: 12px;
+      text-align: left;
+      color: #bc4749;
+    }
+    table tr:nth-child(even){
+      background-color: #f2f2f2;
+    }
+    table button{
+      color: #bc4749;
+      border: none;
+      outline:none;
+      background:transparent;
+      cursor:pointer;
+    }
+    </style>
 </head>
 <body>
     <div class="review-history-container">
-        <h1>Review Page</h1>
+        <h2>Review Page</h2>
 
         <!-- Filter Options -->
         <div class="filter-options">
@@ -23,7 +89,6 @@
         <table id="reviewTable">
             <thead>
                 <tr>
-                    <th>Review ID</th>
                     <th>Stars</th>
                     <th>Description</th>
                     <th>Rated By</th>
@@ -35,11 +100,10 @@
                 <% if (Array.isArray(review)) { %>
                     <% review.forEach(function(row) { %>
                         <tr>
-                            <td><%= row.id %></td>
                             <td><%= row.stars %></td>
                             <td><%= row.description %></td>
-                            <td><%= row.ratedBy %></td>
-                            <td><%= row.ratedFor %></td>
+                            <td><%= row.username_by %></td>
+                            <td><%= row.username_for %></td>
                             <td>
                                 <% if (row.ratedBy === row.userID) { %>
                                     <!-- Delete Button for own reviews -->

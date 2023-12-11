@@ -114,23 +114,27 @@ input[type="submit"]{
             }
 
             function validatePassword(){
+              var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
                 if(password.value != confirm_password.value) {
                     confirm_password.setCustomValidity("Passwords Don't Match");
                 }
                 else if(!isPasswordValid(password.value)){
-                password.setCustomValidity(`Password does not meet criteria. Make sure:
-                - Contains atleast one Uppercase character
-                - Contains atleast one Lowercase character
-                - Contains atleast one special character
-                - Contains atleast one digit
-                - Has a minimum length of 8 characters
-                `);
-            } 
+                    // console.log(isPasswordValid(password.value),password.value)
+                    password.setCustomValidity(`Password does not meet criteria. Make sure:
+                    - Contains atleast one Uppercase character
+                    - Contains atleast one Lowercase character
+                    - Contains atleast one special character
+                    - Contains atleast one digit
+                    - Has a minimum length of 8 characters
+                    `);
+                } 
                 else {
                     confirm_password.setCustomValidity('');
+                    password.setCustomValidity('');
                 }
             }
             password.onchange = validatePassword;
+            password.onkeyup = validatePassword;
             confirm_password.onkeyup = validatePassword;
             
             var phone = document.getElementById("phone")
@@ -141,7 +145,7 @@ input[type="submit"]{
             }
             
             function validatephone(){
-                if(!isValidPhoneNumber(phone)) {
+                if(!isValidPhoneNumber(phone.value)) {
                     phone.setCustomValidity("Number not Valid");
                 } else {
                     phone.setCustomValidity('');

@@ -56,7 +56,8 @@ class review_Model {
             if (err) {
               return callback(err, null);
             }
-            const query = "SELECT * FROM user_reviews WHERE rating_for=? OR rating_by=?";
+            // const query = "SELECT * FROM user_reviews WHERE rating_for=? OR rating_by=?";
+            const query = "SELECT *,f.first_name AS username_for, b.first_name AS username_by FROM user_reviews JOIN user AS f ON user_reviews.rating_for=f._ID JOIN user AS b ON user_reviews.rating_by=b._ID WHERE rating_for=? OR rating_by=?"
             connection.query(query,[user_id, user_id], async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {
@@ -74,6 +75,8 @@ class review_Model {
                             description: review.description,
                             ratedBy: review.rating_by,
                             ratedFor: review.rating_for,
+                            username_by: review.username_by,
+                            username_for: review.username_for,
                             userID: user_id
                         };
                     });

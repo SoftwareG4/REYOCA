@@ -68,18 +68,9 @@ function update_pic(req, res) {
         console.error('Error parsing form:', err);
         return;
       }
-    //   console.log(files,fields)
+      console.log(files,fields)
 
       const oldPath = files.file[0].filepath;
-      // console.log(oldPath)
-    //   const newPath = __dirname + '/uploads/' + files.file[0].newFilename+".jpg";
-
-    //   await fs.rename(oldPath, newPath, (err) => {
-    //     if (err) {
-    //       console.error('Error moving file:', err);
-    //       return;
-    //     }
-    //   });
 
       const params={
         Bucket:process.env.BUCKET_NAME,
@@ -178,28 +169,19 @@ function update_prof(req, res) {
       res.end(JSON.stringify({ error: "User not Authenticated" }));
       return;
   }
-  const chunks = [];
-  req.on("data", (chunk) => {
-      chunks.push(chunk);
-  });
-  req.on('end', () => {
-      let requestData = {};
-      try {
-          const data = Buffer.concat(chunks);
-          const stringData = data.toString();
-          const parsedData = new URLSearchParams(stringData);
-          for (var pair of parsedData.entries()) {
-              requestData[pair[0]] = pair[1];
-          }
-          console.log("DataObj: ", requestData);
-
-      } catch (error) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
+  let body = '';
+    req.on('data', (chunk) => {
+        body += chunk;
+    });
+    req.on('end', () => {
+        let requestData;
+        if (body){
+            requestData = JSON.parse(body);
+        }else {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
-          return;
-      }
-      requestData = Object.keys(requestData)[0];
-      requestData = JSON.parse(requestData);
+        }
+  
       profile_Model.profile_update(user_id,requestData, (err, result) => {
       if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });

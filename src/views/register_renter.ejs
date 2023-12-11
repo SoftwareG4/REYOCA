@@ -128,6 +128,7 @@ input[type="submit"]{
             } 
                 else {
                     confirm_password.setCustomValidity('');
+                    password.setCustomValidity('');
                 }
             }
             password.onchange = validatePassword;
@@ -141,7 +142,7 @@ input[type="submit"]{
             }
             
             function validatephone(){
-                if(!isValidPhoneNumber(phone)) {
+                if(!isValidPhoneNumber(phone.value)) {
                     phone.setCustomValidity("Number not Valid");
                 } else {
                     phone.setCustomValidity('');

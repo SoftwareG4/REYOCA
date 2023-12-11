@@ -20,28 +20,19 @@ function delete_review(req, res) {
       res.end(JSON.stringify({ error: "User not Authenticated" }));
       return;
   }
-  const chunks = [];
-  req.on("data", (chunk) => {
-      chunks.push(chunk);
-  });
-  req.on('end',async () => {
-      let requestData = {};
-      try {
-          const data = Buffer.concat(chunks);
-          const stringData = data.toString();
-          const parsedData = new URLSearchParams(stringData);
-          for (var pair of parsedData.entries()) {
-              requestData[pair[0]] = pair[1];
-          }
-          console.log("DataObj: ", requestData);
-
-      } catch (error) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
+  let body = '';
+    req.on('data', (chunk) => {
+        body += chunk;
+    });
+    req.on('end', () => {
+        let requestData;
+        if (body){
+            requestData = JSON.parse(body);
+        }else {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
-          return;
-      }
-      requestData = Object.keys(requestData)[0];
-      requestData = JSON.parse(requestData);
+        }
+
       AdminModel.review_delete(user_id,requestData, (err, result) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -101,7 +92,7 @@ function delete_report(req, res) {
 }
 
 function delete_user(req, res) {
-  if(req.method!="POST"){
+  if(req.method!="DELETE"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
     return;
@@ -132,9 +123,11 @@ function delete_user(req, res) {
         res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
         return;
     }
+    if (Object.keys(requestData).length!=0){
     requestData = Object.keys(requestData)[0];
     requestData = JSON.parse(requestData);
     console.log(requestData);
+    }
     AdminModel.user_delete(user_id,requestData, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });

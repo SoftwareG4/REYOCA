@@ -163,7 +163,12 @@ button{
             .then(response => response.json())
             .then(data => {
                 if (data.message) {
+                    if (data.message==="Login Success admin"){
+                      window.location.href = "http://localhost:3000/dev_page_route/admin_page_middleware"
+
+                    }else{
                     window.location.href = "http://localhost:3000"
+                    }
                 } else {
                     alert("Invalid Credentials");
                     // password.setCustomValidity(data.found_bad_words.toString());

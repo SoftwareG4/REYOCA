@@ -76,7 +76,7 @@
         </div>
 
         <textarea id="reviewDescription" placeholder="Write your review here..."></textarea>
-        <input type="text" id="userID" placeholder="Vehicle ID" required>
+        <!-- <input type="text" id="userID" placeholder="Vehicle ID" required> -->
         <button onclick="submitReview()">Submit Review</button>
     </div>
 
@@ -107,7 +107,7 @@
             // Function to handle review submission
             // Collect the report type and the text from the textarea
             var description = document.getElementById('reviewDescription').value;
-            var userID = document.getElementById('userID').value;
+            // var userID = document.getElementById('userID').value;
             //alert(selectedRating)
             var data = {
                 description: description,

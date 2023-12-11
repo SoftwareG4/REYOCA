@@ -49,7 +49,7 @@ app.get( '/auth/google/callback',
 
 app.get('/protected', (req, res) => {
   
-  const accessToken=createTokens(req.user);
+  const accessToken=createTokens({_ID:req.user});
   console.log(req.user,accessToken)
   res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
   res.redirect("http://localhost:3000")

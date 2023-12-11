@@ -334,11 +334,11 @@ h2{
             const fileInput = document.getElementById('photoInput');
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
-                console.log('Selected file:', file.name);
+                console.log('Selected file:', file);
     
                 // Optional: Display the file name or handle the file upload
                 // Example: displayFileName(file.name);
-                // Example: uploadFile(file);
+                uploadFile(file);
             }
         }
     
@@ -349,10 +349,31 @@ h2{
         }
     
         // Optional: Function to upload file
-        function uploadFile(file) {
-            // Logic to upload the file to the server
-            // Typically involves creating FormData and sending it through AJAX
-            alert('File upload functionality not implemented');
+        function uploadFile(filedata) {
+          const formData = new FormData();
+          formData.append('file', filedata);
+            // alert(data)
+            fetch('http://localhost:3000/profile/updatepic', {
+                method: 'POST',
+                // headers: { 'Content-Type': 'multipart/form-data;' },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); 
+                    location.reload();
+                } else {
+                    alert("error uploading file");
+                    // password.setCustomValidity(data.found_bad_words.toString());
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+            // alert('File upload functionality not implemented');
         }
     </script>
 </body>

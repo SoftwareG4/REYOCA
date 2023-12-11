@@ -3,7 +3,7 @@ const {createTokens, validateToken}= require('../services/JWTauth');
 const jwt = require('jsonwebtoken')
 const cookie = require('cookie');
 const dotenv = require('dotenv');
-const {redirect_admin, red_reg_adminpage}=require("./page_redirect")
+// const {redirect_admin, red_reg_adminpage}=require("./page_redirect")
 dotenv.config();
 
 require('../../global.js');
@@ -125,28 +125,18 @@ function login_user(req, res) {
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
         return;
     }
-    const chunks = [];
-    req.on("data", (chunk) => {
-        chunks.push(chunk);
+    let body = '';
+    req.on('data', (chunk) => {
+        body += chunk;
     });
     req.on('end', () => {
-        let requestData = {};
-        try {
-            const data = Buffer.concat(chunks);
-            const stringData = data.toString();
-            const parsedData = new URLSearchParams(stringData);
-            for (var pair of parsedData.entries()) {
-                requestData[pair[0]] = pair[1];
-            }
-            console.log("DataObj: ", requestData);
-        } catch (error) {
+        let requestData;
+        if (body){
+            requestData = JSON.parse(body);
+        }else {
             res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
-            return;
+          res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
         }
-        requestData = Object.keys(requestData)[0];
-      requestData = JSON.parse(requestData);
-      console.log(requestData)
         // console.log(requestData)
         UserModel.login_verify(requestData, (err, result) => {
             if (err) {
@@ -161,7 +151,9 @@ function login_user(req, res) {
                 res.setHeader('Set-Cookie', `access_token=${accessToken};Max-Age=604800;httpOnly=true`);
                 if (result[0].role=="admin"){
                     console.log("inside admin");
-                    red_reg_adminpage(req,res,requestData);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: "Login Success admin"}));
+                    // red_reg_adminpage(req,res,requestData);
                 }
                 else{
                     console.log("inside user")
