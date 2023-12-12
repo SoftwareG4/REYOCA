@@ -1,5 +1,6 @@
 
 const db = require('../../dbcon');
+const sendEmail = require('../services/emailService');
 
 class MessageModel {
     static #sender_id = null;
@@ -30,9 +31,72 @@ class MessageModel {
                         console.log(err);
                         return callback(err, null);
                     } else {
+                        sendEmail('tummala.sairevanth@gmail.com', 'Notification: New Message', this.#messageContent);
                         return callback(null, true);
                     }
                 });
+            });
+        } catch (err) {
+            console.log(err);
+            return callback(err, null);
+        }
+    }
+
+    static getNames(sender_id, receiver_id, callback) {
+        try {
+            const dbCon = db();
+            dbCon.connect((err) => {
+                if (err) {
+                    return callback(err, null);
+                }
+                
+                let query = `SELECT first_name FROM user WHERE _ID=?`;
+                let sender;
+                let receiver;
+                dbCon.query(query, [sender_id], (err, result) => {
+                    if (err) {
+                        console.log(err);
+                        return callback(err, null);
+                    }
+                    console.log(result[0]);
+                    sender = result[0].first_name;
+                    dbCon.query(query, [receiver_id], (err, result) => {
+                        if (err) {
+                            console.log(err);
+                            return callback(err, null);
+                        }
+                        receiver = result[0].first_name;
+                        return callback(null, {"sender": sender, "receiver": receiver});
+                    });
+                });
+                
+                
+            });
+        } catch (err) {
+            console.log(err);
+            return callback(err, null);
+        }
+    }
+
+    static getMessages(sender_id, receiver_id, callback) {
+        try {
+            const dbCon = db();
+            dbCon.connect((err) => {
+                if (err) {
+                    return callback(err, null);
+                }
+                
+                let query = `SELECT * FROM message WHERE (from_user_id=? AND to_user_id=?) OR (from_user_id=? AND to_user_id=?)`;
+                dbCon.query(query, [sender_id, receiver_id, receiver_id, sender_id], (err, result) => {
+                    if (err) {
+                        console.log(err);
+                        return callback(err, null);
+                    }
+                    console.log(result);
+                    return callback(null, JSON.stringify(result));
+                });
+                
+                
             });
         } catch (err) {
             console.log(err);

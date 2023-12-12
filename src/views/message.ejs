@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff; /* Updated background color to light blue */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #chat-heading {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #chatbox {
+            width: 160%; /* Updated width to double */
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 500px;
+            overflow-y: scroll;
+            background-color: #fffacd; /* Updated background color to lemon chiffon */
+        }
+
+        .message {
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .message .sender {
+            padding: 5px;
+            margin-right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .message .sender_msg {
+            float: right;
+            clear: both;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .message .receiver_msg {
+            float: left;
+            clear: both;
+            padding: 5px;
+            margin-left: 10px;
+        }
+
+        .message .receiver {
+            padding: 5px;
+            margin-left: 10px;
+            background-color: #ccc;
+            border-radius: 5px;
+        }
+
+        #messageInput {
+            width: 300px;
+            margin-top: 10px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        #sendButton {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="chat-container">
+        <div id="chat-heading">Message to the renter</div>
+        <div id="chatbox"></div>
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <button id="sendButton" onclick="sendMessage()">Send</button>
+    </div>
+    <p id="receiverID" data-receiverID="<%= receiver_id %>" style="visibility: hidden;"></p>
+    <script>
+        let sender = "";
+        let receiver = "";
+        let receiver_id;
+
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
+
+            if (message !== "") {
+                data = {"receiver": receiver_id, "message": message};
+                fetch('http://localhost:3000/message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                    .then(response => response.json())
+                    .then(newMessage => {
+                        console.log(newMessage.response);
+                        displayMessage(message);
+                        messageInput.value = "";
+                    })
+                    .catch(error => console.error('Error sending message:', error));
+            }
+        }
+
+        function getMessages() {
+            fetch('http://localhost:3000/message/get-messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"receiver": receiver_id})
+            })
+            .then(response => response.json())
+            .then(messages => displayMessages(messages))
+            .catch(error => console.error('Error fetching messages:', error));
+        }
+
+        function displayMessages(messages) {
+            console.log(messages);
+            const chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML = "";
+
+            messages.forEach(msg => {
+                displayMessage(msg);
+            });
+
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function displayMessage(msg) {
+            console.log(msg);
+            const chatbox = document.getElementById("chatbox");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = "message";
+
+            console.log(msg.from_user_id, ": ", msg.message_body);
+            if (msg.from_user_id == receiver_id) {
+                messageDiv.innerHTML = `<div class="receiver_msg"><span class="receiver">${receiver}:</span> ${msg.message_body}</div>`;
+            } else {
+                messageDiv.innerHTML = `<div class="sender_msg"><span class="sender">${sender}:</span> ${msg.message_body}</div>`;
+            }
+
+            chatbox.appendChild(messageDiv);
+        }
+
+        window.onload = function () {
+            receiver_id = document.getElementById("receiverID").dataset.receiverid;
+            if (receiver_id == 1) {
+                document.getElementById('chat-heading').textContent = "Customer Support";
+            }
+            // Fetch sender and receiver from the server
+            fetch('http://localhost:3000/message/get-names', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"receiver": receiver_id})
+            })
+                .then(response => {
+                    console.log(response);
+                    return response.json();
+                })
+                .then(names => {
+                    console.log(names.response);
+                    sender = names.sender;
+                    receiver = names.receiver;
+                    console.log("Sender: ", sender);
+                    console.log("Receiver: ", receiver);
+                })
+                .then(getMessages)
+                .catch(error => console.error('Error fetching names:', error));
+
+            setInterval(getMessages, 1000);
+        };
+    </script>
+
+
+</body>
+</html>
+
