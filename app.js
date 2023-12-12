@@ -29,6 +29,8 @@ const vehicleApi = require('./src/routes/vehicleAPIs');
 const favouritesApi = require('./src/routes/favouritesAPIs');
 const loyaltyApi = require('./src/routes/loaltyPointsAPI');
 const userAPI = require('./src/routes/getUserAPI');
+// const weatherAPI = require('./src/routes/weatherAPIs');
+const customizeAPI = require('./src/routes/customizeAPI');
 
 const {view_cart} = require('./src/routes/view_cart');
 const {delete_car} = require('./src/routes/delete_car');
@@ -109,6 +111,9 @@ const server = http.createServer(async (req, res) => {
   else if (req.url.startsWith('/user')) {
     userAPI(req, res);
   }
+  else if (req.url.startsWith('/weather') && req.method === 'POST') {
+    weatherAPI(req, res);
+  }
   else if (req.url.startsWith(deletecar)) {
     delete_car(req, res);
   } else if (req.url.startsWith(validatecoupon)) {
@@ -117,6 +122,33 @@ const server = http.createServer(async (req, res) => {
     checkout(req, res);
   } else if (req.url.startsWith(paymentmethods)) {
     view_pay_method(req, res);
+  } else if (req.url.startsWith('/view_cart_route')) {
+    fs.readFile('./public/dummybeforecart.html', function (err, html) {
+      if (err) {
+        console.log(err);
+      }
+      res.writeHead(200, {"Content-Type": "text/html"});
+      res.write(html);
+      res.end();
+    });
+  } else if (req.url.startsWith('/success')) {
+    fs.readFile('./public/success.html', function (err, html) {
+      if (err) {
+        console.log(err);
+      }
+      res.writeHead(200, {"Content-Type": "text/html"});
+      res.write(html);
+      res.end();
+    });
+  } else if (req.url.startsWith('/cancel')) {
+    fs.readFile('./public/cancel.html', function (err, html) {
+      if (err) {
+        console.log(err);
+      }
+      res.writeHead(200, {"Content-Type": "text/html"});
+      res.write(html);
+      res.end();
+    });
   }
 
   else if (req.url === noPath) {
@@ -134,17 +166,13 @@ const server = http.createServer(async (req, res) => {
     }
     fs.readFile(file_name, 'utf8', (err, html) => {
       if (err) {
-        console.error(err);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
-      } else {
-        const dataToRender = { title: 'User Profile' };
-        const renderedHtml = ejs.render(html, dataToRender);
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(renderedHtml);
+        console.log(err);
       }
+      res.writeHead(200, {"Content-Type": "text/html"});
+      res.write(html);
+      res.end();
     });
-  }
+  } 
   else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Page Not Found');

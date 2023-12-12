@@ -74,11 +74,12 @@ class CartModel {
           console.error('Error connecting to the database:', err);
           return;
         }
+        console.log(cartData);
   
-        const query = 'INSERT INTO cart (rentee_id, vehicle_id, extras, quantity, total_cost) VALUES (?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO cart (rentee_id, vehicle_id, extras, quantity, total_cost, to_date, from_date) VALUES (?, ?, ?, ?, ?, ?, ?)';
         connection.query(
           query,
-          [cartData.renteeId, cartData.vehicleId, cartData.extras, cartData.quantity, cartData.totalCost],
+          [cartData.renteeId, cartData.vehicleId, cartData.extras, cartData.quantity, cartData.total, cartData.to_date, cartData.from_date],
           (err, result) => {
             connection.end(); // Close the connection
   
@@ -96,6 +97,38 @@ class CartModel {
       return callback(error, null);
     }
   }
+
+
+  static checkCart(renteeId, callback) {
+    const connection = mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT,
+    });
+  
+    connection.connect((err) => {
+      if (err) {
+        return callback(err, null);
+      }
+  
+      const query = 'SELECT * FROM cart WHERE rentee_id = ?';
+      connection.query(query, [renteeId], (err, results) => {
+        connection.end(); // Close the connection
+  
+        if (err) {
+          return callback(err, null);
+        }
+  
+        // Check if there are any entries in the cart for the given renteeId
+        const isEmpty = results.length === 0;
+  
+        return callback(null, isEmpty);
+      });
+    });
+  }
+  
   
   static async view_cart(id, callback) {
     const connection = mysql.createConnection({
@@ -110,7 +143,7 @@ class CartModel {
         return callback(err, null);
       }
       connection.query(
-        'SELECT * FROM cart WHERE rentee_id = ?',
+        'SELECT * FROM cart as c inner join vehicles as v WHERE rentee_id = ? and c.vehicle_id = v._ID',
         [id],
         (error, results) => {
           if (error) {

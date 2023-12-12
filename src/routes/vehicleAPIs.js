@@ -12,6 +12,18 @@ const { is } = require('express/lib/request');
 
 function vehicleApi(req, res) {
   try {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Add this line
+  
+    // Check if the request method is OPTIONS (preflight request)
+    if (req.method === 'OPTIONS') {
+      // Respond to the preflight request
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+  
     let apiCall = req.url;
     if (apiCall.endsWith('/')) {
       apiCall = apiCall.subsstring(0, apiCall.length-1);
@@ -113,10 +125,10 @@ function vehicleApi(req, res) {
         const postBody = JSON.parse(body);
 
         // Extract parameters from postBody
-        const { vehicleId, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns } = postBody;
+        const { basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns } = postBody;
 
         // Calculate the price using the pricing service
-        const price = pricingService.calculatePrice(vehicleId, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns);
+        const price = pricingService.calculatePrice(basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns);
 
         // Return the price in the response
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -134,7 +146,7 @@ function vehicleApi(req, res) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Internal Server Error' }));
         } else {
-          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json' ,'Access-Control-Allow-Origin': '*'});
           res.end(JSON.stringify(details));
         }
       });

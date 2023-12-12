@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ReYoCa - Car Rental Application</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #6dd5ed, #2193b0); /* Modern gradient background */
+      color: #333; /* Darker text for better readability */
+    }
+    .star {
+            font-size: 25px;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.3s;
+        }
+        .star:hover,
+        .star.checked {
+            color: #ffcc00;
+      }
+    .navbar-custom {
+      background-color: #224957; /* Darker shade for the navbar */
+      padding: 10px 20px;
+    }
+    .navbar-custom .navbar-brand {
+      font-size: 30px;
+      color: #fff; /* White color for contrast */
+    }
+    .welcome-text {
+      font-size: 18px;
+      color: #fff; /* White color for contrast */
+    }
+    .container-custom {
+      background-color: white;
+      margin-top: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,.05);
+      border-radius: 8px;
+      padding: 20px;
+      opacity: 0.95; /* Slight transparency for modern feel */
+    }
+    .car-info, .booking-info, .renter-details, .reviews {
+      background-color: #ffffff; /* Pure white for sections */
+      border: 2px solid #ddd; /* Subtle borders */
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,.1); /* Soft shadow for depth */
+    }
+    .car-section img {
+      border-radius: 8px;
+    }
+    .section-header {
+      background-color: #224957; /* Matching with the navbar */
+      color: #fff;
+      padding: 5px 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .btn-custom {
+      background-color: #20bf6b; /* Vibrant button color */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      margin-top: 1rem;
+    }
+    .btn-custom:hover {
+      background-color: #0b8457; /* Darker shade on hover */
+    }
+    .footer-custom {
+      background-color: #224957; /* Consistent with navbar */
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    .stars {
+      color: #f9d342; /* Gold color for stars */
+    }
+    .rating-description {
+      margin-left: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .car-section, .car-info {
+        text-align: center;
+      }
+    }
+    @media (max-width: 992px) {
+      .car-section img {
+        margin-bottom: 15px;
+      }
+      .car-section .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<!-- <script src="ReYoCa.js"></script> -->
+<script>
+  document.cookie = "id=1";
+  const options = {
+      method: "GET",
+      credentials: 'include',
+      cache: "default",
+  };
+  function handleViewCart() {
+      
+      fetch("/cart", options)
+          .then(res => res.text())
+          .then((data) => {
+              document.open();
+              document.write(data);
+              document.close();
+          })
+  }
+</script>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <a class="navbar-brand" href="#">ReYoCa</a>
+  <div class="ml-auto welcome-text" id="loyaltyapiData">Welcome Loading... loyalty points</div>
+</nav>
+
+<div class="container container-custom">
+  <div class="car-section row">
+    <div class="col-md-6">
+      <img src="https://cdn.carbuzz.com/gallery-images/1600/592000/300/592367.jpg" alt="Car Image" class="img-fluid rounded">
+    </div>
+    <div class="col-md-6">
+      <div class="car-info">
+        <h3 class="section-header">Car Information</h3>
+        <div id="vehicleapiData">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+<form id="bookingform" class="booking-info">
+  <h3 class="section-header">Booking Info</h3>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="pickupDate">Pickup Date</label>
+      <input type="date" class="form-control" id="pickupDate">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="returnDate">Return Date</label>
+      <input type="date" class="form-control" id="returnDate">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label>Additional Driver</label>
+        <input id="additionalDrivers" type="number" value="0" min="0" max="4" step="1">
+    </div>
+    <div class="form-group col-md-4">
+      <label>Child Seats</label>
+        <input id="childSeats" type="number" value="0" min="0" max="2" step="1">
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="insurance">Insurance</label>
+      <select class="form-control" id="insurance">
+        <option value=1 >Yes</option>
+        <option value=0 >No</option>
+      </select>
+    </div>
+  </div>
+  <div class="highlight">
+    <div id="priceapiData">Loading...</div>
+  </div>
+  <button type="submit" class="btn btn-custom add-to-cart-btn" id = "add-to-cart-btn">Add to cart</button>
+  <button id="checkoutbutton"  type="button"  onclick="handleViewCart()" class="btn btn-custom add-to-cart-btn">Go to cart</button>
+</form>
+
+  <div class="renter-details">
+    <h3 class="section-header">Renter Details</h3>
+    <div id="userapiData">Loading...</div>
+    <script src="renterView.js"></script>
+  </div>
+  
+  <div class="reviews">
+    <h3 class="section-header">Ratings & Reviews</h3>
+    <ul class="ratings">
+      <div id="reviewapiData">Loading...</div>
+      <div id="reviewhider">
+        <form id="reviewform">
+          <label for="starreview">Review:</label>
+          <textarea id="starreview" name="starreview" placeholder="Enter Review" rows="4" cols="50"></textarea> 
+          <div id="starContainer">
+              <span class="star" id="star1" onclick="setRating(1)">&#9733;</span>
+              <span class="star" id="star2" onclick="setRating(2)">&#9733;</span>
+              <span class="star" id="star3" onclick="setRating(3)">&#9733;</span>
+              <span class="star" id="star4" onclick="setRating(4)">&#9733;</span>
+              <span class="star" id="star5" onclick="setRating(5)">&#9733;</span>
+          </div>
+          <input type="hidden" id="starrating" name="starrating" value="0">
+          <button type="submit" class="btn btn-custom add-to-cart-btn">Add Review</button>
+          <script>
+            function setRating(rating) {
+                var stars = document.getElementsByClassName('star');
+                document.getElementById("starrating").value=rating;
+                for (var i = 0; i < stars.length; i++) {
+                    if (i < rating) {
+                        stars[i].classList.add('checked');
+                    } else {
+                        stars[i].classList.remove('checked');
+                    }
+                }
+            }
+          </script>        
+        </form>
+      </div>
+    </ul>
+  </div>
+</div>
+
+<div class="footer-custom">
+  ReYoCa &copy; 2023
+</div>
+
+<script>
+
+function disableForm() {
+      // Get the form element
+      const form = document.getElementById('bookingform');
+
+      // Disable the entire form
+      form.disabled = true;
+    }
+  
+    function enableForm() {
+      // Get the form element
+      const form = document.getElementById('bookingform');
+
+      // Disable the entire form
+      form.disabled = false;
+    }
+
+document.addEventListener('DOMContentLoaded', function() {
+
+let vehicleId = 6;
+let userId = 6;
+let pickUpDate = "2024-02-02";
+let dropOffDate = "2024-02-03";
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding 1 to month because it's zero-based
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+const currentDate = new Date();
+const yesterday = new Date(currentDate);
+yesterday.setDate(currentDate.getDate());
+
+const formattedYesterday = formatDate(yesterday);
+
+console.log(formattedYesterday); // Output: "2023-12-07" (example)
+
+
+
+document.getElementById("pickupDate").value=pickUpDate;
+document.getElementById("returnDate").min=pickUpDate;
+document.getElementById("pickupDate").min=formattedYesterday;
+document.getElementById("returnDate").value=dropOffDate;
+
+
+// Hides button if user already has something in cart.
+var addToCartButton = document.getElementById('add-to-cart-btn');
+    var checkCartData = {
+        userId: userId
+    };
+    fetch('/cart/check-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(checkCartData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data,"comment this");
+            if (!data.message) {
+                addToCartButton.style.display = 'none';
+                document.getElementById("checkoutbutton").style.display = '';
+                disableForm()
+            }
+            else{
+              addToCartButton.style.display = '';
+              document.getElementById("checkoutbutton").style.display = 'none';
+              enableForm()
+            }
+        })
+        .catch(error => console.error('Error:', error));
+
+        getVehicleDetails(vehicleId).then((data)=> {
+        const basePrice = data.price;
+calculateDynamicPrice(basePrice,pickUpDate,dropOffDate, 0, 0, 1, null).then(function(calcprice) {
+    const displayElement = document.getElementById('priceapiData');
+    console.log(calcprice);
+    const outputHTML = `
+    <h2><p>Estimated Price: $${calcprice.price}</p></h2>`;
+    displayElement.innerHTML = outputHTML;
+})
+        })
+
+let form = document.getElementById("bookingform")
+let cartForm = function(event) {
+
+    event.preventDefault();
+    const data = new FormData(event.target);
+    addToCart(vehicleId,userId);
+}
+
+form.addEventListener("submit", cartForm, true)
+
+let price = function(event){
+    let form = document.getElementById("bookingform");
+    console.log(form.insurance.value);
+    document.getElementById("returnDate").min=document.getElementById("pickupDate").value;
+
+    getVehicleDetails(vehicleId).then((data)=> {
+        const basePrice = data.price;
+    
+    calculateDynamicPrice(basePrice, form.pickupDate.value, form.returnDate.value, form.additionalDrivers.value, form.childSeats.value, form.insurance.value, null).then(function(calcprice) {
+        const displayElement = document.getElementById('priceapiData');
+        console.log(calcprice);
+        const outputHTML = `
+        <h2><p>Estimated Price: $${calcprice.price}</p></h2>`;
+        displayElement.innerHTML = outputHTML;
+    })
+
+  })
+}
+form.addEventListener("change",price, true)
+
+let reviewform = document.getElementById("reviewform")
+let reviewForm = function(event) {
+
+    event.preventDefault();
+    const data = new FormData(event.target);
+    addtoReview(vehicleId,userId);
+}
+reviewform.addEventListener("submit", reviewForm, true)
+
+getVehicleDetails(vehicleId).then((data)=> {
+    vehicleView(data);
+    renterView(data.renter_id);
+})
+    loyaltyView(userId);
+    reviewView(vehicleId,userId);
+});
+
+
+function loyaltyView(user_id) {
+const fetchOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json', 
+    },
+    body: JSON.stringify({ user_id }),
+};
+console.log(fetchOptions);
+fetch(`http://localhost:3000/loyalty/calculate-points`, fetchOptions)
+    .then(response => response.json())
+    .then(data => {
+        const displayElement = document.getElementById('loyaltyapiData');
+
+        const points = data.loyaltyPoints;
+        console.log(data)
+        displayElement.innerHTML = points;
+
+        // Update the loyalty points in the navigation bar
+        const welcomeText = document.querySelector('.welcome-text');
+        welcomeText.textContent = `Welcome, You have ${points} loyalty points`;
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        document.getElementById('loyaltyapiData').innerHTML = 'Error loading data.';
+    });
+}
+
+function renterView(user_ID) {
+fetch(`http://localhost:3000/user/get/${user_ID}`)
+    .then(response => response.json())
+    .then(data => {
+        // Check if data is an array and has at least one element
+        if (Array.isArray(data) && data.length > 0) {
+            const userData = data[0]; // Assuming you are interested in the first object in the array
+            const displayElement = document.getElementById('userapiData');
+
+            // Extract user data properties and format the output
+            const firstName = userData.first_name || 'N/A';
+            const lastName = userData.last_name || 'N/A';
+            const email = userData.email || 'N/A';
+            const phone = userData.phone || 'N/A';
+
+            // Construct the output HTML
+            const outputHTML = `
+                <p>First Name: ${firstName}</p>
+                <p>Last Name: ${lastName}</p>
+                <p>Email: ${email}</p>
+            `;
+
+            // Set the innerHTML of the display element
+            displayElement.innerHTML = outputHTML;
+        } else {
+            console.error('Invalid user data received from the API');
+            document.getElementById('userapiData').innerHTML = 'Error loading user data.';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user data:', error);
+        document.getElementById('userapiData').innerHTML = 'Error loading user data.';
+    });
+}
+
+function reviewView(vehicle_ID,userId) {
+const fetchOptions = {
+    method: 'GET', // You can adjust the method as needed
+};
+
+fetch(`http://localhost:3000/reviews/${vehicle_ID}`, fetchOptions)
+    .then(response => response.json())
+    .then(reviews => { 
+        const reviewsContainer = document.getElementById('reviewapiData');
+        var reviewdiv = document.getElementById("reviewhider");
+        let reviewbycounter = 0;
+        reviewsContainer.innerHTML = ''; 
+        if (reviews && reviews.length > 0) {
+            const ulElement = document.createElement('ul');
+            ulElement.className = 'ratings';
+            reviews.forEach(review => {
+                const liElement = document.createElement('li');
+                if(review.rating_by === userId){
+                    reviewbycounter= reviewbycounter+1;
+                    liElement.innerHTML = `<span class="stars">${'★'.repeat(review.stars)}${'☆'.repeat(5 - review.stars)}</span><span class="rating-description">${review.description}</span><button class="btn-danger" style="float: right;" onClick=deleteReviewFunc(${review._ID},${userId})>Delete</button>`;
+
+                    if(reviewdiv){reviewdiv.style.display='none';}
+                }
+                else{
+                    liElement.innerHTML = `<span class="stars">${'★'.repeat(review.stars)}${'☆'.repeat(5 - review.stars)}</span><span class="rating-description">${review.description}</span>`;    
+                }
+                ulElement.appendChild(liElement);
+            });
+            reviewsContainer.appendChild(ulElement);
+        } else {
+            reviewsContainer.innerHTML = '<p>No reviews available.</p>';
+        }
+        if(reviewbycounter === 0){if(reviewdiv){reviewdiv.style.display='block';}}
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        document.getElementById('reviewapiData').innerHTML = 'Error loading data.';
+    });
+}
+
+async function getVehicleDetails(vehicle_ID) {
+let response = await fetch(`http://localhost:3000/vehicle/details/${vehicle_ID}`)
+let result = await response.json();
+return await result;
+}
+
+function vehicleView(data) {
+
+const displayElement = document.getElementById('vehicleapiData');
+
+// Extract data properties and format the output
+const make = data.make || 'N/A';
+const model = data.model || 'N/A';
+const type = data.type || 'N/A';
+const seats = data.seater || '5';
+const price = data.price || 'N/A';
+
+// Construct the output HTML
+const outputHTML = `
+    <h3><p>Make: ${make}</p></h3>
+    <p>Model: ${model}</p>
+    <p>Type: ${type}</p>
+    <p>Seats: ${seats}</p>
+    <p>Price per day: $${price}</p>
+`;
+
+// Set the innerHTML of the display element
+displayElement.innerHTML = outputHTML;
+}
+
+async function checkVehicleAvailability(vehicleId, startDate, endDate) {
+const fetchOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ vehicleId, startDate, endDate }),
+};
+let response = await fetch("http://localhost:3000/vehicle/check-availability", fetchOptions);
+let result = await response.json();
+return await result; 
+}
+
+async function calculateDynamicPrice(basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns){
+const fetchOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ basePrice, startDate, endDate, additionalDrivers, childSeats, insurance, otherAddOns }),
+};
+let response = await fetch("http://localhost:3000/vehicle/calculate-price", fetchOptions);
+let result = await response.json();
+return await result; 
+}
+
+async function addToReviewfunc(stars, description, rating_for, rating_by){
+const fetchOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ stars, description, rating_for, rating_by }),
+};
+let response = await fetch("http://localhost:3000/reviews/", fetchOptions);
+let result = await response.json();
+return await result; 
+
+}
+
+async function deleteReviewFunc(reviewId,userId){
+
+console.log(reviewId);
+console.log(userId);
+
+const fetchOptions = {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ reviewId }),
+};
+console.log(fetchOptions);
+console.log("Body");
+console.log(fetchOptions.body);
+let response = await fetch("http://localhost:3000/reviews/", fetchOptions);
+
+}
+
+async function addToCartfunc(vehicleId, renteeId, extras,quantity,total, to_date, from_date){
+  console.log(to_date, from_date, "to/from");
+const fetchOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ vehicleId, renteeId, extras,quantity, total, to_date, from_date }),
+};
+console.log(fetchOptions.body, "fetchOptions");
+let response = await fetch("http://localhost:3000/cart/add-to-cart", fetchOptions);
+let result = await response.json();
+return await result; 
+
+}
+
+function addtoReview(vehicleId,userId){
+let review_form= document.getElementById("reviewform");
+addToReviewfunc(review_form.starrating.value, review_form.starreview.value, vehicleId, userId).then(function(reviewres) {
+    alert("Review Added Successfully");
+    reviewView(vehicleId,userId);
+})
+}
+
+function setExtras(Dataform){
+
+const arr = [];
+
+if (Dataform.childSeats.value*1 > 0) {
+arr.push("childSeats");
+}
+if (Dataform.insurance.value*1 > 0) {
+arr.push("Insurance");
+}
+if (Dataform.additionalDrivers.value*1 > 0) {
+arr.push("Additional Drivers");
+}
+
+const ans = arr.join(",");
+
+
+return ans;
+}
+
+function addToCart(vehicleId,userId) {
+let form = document.getElementById("bookingform");
+const renteeId = userId; // Example rentee ID
+const extras = setExtras(form); // Example extras
+let quantity = 1;
+// let startDate = pickUpDate;
+// let endDate = dropOffDate;
+
+// console.log(startDate, endDate, "start/end1");
+// const calculatePriceData = {
+//     vehicleId: vehicleId,
+//     startDate: startDate, // Replace with your start date
+//     endDate: endDate, // Replace with your end date
+//     additionalDrivers: 0, // Example additionalDrivers value
+//     childSeats: 5, // Example childSeats value
+//     insurance: 1, // Example insurance value
+//     otherAddOns: "" // Example otherAddOns value
+// };
+
+checkVehicleAvailability(vehicleId, form.pickupDate.value, form.returnDate.value).then(function(response){
+
+    if(response.message === "Yes") {
+      getVehicleDetails(vehicleId).then((data)=> {
+        const basePrice = data.price;
+
+        calculateDynamicPrice(basePrice, form.pickupDate.value, form.returnDate.value, form.additionalDrivers.value, form.childSeats.value, form.insurance.value, null).then(function(price) {
+            const displayElement = document.getElementById('priceapiData');
+            const outputHTML = `
+            <h2><p>Estimated Price: $${price.price}</p></h2>`;
+            displayElement.innerHTML = outputHTML;
+            // console.log(startDate, endDate, "start/end2");
+            addToCartfunc(vehicleId,renteeId,extras,quantity,price.price, form.pickupDate.value, form.returnDate.value).then(function(cartstatus){
+              document.getElementById("add-to-cart-btn").style.display = 'none';
+              document.getElementById("checkoutbutton").style.display = '';
+              disableForm()
+                alert(cartstatus.message);
+            })
+        })
+      })
+
+    }
+    else {
+        alert("Not available")
+    }
+});
+}
+
+
+</script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.10/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

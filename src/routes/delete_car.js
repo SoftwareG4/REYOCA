@@ -4,6 +4,7 @@
 const CartModel = require('../models/M_cart');
 const dotenv = require('dotenv');
 dotenv.config();
+const cookie = require('cookie');
 
 function delete_car(req, res) {
     const chunks = [];
@@ -21,15 +22,15 @@ function delete_car(req, res) {
                 for (var pair of parsedData.entries()) {
                     requestData[pair[0]] = pair[1];
                 }
-                
             }
             catch (error) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Invalid formatting of the request' }));
                 return;
             }
-            const rentee_id = requestData['rentee_id'];
+            const rentee_id = cookie.parse(req.headers.cookie)['id'];
             const vehicle_id = requestData['vehicle_id'];
+            requestData['rentee_id'] = cookie.parse(req.headers.cookie)['id'];
             if (rentee_id && vehicle_id) {
                 CartModel.delete_car(requestData, (err, result) => {
                     if (err) {
