@@ -66,7 +66,7 @@ async function verify_foul(description){
         });
 
         const words = result.map(row => row.word);
-        const input = description.split(" ");
+        const input = description.split(/[\s.!]+/);
 
         for (let i = 0; i < input.length; i++) {
             if (words.includes(input[i])) {
