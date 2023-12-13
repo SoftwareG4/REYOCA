@@ -40,6 +40,15 @@ class Profile_Model {
                 }
                 else{
                     const user = results.map(user => {
+                        if (user.government_id && user.government_id.length != 0) {
+                            try {
+                                user.government_id = encrypted.decrypt(user.government_id);
+                            } catch (error) {
+                                console.error("Decryption failed:", error);
+                                user.government_id = null; // Set to null if decryption fails
+                            }
+                        }
+                        
                         return {
                             photo: user.img_url,
                             first_name: user.first_name,
@@ -171,7 +180,7 @@ class Profile_Model {
                     }
                     if (requestData.government_id) { 
                         conditions.push("government_id = ?");
-                        values.push(requestData.government_id);
+                        values.push(encrypted.decrypt(requestData.government_id));
                     }
 
                     if (conditions.length > 0) {

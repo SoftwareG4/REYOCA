@@ -91,32 +91,34 @@
             <thead>
                 <tr>
                     <th>Order ID</th>
-                    <th>Payment ID</th>
                     <th>Vehicle ID</th>
                     <th>Amount</th>
-                    <th>Booking Start</th>
-                    <th>Booking End</th>
+                    <th>Initiated</th>
+                    <th>Return Time</th>
                     <!-- Add more columns as needed -->
                 </tr>
             </thead>
             <tbody>
-                <% order.forEach(function(row) { %>
-                    <tr class="row">
-                        <td><%= row.id %></td>
-                        <td><%= row.payment_id %></td>
-                        <td><%= row.vehicle_id %></td>
-                        <td><%= row.amount %></td>
-                        <td><%= row.booking_start %></td>
-                        <td><%= row.booking_end %></td>
-                        <td>
-                            <button id="review" value="<%= row.vehicle_id %>" onclick="postreview(this)">Give Review</button>
-                        </td>
-                        <td>
-                            <button id="report" onclick="postreport()">Report Car</button>
-                        </td>
-                        <!-- Add more cells as needed -->
-                    </tr>
-                <% }) %>
+                <% if (Array.isArray(order)) { %>
+                    <% order.forEach(function(row) { %>
+                        <tr class="row">
+                            <td><%= row.id %></td>
+                            <td><%= row.vehicle_id %></td>
+                            <td><%= row.amount %></td>
+                            <td><%= row.booking_start %></td>
+                            <td><%= row.booking_end %></td>
+                            <td>
+                                <button id="review" value="<%= row.vehicle_id %>" onclick="postreview(this)">Give Review</button>
+                            </td>
+                            <td>
+                                <button id="report" onclick="postreport()">Report</button>
+                            </td>
+                            <!-- Add more cells as needed -->
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <p>No Order History.</p>
+                <% } %>
             </tbody>
         </table>
     </div>
