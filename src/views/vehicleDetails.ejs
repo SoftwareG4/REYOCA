@@ -244,10 +244,23 @@ function disableForm() {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-let vehicleId = 6;
+// let vehicleId = 6;
+let vehicleId = parseInt(localStorage.getItem("lastSelectedVehicleID"));
+let lastSearchQuery = JSON.parse(localStorage.getItem("lastSearchQuery"));
 let userId = 6;
-let pickUpDate = "2024-02-02";
-let dropOffDate = "2024-02-03";
+let pickUpDate, dropOffDate;
+if(lastSearchQuery) {
+  pickUpDate = lastSearchQuery.startDate.slice(0,10);
+  dropOffDate = lastSearchQuery.endDate.slice(0,10);
+} else {
+  const now = new Date();
+  const start_date = new Date(now.getTime() + 3600000);
+  const end_date = new Date(start_date.getTime() + 3600000);
+  pickUpDate = formatDate(start_date);
+  dropOffDate = formatDate(end_date);
+}
+
+console.log(pickUpDate, dropOffDate);
 
 function formatDate(date) {
   const year = date.getFullYear();

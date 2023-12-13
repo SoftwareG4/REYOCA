@@ -150,10 +150,13 @@
         function selected(event) {
             console.log("selected");
             const element = event.currentTarget;
-            const data = element.dataset.objectData;
+            let data = element.dataset.objectData;
+            data = JSON.parse(data);
 
             // Use the data as needed (for example, log to console)
-            console.log("Element Data: ", JSON.parse(data));
+            console.log("Element Data: ", data);
+            localStorage.setItem("lastSelectedVehicleID", data.vehicleID);
+            window.location.href = "http://localhost:3000/customize";
         }
 
         async function submitForm() {
