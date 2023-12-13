@@ -331,16 +331,22 @@ h2{
         }
     
         function handleFileChange() {
-            const fileInput = document.getElementById('photoInput');
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                console.log('Selected file:', file);
-    
-                // Optional: Display the file name or handle the file upload
-                // Example: displayFileName(file.name);
-                uploadFile(file);
-            }
-        }
+          const fileInput = document.getElementById('photoInput');
+          if (fileInput.files.length > 0) {
+              const file = fileInput.files[0];
+              console.log('Selected file:', file);
+      
+              // Check if the file is an image
+              if (file.type.match('image.*')) {
+                  // It's an image file, proceed with the upload
+                  uploadFile(file);
+              } else {
+                  // Not an image file, display an alert
+                  alert('Invalid file type. Please select an image file.');
+              }
+          }
+      }
+      
     
         // Optional: Function to display file name
         function displayFileName(fileName) {
