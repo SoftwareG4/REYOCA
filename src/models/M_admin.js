@@ -30,7 +30,7 @@ class AdminModel{
         });
     }
 
-    static async report_delete(user_id,data,callback) {
+    static async report_resolve(user_id,data,callback) {
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -42,7 +42,7 @@ class AdminModel{
             if (err) {
               return callback(err, null);
             }
-            const query ="DELETE FROM report WHERE _ID = ?";
+            const query ="UPDATE report SET status = 'resolved' WHERE _ID = ?";
             connection.query(query, data["_ID"], (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {

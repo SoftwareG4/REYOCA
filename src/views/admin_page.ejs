@@ -96,13 +96,6 @@
  
     <section>
         <h2>Reports Pending:</h2>
-        <p>Filter Reports:</p>
-        <form>
-            <input type="text" name="reported_id" placeholder="Reported ID">
-            <input type="text" name="reported_by" placeholder="Reported By">
-            <input type="text" name="report_type" placeholder="Report Type">
-            <input type="text" name="keyword" placeholder="Keyword in Description">
-            <button type="submit">Filter</button>
         </form>
         <% if (reportData && reportData.length > 0) { %>
             <table>
@@ -118,17 +111,16 @@
                 <tbody>
                     <% reportData.forEach(function(report) { %>
                         <tr>
-                            <td><%= report.id %></td>
+                            <td><%= report._ID %></td>
                             <td><%= report.reported_by %></td>
                             <td><%= report.reported_id %></td>
                             <td><%= report.description %></td>
                             <td><%= report.report_type %></td>
                             <td>
                                 <!-- Resolve Button -->
-                                <!-- Note: You might need to adjust the form's action URL -->
                                 <form>
-                                    <input type="hidden" name="_ID" value="<%= report.id %>">
-                                    <button type="submit">Resolve</button>
+                                    <input type="hidden" name="_ID" value="<%= report._ID %>">
+                                    <button type="button" onclick="resolve('<%= report._ID %>')">Resolve</button>
                                 </form>
                             </td>
                         </tr>
@@ -210,6 +202,29 @@
                 alert(data.error); 
             } else {
                 alert('Successfully Deleted');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+    function resolve(reportid){
+        var data = {
+            _ID: reportid
+        };
+        fetch('http://localhost:3000/admin/resolvereport', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error); 
+            } else {
+                alert('Successfully Resolved');
                 location.reload();
             }
         })

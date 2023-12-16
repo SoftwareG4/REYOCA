@@ -111,7 +111,7 @@ function review_get(req, res) {
 }
 
 function review_filter(req, res) {
-  if(req.method!="GET"){
+  if(req.method!="POST"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
     return;
@@ -122,32 +122,26 @@ function review_filter(req, res) {
       res.end(JSON.stringify({ error: "User not Authenticated" }));
       return;
   }
-  const chunks = [];
-  req.on("data", (chunk) => {
-      chunks.push(chunk);
-  });
-  req.on('end',async () => {
-    let requestData = {};
-    try {
-        const data = Buffer.concat(chunks);
-        const stringData = data.toString();
-        const parsedData = new URLSearchParams(stringData);
-        for (var pair of parsedData.entries()) {
-            requestData[pair[0]] = pair[1];
+  let body = '';
+    req.on('data', (chunk) => {
+        body += chunk;
+    });
+    req.on('end', () => {
+        let requestData;
+        if (body){
+            requestData = JSON.parse(body);
+        }else {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
         }
-        console.log("DataObj: ", requestData);
-
-    } catch (error) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
-        return;
-    }
-    
-    review_Model.filterReview(requestData, (err, result) => {
+        // console.log(requestData);
+    review_Model.filterReview(user_id, requestData, (err, result) => {
         if (err) {
+          console.log(err);
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
         } else {
+          // console.log(result);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ message: result }));
         }

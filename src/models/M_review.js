@@ -57,13 +57,13 @@ class review_Model {
               return callback(err, null);
             }
             // const query = "SELECT * FROM user_reviews WHERE rating_for=? OR rating_by=?";
-            const query = "SELECT *,f.first_name AS username_for, b.first_name AS username_by FROM user_reviews JOIN user AS f ON user_reviews.rating_for=f._ID JOIN user AS b ON user_reviews.rating_by=b._ID WHERE rating_for=? OR rating_by=?"
+            const query = "SELECT user_reviews._ID as _ID,user_reviews.stars as stars,user_reviews.description as description,user_reviews.rating_for as rating_for,user_reviews.rating_by as rating_by, f.first_name AS username_for, b.first_name AS username_by FROM user_reviews JOIN user AS f ON user_reviews.rating_for=f._ID JOIN user AS b ON user_reviews.rating_by=b._ID WHERE rating_for=? OR rating_by=?;"
             connection.query(query,[user_id, user_id], async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {
                 return callback(err, null);
                 }
-                console.log(results)
+                // console.log(results)
                 if(results.length==0){
                     return callback(null, "No Reviews Found");
                 }
@@ -80,7 +80,7 @@ class review_Model {
                             userID: user_id
                         };
                     });
-                    console.log(reviews);
+                    // console.log(reviews);
                     connection.end(); // Close the connection
                     return callback(null, reviews);
                 }
@@ -88,7 +88,7 @@ class review_Model {
         });
     }
 
-    static async filterReview(filterCriteria, callback) {
+    static async filterReview(user_id, filterCriteria, callback) {
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -100,27 +100,22 @@ class review_Model {
             if (err) {
                 return callback(err, null);
             }
-            let query = "SELECT * FROM user_reviews"; 
+
+            let query = "SELECT * FROM (SELECT user_reviews._ID as _ID,user_reviews.stars as stars,user_reviews.description as description,user_reviews.rating_for as rating_for,user_reviews.rating_by as rating_by, f.first_name AS username_for, b.first_name AS username_by FROM user_reviews JOIN user AS f ON user_reviews.rating_for=f._ID JOIN user AS b ON user_reviews.rating_by=b._ID WHERE rating_for="+user_id+ " OR rating_by="+user_id+") AS dt";
             let conditions = [];
             let values = [];
     
-            if (filterCriteria.rating_for) { 
-                conditions.push("rating_for = ?");
-                values.push(filterCriteria.rating_for);
+            if (filterCriteria.stars!='') {
+                conditions.push("stars = " + filterCriteria.stars);
             }
-            if (filterCriteria.stars) {
-                conditions.push("stars = ?");
-                values.push(filterCriteria.stars);
+            if (filterCriteria.description) {
+                conditions.push("description LIKE '%" + filterCriteria.description + "%'");
             }
-            if (filterCriteria.keyword) {
-                conditions.push("description LIKE '%" + filterCriteria.keyword + "%'");
-            }
-            
             if (conditions.length > 0) {
                 query += " WHERE " + conditions.join(" AND ");
             }
     
-            connection.query(query, values, (err, results) => {
+            connection.query(query, (err, results) => {
                 connection.end(); // Close the connection
                 if (err) {
                     return callback(err, null);

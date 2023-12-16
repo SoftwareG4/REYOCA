@@ -303,7 +303,7 @@ function red_reg_get_reviews(req, res){
             title: 'Reviews',
             review: result // Assuming result is an array of review objects
           };
-          console.log(result);
+          // console.log(result);
           const renderedHtml = ejs.render(data, dataToRender);
           res.writeHead(200, { 'Content-Type': 'text/html' });
           res.end(renderedHtml);

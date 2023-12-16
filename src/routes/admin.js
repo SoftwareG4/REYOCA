@@ -45,8 +45,8 @@ function delete_review(req, res) {
   });
 }
 
-function delete_report(req, res) {
-  if(req.method!="DELETE"){
+function resolve_report(req, res) {
+  if(req.method!="POST"){
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method Not Allowed' }));
     return;
@@ -79,7 +79,7 @@ function delete_report(req, res) {
     }
     requestData = Object.keys(requestData)[0];
     requestData = JSON.parse(requestData);
-    AdminModel.report_delete(user_id,requestData, (err, result) => {
+    AdminModel.report_resolve(user_id,requestData, (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err }));
@@ -196,8 +196,8 @@ function admin_route(req, res){
       case "/admin/deletereview":
           delete_review(req, res);
           break
-      case "/admin/deletereport":
-          delete_report(req, res);
+      case "/admin/resolvereport":
+          resolve_report(req, res);
           break
       case "/admin/deleteuser":
           console.log("path")

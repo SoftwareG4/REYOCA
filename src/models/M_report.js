@@ -52,7 +52,7 @@ class ReportModel {
             if (err) {
               return callback(err, null);
             }
-            const query = "SELECT * FROM report";
+            const query = "SELECT * FROM report WHERE status = 'pending'";
             connection.query(query, async (err, results) => {
                 // connection.end(); // Close the connection
                 if (err) {

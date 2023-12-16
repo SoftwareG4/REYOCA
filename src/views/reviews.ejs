@@ -79,10 +79,8 @@
         <!-- Filter Options -->
         <div class="filter-options">
             <input type="text" id="filterStars" placeholder="Filter by Stars">
-            <input type="text" id="filterRatedBy" placeholder="Filter by Rated By">
-            <input type="text" id="filterRatedFor" placeholder="Filter by Rated For">
             <input type="text" id="filterKeyword" placeholder="Filter by Keyword">
-            <button onclick="applyFilters()">Apply Filters</button>
+            <button type="button" onclick="applyFilters()">Apply Filters</button>
         </div>
 
         <!-- Review Table -->
@@ -126,6 +124,66 @@
 
     <!-- Add any necessary JavaScript at the bottom -->
     <script>
+        function applyFilters(){
+            var data = {
+                stars: document.getElementById('filterStars').value,
+                description: document.getElementById('filterKeyword').value
+            };
+            fetch('/review/filterreview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); 
+                } else {
+                    updateReviewTable(data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error);
+                alert("An error occured");
+            });
+        }
+
+        function updateReviewTable(data) {
+            // Access the 'message' property to get the array of reviews
+            var reviews = data.message || [];
+            var tbody = document.getElementById('reviewTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; // Clear existing content
+        
+            // Check if the reviews array is not empty
+            if (Array.isArray(reviews) && reviews.length > 0) {
+                // Iterate through each review in the array
+                reviews.forEach(function(row) {
+                    var buttonHTML = '';
+                    if (row.ratedBy === row.userID) {
+                        buttonHTML = '<button onclick="deleteReview(\'' + row.id + '\')">Delete</button>';
+                    } else {
+                        buttonHTML = '<button onclick="reportReview(\'' + row.id + '\')">Report</button>';
+                    }
+                    var tr = '<tr>' +
+                                '<td>' + row.stars + '</td>' +
+                                '<td>' + row.description + '</td>' +
+                                '<td>' + row.username_by + '</td>' + 
+                                '<td>' + row.username_for + '</td>' + 
+                                '<td>' + buttonHTML + '</td>' +
+                             '</tr>';
+                    tbody.innerHTML += tr;
+                });
+            } else {
+                // If the array is empty
+                tbody.innerHTML = '<tr><td colspan="4">No reviews found.</td></tr>';
+            }
+        }
+        
+        
+        
+        
+        
         function reportReview(reviewId) {
             window.location.href = 'http://localhost:3000/dev_page_route/profilepage/postreport';
         }
@@ -144,7 +202,6 @@
                 if (data.error) {
                     alert(data.error); 
                 } else {
-                    alert('Successfully Deleted');
                     location.reload();
                 }
             })
