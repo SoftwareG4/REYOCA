@@ -44,7 +44,6 @@ class Profile_Model {
                             try {
                                 user.government_id = encrypted.decrypt(user.government_id);
                             } catch (error) {
-                                console.error("Decryption failed:", error);
                                 user.government_id = null; // Set to null if decryption fails
                             }
                         }

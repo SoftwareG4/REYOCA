@@ -57,7 +57,7 @@ async function verify_foul(description){
     try {
         await connection.connect();
 
-        const query = "SELECT word FROM profanity_check";
+        const query = "SELECT LOWER(word) as word FROM profanity_check";
         const result = await new Promise((resolve, reject) => {
             connection.query(query, (err, result) => {
                 if (err) reject(err);
@@ -69,7 +69,7 @@ async function verify_foul(description){
         const input = description.split(/[\s.!]+/);
 
         for (let i = 0; i < input.length; i++) {
-            if (words.includes(input[i])) {
+            if (words.includes(input[i].toLowerCase())) {
                 foul.add(input[i]);
             }
         }
