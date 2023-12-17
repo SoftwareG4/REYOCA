@@ -169,17 +169,27 @@ function update_prof(req, res) {
       res.end(JSON.stringify({ error: "User not Authenticated" }));
       return;
   }
-  let body = '';
-    req.on('data', (chunk) => {
-        body += chunk;
+  const chunks = [];
+    req.on("data", (chunk) => {
+        chunks.push(chunk);
     });
+    // requestData = Object.keys(requestData)[0];
+    // requestData = JSON.parse(requestData);
     req.on('end', () => {
-        let requestData;
-        if (body){
-            requestData = JSON.parse(body);
-        }else {
+        let requestData = {};
+        try {
+            const data = Buffer.concat(chunks);
+            const stringData = data.toString();
+            const parsedData = new URLSearchParams(stringData);
+            for (var pair of parsedData.entries()) {
+                requestData[pair[0]] = pair[1];
+            }
+            // console.log("DataObj: ", requestData);
+
+        } catch (error) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
+            res.end(JSON.stringify({ error: 'Invalid Form data in the request body' }));
+            return;
         }
   
       profile_Model.profile_update(user_id,requestData, (err, result) => {
